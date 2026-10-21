@@ -1,0 +1,2538 @@
+{
+  "fecha_corrida": "2026-10-21T15:50:37-03:00",
+  "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)",
+  "delay": [
+    0.8,
+    1.5
+  ],
+  "limite_pagina": 64,
+  "max_requests": 150,
+  "robots": {
+    "url": "https://www.ciclovia.com.py/robots.txt",
+    "bytes": 820,
+    "politica": "paginado",
+    "permite_url_con_query": false,
+    "robo_txt_disallow_query": true,
+    "paginado_habilitado_por_politica": true,
+    "advertencia": "robots.txt tiene 'Disallow: /*?' bajo 'User-agent: *'. El paginado ?p=N&product_list_limit=64 NO es robots-compliant y requiere autorización escrita del dueño del sitio. Vía 100% compliant: sitemap + fichas SEO individuales (3.778 requests, ~1,2 s c/u).",
+    "permite_categoria": true,
+    "permite_ficha": true,
+    "permite_media_producto": true,
+    "permite_catalog_product_view": false,
+    "texto": "# Ciclovia\n\nUser-agent: *\n\n# Directories\nDisallow: /js/\nDisallow: /lib/\nDisallow: /media/\nDisallow: /skin/\n\n# Paths (no clean URLs)\nDisallow: /*?\nDisallow: /*.php$\nDisallow: /*?p=*&\nDisallow: /*?SID=\n\n# Paths (clean URLs)\nDisallow: /index.php/\nDisallow: /catalog/product/view/\nDisallow: /checkout/\nDisallow: /customer/\nAllow: /media/catalog/product/\nAllow: /market/catalog/\n\nUser-agent: AdsBot-Google\nDisallow:\n\nUser-agent: Googlebot\nDisallow: /lib/\nDisallow: /pkginfo/\nDisallow: /report/\nDisallow: /var/\nDisallow: /catalog/\nDisallow: /customer/\nDisallow: /sendfriend/\nDisallow: /review/\nDisallow: /*SID=\nDisallow: /*?p=\nDisallow: /*?___store=\nDisallow: /*?price=\nDisallow: /*?marca_\nDisallow: /*?color_\nDisallow: /*D=\nDisallow: /*?talle_\nDisallow: /*&color_\nDisallow: /*&talle_\n\nhttps://www.ciclovia.com.py/sitemap.xml\n"
+  },
+  "sitemap": {
+    "urls": 3922,
+    "desde_cache": false,
+    "html": 3778
+  },
+  "descubrimiento": {
+    "categorias_2_niveles": 25,
+    "raices_detectadas": [
+      "https://www.ciclovia.com.py/autoaccesorios.html",
+      "https://www.ciclovia.com.py/bicicletas.html",
+      "https://www.ciclovia.com.py/fitness.html",
+      "https://www.ciclovia.com.py/indumentaria.html"
+    ],
+    "raices_incluidas": true,
+    "extras": [
+      "https://www.ciclovia.com.py/promociones.html",
+      "https://www.ciclovia.com.py/cyberday.html"
+    ],
+    "total_candidatas": 31,
+    "productos_con_barra_en_url_descartados": 45,
+    "fuente": "sitemap.xml (+ menú de navegación al vuelo)"
+  },
+  "raices_reutilizadas_de_cache": [],
+  "raices_no_bajadas": [],
+  "ficha_control": {
+    "url": "https://www.ciclovia.com.py/bicicleta-mtb-scott-contrail-40.html",
+    "ok": true,
+    "chequeos": {
+      "sku": {
+        "esperado": "410116726",
+        "actual": "410116726",
+        "ok": true
+      },
+      "precio_final": {
+        "esperado": 3811800,
+        "actual": 3811800,
+        "ok": true
+      },
+      "precio_anterior": {
+        "esperado": 5082400,
+        "actual": 5082400,
+        "ok": true
+      },
+      "cantidad_variantes": {
+        "esperado": 11,
+        "actual": 11,
+        "ok": true
+      },
+      "variantes_vendibles": {
+        "esperado": 3,
+        "actual": 3,
+        "ok": true
+      }
+    },
+    "estado_ficha": "ok"
+  },
+  "fecha_fin": "2026-10-21T15:53:07-03:00",
+  "requests_http": 119,
+  "cache_hits": 1,
+  "categorias": [
+    {
+      "categoria_url": "https://www.ciclovia.com.py/autoaccesorios.html",
+      "slug": "autoaccesorios",
+      "categoria": "autoaccesorios",
+      "nombre": "AUTOACCESORIOS",
+      "total_declarado": 22,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 22,
+      "tarjetas_esperadas": 22,
+      "tarjetas_descartadas": 0,
+      "nuevas": 22,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/autoaccesorios.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 22,
+          "esperadas": 22
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 22
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/bicicletas.html",
+      "slug": "bicicletas",
+      "categoria": "bicicletas",
+      "nombre": "BICICLETAS",
+      "total_declarado": 1302,
+      "paginas_previstas": 21,
+      "paginas_bajadas": 21,
+      "tarjetas": 1302,
+      "tarjetas_esperadas": 1302,
+      "tarjetas_descartadas": 0,
+      "nuevas": 1284,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 3,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=3",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 4,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=4",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 5,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=5",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 6,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=6",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 7,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=7",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 8,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=8",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 9,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=9",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 10,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=10",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 11,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=11",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 12,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=12",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 13,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=13",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 14,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=14",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 15,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=15",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 16,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=16",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 17,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=17",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 18,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=18",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 19,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=19",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 20,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=20",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 21,
+          "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=21",
+          "desde_cache": false,
+          "tarjetas": 22,
+          "esperadas": 22
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness.html",
+      "slug": "fitness",
+      "categoria": "fitness",
+      "nombre": "FITNESS",
+      "total_declarado": 1233,
+      "paginas_previstas": 20,
+      "paginas_bajadas": 20,
+      "tarjetas": 1233,
+      "tarjetas_esperadas": 1233,
+      "tarjetas_descartadas": 0,
+      "nuevas": 1229,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 3,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=3",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 4,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=4",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 5,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=5",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 6,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=6",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 7,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=7",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 8,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=8",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 9,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=9",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 10,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=10",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 11,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=11",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 12,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=12",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 13,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=13",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 14,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=14",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 15,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=15",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 16,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=16",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 17,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=17",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 18,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=18",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 19,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=19",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 20,
+          "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=20",
+          "desde_cache": false,
+          "tarjetas": 17,
+          "esperadas": 17
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/indumentaria.html",
+      "slug": "indumentaria",
+      "categoria": "indumentaria",
+      "nombre": "INDUMENTARIA",
+      "total_declarado": 141,
+      "paginas_previstas": 3,
+      "paginas_bajadas": 3,
+      "tarjetas": 141,
+      "tarjetas_esperadas": 141,
+      "tarjetas_descartadas": 0,
+      "nuevas": 140,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/indumentaria.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/indumentaria.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 3,
+          "url": "https://www.ciclovia.com.py/indumentaria.html?product_list_limit=64&p=3",
+          "desde_cache": false,
+          "tarjetas": 13,
+          "esperadas": 13
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/bicicletas/mtb.html",
+      "slug": "bicicletas-mtb",
+      "categoria": "bicicletas/mtb",
+      "nombre": "MTB",
+      "total_declarado": 420,
+      "paginas_previstas": 7,
+      "paginas_bajadas": 7,
+      "tarjetas": 420,
+      "tarjetas_esperadas": 420,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 3,
+          "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=3",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 4,
+          "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=4",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 5,
+          "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=5",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 6,
+          "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=6",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 7,
+          "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=7",
+          "desde_cache": false,
+          "tarjetas": 36,
+          "esperadas": 36
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/bicicletas/ruta.html",
+      "slug": "bicicletas-ruta",
+      "categoria": "bicicletas/ruta",
+      "nombre": "RUTA",
+      "total_declarado": 18,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 18,
+      "tarjetas_esperadas": 18,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/bicicletas/ruta.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 18,
+          "esperadas": 18
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 18
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/bicicletas/urbanas.html",
+      "slug": "bicicletas-urbanas",
+      "categoria": "bicicletas/urbanas",
+      "nombre": "URBANAS",
+      "total_declarado": 7,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 7,
+      "tarjetas_esperadas": 7,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/bicicletas/urbanas.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 7,
+          "esperadas": 7
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 7
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/cintas.html",
+      "slug": "fitness-cintas",
+      "categoria": "fitness/cintas",
+      "nombre": "CINTAS",
+      "total_declarado": 48,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 48,
+      "tarjetas_esperadas": 48,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness/cintas.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 48,
+          "esperadas": 48
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 48
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/elipticas.html",
+      "slug": "fitness-elipticas",
+      "categoria": "fitness/elipticas",
+      "nombre": "ELÍPTICAS",
+      "total_declarado": 7,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 7,
+      "tarjetas_esperadas": 7,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness/elipticas.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 7,
+          "esperadas": 7
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 7
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/bicicletas.html",
+      "slug": "fitness-bicicletas",
+      "categoria": "fitness/bicicletas",
+      "nombre": "BICICLETAS",
+      "total_declarado": 24,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 24,
+      "tarjetas_esperadas": 24,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness/bicicletas.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 24,
+          "esperadas": 24
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 24
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/accesorios.html",
+      "slug": "fitness-accesorios",
+      "categoria": "fitness/accesorios",
+      "nombre": "ACCESORIOS",
+      "total_declarado": 974,
+      "paginas_previstas": 16,
+      "paginas_bajadas": 16,
+      "tarjetas": 974,
+      "tarjetas_esperadas": 974,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 3,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=3",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 4,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=4",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 5,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=5",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 6,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=6",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 7,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=7",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 8,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=8",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 9,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=9",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 10,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=10",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 11,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=11",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 12,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=12",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 13,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=13",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 14,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=14",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 15,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=15",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 16,
+          "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=16",
+          "desde_cache": false,
+          "tarjetas": 14,
+          "esperadas": 14
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/autoaccesorios/portabultos.html",
+      "slug": "autoaccesorios-portabultos",
+      "categoria": "autoaccesorios/portabultos",
+      "nombre": "PORTA EQUIPAJES",
+      "total_declarado": 12,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 12,
+      "tarjetas_esperadas": 12,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/autoaccesorios/portabultos.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 12,
+          "esperadas": 12
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 12
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/autoaccesorios/portabici.html",
+      "slug": "autoaccesorios-portabici",
+      "categoria": "autoaccesorios/portabici",
+      "nombre": "PORTABICICLETAS",
+      "total_declarado": 9,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 9,
+      "tarjetas_esperadas": 9,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/autoaccesorios/portabici.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 9,
+          "esperadas": 9
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 9
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/abdominalera.html",
+      "slug": "fitness-abdominalera",
+      "categoria": "fitness/abdominalera",
+      "nombre": "ABDOMINALERAS",
+      "total_declarado": 3,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 3,
+      "tarjetas_esperadas": 3,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness/abdominalera.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 3,
+          "esperadas": 3
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 3
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html",
+      "slug": "bicicletas-repuestos-de-bicicletas",
+      "categoria": "bicicletas/repuestos-de-bicicletas",
+      "nombre": "ACCESORIOS",
+      "total_declarado": 752,
+      "paginas_previstas": 12,
+      "paginas_bajadas": 12,
+      "tarjetas": 752,
+      "tarjetas_esperadas": 752,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 3,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=3",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 4,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=4",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 5,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=5",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 6,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=6",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 7,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=7",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 8,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=8",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 9,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=9",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 10,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=10",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 11,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=11",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 12,
+          "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=12",
+          "desde_cache": false,
+          "tarjetas": 48,
+          "esperadas": 48
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/indumentaria/remeras.html",
+      "slug": "indumentaria-remeras",
+      "categoria": "indumentaria/remeras",
+      "nombre": "REMERAS",
+      "total_declarado": 82,
+      "paginas_previstas": 2,
+      "paginas_bajadas": 2,
+      "tarjetas": 82,
+      "tarjetas_esperadas": 82,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/indumentaria/remeras.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/indumentaria/remeras.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 18,
+          "esperadas": 18
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/indumentaria/abrigos.html",
+      "slug": "indumentaria-abrigos",
+      "categoria": "indumentaria/abrigos",
+      "nombre": "ABRIGOS",
+      "total_declarado": 12,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 12,
+      "tarjetas_esperadas": 12,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/indumentaria/abrigos.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 12,
+          "esperadas": 12
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 12
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/indumentaria/calzados.html",
+      "slug": "indumentaria-calzados",
+      "categoria": "indumentaria/calzados",
+      "nombre": "CALZADOS",
+      "total_declarado": 12,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 12,
+      "tarjetas_esperadas": 12,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/indumentaria/calzados.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 12,
+          "esperadas": 12
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 12
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/spinning.html",
+      "slug": "fitness-spinning",
+      "categoria": "fitness/spinning",
+      "nombre": "SPINNING",
+      "total_declarado": 11,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 11,
+      "tarjetas_esperadas": 11,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness/spinning.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 11,
+          "esperadas": 11
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 11
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/remos.html",
+      "slug": "fitness-remos",
+      "categoria": "fitness/remos",
+      "nombre": "REMOS",
+      "total_declarado": 13,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 13,
+      "tarjetas_esperadas": 13,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness/remos.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 13,
+          "esperadas": 13
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 13
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/escaladoras.html",
+      "slug": "fitness-escaladoras",
+      "categoria": "fitness/escaladoras",
+      "nombre": "ESCALADORAS",
+      "total_declarado": 4,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 4,
+      "tarjetas_esperadas": 4,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness/escaladoras.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 4,
+          "esperadas": 4
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 4
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/indumentaria/mochilas.html",
+      "slug": "indumentaria-mochilas",
+      "categoria": "indumentaria/mochilas",
+      "nombre": "MOCHILAS",
+      "total_declarado": 7,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 7,
+      "tarjetas_esperadas": 7,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/indumentaria/mochilas.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 7,
+          "esperadas": 7
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 7
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/indumentaria/shorts.html",
+      "slug": "indumentaria-shorts",
+      "categoria": "indumentaria/shorts",
+      "nombre": "SHORTS",
+      "total_declarado": 20,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 20,
+      "tarjetas_esperadas": 20,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/indumentaria/shorts.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 20,
+          "esperadas": 20
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 20
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/indumentaria/guantes.html",
+      "slug": "indumentaria-guantes",
+      "categoria": "indumentaria/guantes",
+      "nombre": "GUANTES",
+      "total_declarado": 6,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 6,
+      "tarjetas_esperadas": 6,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/indumentaria/guantes.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 6,
+          "esperadas": 6
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 6
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/indumentaria/lentes.html",
+      "slug": "indumentaria-lentes",
+      "categoria": "indumentaria/lentes",
+      "nombre": "LENTES",
+      "total_declarado": 13,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 13,
+      "tarjetas_esperadas": 13,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/indumentaria/lentes.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 13,
+          "esperadas": 13
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 13
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/suplementos-alimenticios.html",
+      "slug": "fitness-suplementos-alimenticios",
+      "categoria": "fitness/suplementos-alimenticios",
+      "nombre": "SUPLEMENTOS NUTRICIONALES",
+      "total_declarado": 67,
+      "paginas_previstas": 2,
+      "paginas_bajadas": 2,
+      "tarjetas": 67,
+      "tarjetas_esperadas": 67,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/fitness/suplementos-alimenticios.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/fitness/suplementos-alimenticios.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 3,
+          "esperadas": 3
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/bicicletas/infantil.html",
+      "slug": "bicicletas-infantil",
+      "categoria": "bicicletas/infantil",
+      "nombre": "INFANTIL",
+      "total_declarado": 154,
+      "paginas_previstas": 3,
+      "paginas_bajadas": 3,
+      "tarjetas": 154,
+      "tarjetas_esperadas": 154,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/bicicletas/infantil.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/bicicletas/infantil.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 3,
+          "url": "https://www.ciclovia.com.py/bicicletas/infantil.html?product_list_limit=64&p=3",
+          "desde_cache": false,
+          "tarjetas": 26,
+          "esperadas": 26
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/bicicletas/electricas.html",
+      "slug": "bicicletas-electricas",
+      "categoria": "bicicletas/electricas",
+      "nombre": "ELECTRICAS",
+      "total_declarado": 7,
+      "paginas_previstas": 1,
+      "paginas_bajadas": 1,
+      "tarjetas": 7,
+      "tarjetas_esperadas": 7,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/bicicletas/electricas.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 7,
+          "esperadas": 7
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 7
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/fitness/peso-libre.html",
+      "slug": "fitness-peso-libre",
+      "categoria": "fitness/peso-libre",
+      "nombre": "",
+      "total_declarado": null,
+      "paginas_previstas": null,
+      "paginas_bajadas": 0,
+      "tarjetas": 0,
+      "tarjetas_esperadas": 0,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "no_es_categoria",
+      "moneda": "PYG",
+      "detalle_paginas": [],
+      "es_categoria": false,
+      "es_categoria_magento": false
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/promociones.html",
+      "slug": "promociones",
+      "categoria": "promociones",
+      "nombre": "Promociones",
+      "total_declarado": null,
+      "paginas_previstas": null,
+      "paginas_bajadas": 0,
+      "tarjetas": 0,
+      "tarjetas_esperadas": 0,
+      "tarjetas_descartadas": 0,
+      "nuevas": 0,
+      "estado": "categoria_sin_grid_server_side",
+      "moneda": "PYG",
+      "detalle_paginas": [],
+      "es_categoria": false,
+      "es_categoria_magento": true
+    },
+    {
+      "categoria_url": "https://www.ciclovia.com.py/cyberday.html",
+      "slug": "cyberday",
+      "categoria": "cyberday",
+      "nombre": "CYBER DAY",
+      "total_declarado": 331,
+      "paginas_previstas": 6,
+      "paginas_bajadas": 6,
+      "tarjetas": 331,
+      "tarjetas_esperadas": 331,
+      "tarjetas_descartadas": 0,
+      "nuevas": 6,
+      "estado": "ok",
+      "moneda": "PYG",
+      "detalle_paginas": [
+        {
+          "pagina": 1,
+          "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=1",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 2,
+          "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=2",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 3,
+          "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=3",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 4,
+          "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=4",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 5,
+          "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=5",
+          "desde_cache": false,
+          "tarjetas": 64,
+          "esperadas": 64
+        },
+        {
+          "pagina": 6,
+          "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=6",
+          "desde_cache": false,
+          "tarjetas": 11,
+          "esperadas": 11
+        }
+      ],
+      "es_categoria": true,
+      "es_categoria_magento": true,
+      "tam_pagina_efectivo": 64
+    }
+  ],
+  "totales": {
+    "categorias_intentadas": 31,
+    "categorias_ok": 29,
+    "paginas_bajadas": 111,
+    "tarjetas_extraidas": 5711,
+    "tarjetas_esperadas": 5711,
+    "productos_unicos": 2681,
+    "fichas_ok": 5,
+    "fichas_total": 5
+  },
+  "cobertura_por_pilar": [
+    {
+      "pilar": "autoaccesorios",
+      "url_pilar": "https://www.ciclovia.com.py/autoaccesorios.html",
+      "estado": "ok",
+      "total_declarado": 22,
+      "tarjetas_extraidas": 22,
+      "cobertura_pct": 100.0,
+      "productos_unicos_rubro": 22
+    },
+    {
+      "pilar": "bicicletas",
+      "url_pilar": "https://www.ciclovia.com.py/bicicletas.html",
+      "estado": "ok",
+      "total_declarado": 1302,
+      "tarjetas_extraidas": 1302,
+      "cobertura_pct": 100.0,
+      "productos_unicos_rubro": 1281
+    },
+    {
+      "pilar": "fitness",
+      "url_pilar": "https://www.ciclovia.com.py/fitness.html",
+      "estado": "ok",
+      "total_declarado": 1233,
+      "tarjetas_extraidas": 1233,
+      "cobertura_pct": 100.0,
+      "productos_unicos_rubro": 1232
+    },
+    {
+      "pilar": "indumentaria",
+      "url_pilar": "https://www.ciclovia.com.py/indumentaria.html",
+      "estado": "ok",
+      "total_declarado": 141,
+      "tarjetas_extraidas": 141,
+      "cobertura_pct": 100.0,
+      "productos_unicos_rubro": 140
+    },
+    {
+      "pilar": "promociones",
+      "url_pilar": "https://www.ciclovia.com.py/promociones.html",
+      "estado": "categoria_sin_grid_server_side",
+      "total_declarado": null,
+      "tarjetas_extraidas": 0,
+      "cobertura_pct": null,
+      "productos_unicos_rubro": 6
+    },
+    {
+      "pilar": "cyberday",
+      "url_pilar": "https://www.ciclovia.com.py/cyberday.html",
+      "estado": "ok",
+      "total_declarado": 331,
+      "tarjetas_extraidas": 331,
+      "cobertura_pct": 100.0,
+      "productos_unicos_rubro": 0
+    }
+  ],
+  "registro_requests": [
+    {
+      "ts": "2026-10-21T15:50:39-03:00",
+      "url": "https://www.ciclovia.com.py/sitemap.xml",
+      "status": 200,
+      "bytes": 5348600,
+      "ms": 715,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:40-03:00",
+      "url": "https://www.ciclovia.com.py/autoaccesorios.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 282159,
+      "ms": 179,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:41-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 657549,
+      "ms": 41,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:43-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 578041,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:44-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=3",
+      "status": 200,
+      "bytes": 564743,
+      "ms": 46,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:45-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=4",
+      "status": 200,
+      "bytes": 559861,
+      "ms": 42,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:46-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=5",
+      "status": 200,
+      "bytes": 556399,
+      "ms": 38,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:47-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=6",
+      "status": 200,
+      "bytes": 554852,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:48-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=7",
+      "status": 200,
+      "bytes": 554166,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:50-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=8",
+      "status": 200,
+      "bytes": 553441,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:51-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=9",
+      "status": 200,
+      "bytes": 528380,
+      "ms": 46,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:52-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=10",
+      "status": 200,
+      "bytes": 460347,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:53-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=11",
+      "status": 200,
+      "bytes": 499792,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:54-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=12",
+      "status": 200,
+      "bytes": 524077,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:55-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=13",
+      "status": 200,
+      "bytes": 544667,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:56-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=14",
+      "status": 200,
+      "bytes": 519454,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:57-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=15",
+      "status": 200,
+      "bytes": 558181,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:50:59-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=16",
+      "status": 200,
+      "bytes": 556281,
+      "ms": 1426,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:02-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=17",
+      "status": 200,
+      "bytes": 461370,
+      "ms": 1471,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:03-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=18",
+      "status": 200,
+      "bytes": 457312,
+      "ms": 33,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:04-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=19",
+      "status": 200,
+      "bytes": 460831,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:05-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=20",
+      "status": 200,
+      "bytes": 461266,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:07-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas.html?product_list_limit=64&p=21",
+      "status": 200,
+      "bytes": 323476,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:08-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 534369,
+      "ms": 43,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:09-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 545167,
+      "ms": 47,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:11-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=3",
+      "status": 200,
+      "bytes": 526352,
+      "ms": 41,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:12-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=4",
+      "status": 200,
+      "bytes": 510673,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:13-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=5",
+      "status": 200,
+      "bytes": 516637,
+      "ms": 39,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:14-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=6",
+      "status": 200,
+      "bytes": 517231,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:15-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=7",
+      "status": 200,
+      "bytes": 497163,
+      "ms": 41,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:16-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=8",
+      "status": 200,
+      "bytes": 503743,
+      "ms": 38,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:17-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=9",
+      "status": 200,
+      "bytes": 524159,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:20-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=10",
+      "status": 200,
+      "bytes": 518681,
+      "ms": 1438,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:21-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=11",
+      "status": 200,
+      "bytes": 471354,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:22-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=12",
+      "status": 200,
+      "bytes": 483200,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:23-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=13",
+      "status": 200,
+      "bytes": 481349,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:27-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=14",
+      "status": 200,
+      "bytes": 473050,
+      "ms": 2207,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:29-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=15",
+      "status": 200,
+      "bytes": 456069,
+      "ms": 51,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:30-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=16",
+      "status": 200,
+      "bytes": 463261,
+      "ms": 38,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:31-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=17",
+      "status": 200,
+      "bytes": 462077,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:33-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=18",
+      "status": 200,
+      "bytes": 459455,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:34-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=19",
+      "status": 200,
+      "bytes": 474948,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:35-03:00",
+      "url": "https://www.ciclovia.com.py/fitness.html?product_list_limit=64&p=20",
+      "status": 200,
+      "bytes": 270614,
+      "ms": 31,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:36-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 491105,
+      "ms": 38,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:37-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 451245,
+      "ms": 41,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:39-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria.html?product_list_limit=64&p=3",
+      "status": 200,
+      "bytes": 235537,
+      "ms": 32,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:40-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 550410,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:41-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 487143,
+      "ms": 49,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:43-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=3",
+      "status": 200,
+      "bytes": 526487,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:44-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=4",
+      "status": 200,
+      "bytes": 523321,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:45-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=5",
+      "status": 200,
+      "bytes": 463384,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:46-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=6",
+      "status": 200,
+      "bytes": 426661,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:47-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/mtb.html?product_list_limit=64&p=7",
+      "status": 200,
+      "bytes": 335583,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:48-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/ruta.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 259975,
+      "ms": 44,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:50-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/urbanas.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 194453,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:51-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/cintas.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 401250,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:52-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/elipticas.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 203065,
+      "ms": 45,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:53-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/bicicletas.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 297839,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:55-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 536438,
+      "ms": 39,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:56-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 524989,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:57-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=3",
+      "status": 200,
+      "bytes": 509437,
+      "ms": 49,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:58-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=4",
+      "status": 200,
+      "bytes": 517583,
+      "ms": 38,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:51:59-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=5",
+      "status": 200,
+      "bytes": 487384,
+      "ms": 42,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:01-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=6",
+      "status": 200,
+      "bytes": 513435,
+      "ms": 53,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:02-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=7",
+      "status": 200,
+      "bytes": 508301,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:03-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=8",
+      "status": 200,
+      "bytes": 498642,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:05-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=9",
+      "status": 200,
+      "bytes": 482132,
+      "ms": 42,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:06-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=10",
+      "status": 200,
+      "bytes": 458413,
+      "ms": 40,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:07-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=11",
+      "status": 200,
+      "bytes": 457917,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:08-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=12",
+      "status": 200,
+      "bytes": 442615,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:09-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=13",
+      "status": 200,
+      "bytes": 450313,
+      "ms": 33,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:10-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=14",
+      "status": 200,
+      "bytes": 457078,
+      "ms": 47,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:11-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=15",
+      "status": 200,
+      "bytes": 461081,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:13-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/accesorios.html?product_list_limit=64&p=16",
+      "status": 200,
+      "bytes": 246961,
+      "ms": 31,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:14-03:00",
+      "url": "https://www.ciclovia.com.py/autoaccesorios/portabultos.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 234930,
+      "ms": 31,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:15-03:00",
+      "url": "https://www.ciclovia.com.py/autoaccesorios/portabici.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 218163,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:17-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/abdominalera.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 177471,
+      "ms": 31,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:18-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 512112,
+      "ms": 47,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:19-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 515115,
+      "ms": 54,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:20-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=3",
+      "status": 200,
+      "bytes": 508778,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:21-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=4",
+      "status": 200,
+      "bytes": 511351,
+      "ms": 42,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:22-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=5",
+      "status": 200,
+      "bytes": 511167,
+      "ms": 50,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:24-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=6",
+      "status": 200,
+      "bytes": 508209,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:25-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=7",
+      "status": 200,
+      "bytes": 509503,
+      "ms": 44,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:26-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=8",
+      "status": 200,
+      "bytes": 505799,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:27-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=9",
+      "status": 200,
+      "bytes": 467674,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:28-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=10",
+      "status": 200,
+      "bytes": 471982,
+      "ms": 48,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:30-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=11",
+      "status": 200,
+      "bytes": 443178,
+      "ms": 43,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:31-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html?product_list_limit=64&p=12",
+      "status": 200,
+      "bytes": 353947,
+      "ms": 38,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:32-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria/remeras.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 456600,
+      "ms": 47,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:33-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria/remeras.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 247226,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:34-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria/abrigos.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 220602,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:35-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria/calzados.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 223767,
+      "ms": 45,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:37-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/spinning.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 218900,
+      "ms": 32,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:38-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/remos.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 237017,
+      "ms": 32,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:39-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/escaladoras.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 188332,
+      "ms": 31,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:40-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria/mochilas.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 205427,
+      "ms": 32,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:41-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria/shorts.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 265445,
+      "ms": 44,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:42-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria/guantes.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 196311,
+      "ms": 35,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:43-03:00",
+      "url": "https://www.ciclovia.com.py/indumentaria/lentes.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 229392,
+      "ms": 32,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:45-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/suplementos-alimenticios.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 441933,
+      "ms": 48,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:46-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/suplementos-alimenticios.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 183094,
+      "ms": 31,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:47-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/infantil.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 456267,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:48-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/infantil.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 401494,
+      "ms": 42,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:50-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/infantil.html?product_list_limit=64&p=3",
+      "status": 200,
+      "bytes": 276331,
+      "ms": 42,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:51-03:00",
+      "url": "https://www.ciclovia.com.py/bicicletas/electricas.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 201982,
+      "ms": 40,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:52-03:00",
+      "url": "https://www.ciclovia.com.py/fitness/peso-libre.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 149536,
+      "ms": 391,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:53-03:00",
+      "url": "https://www.ciclovia.com.py/promociones.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 156401,
+      "ms": 43,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:54-03:00",
+      "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=1",
+      "status": 200,
+      "bytes": 444348,
+      "ms": 32,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:56-03:00",
+      "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=2",
+      "status": 200,
+      "bytes": 434434,
+      "ms": 34,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:57-03:00",
+      "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=3",
+      "status": 200,
+      "bytes": 450452,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:58-03:00",
+      "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=4",
+      "status": 200,
+      "bytes": 433202,
+      "ms": 37,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:52:59-03:00",
+      "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=5",
+      "status": 200,
+      "bytes": 433505,
+      "ms": 36,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:53:01-03:00",
+      "url": "https://www.ciclovia.com.py/cyberday.html?product_list_limit=64&p=6",
+      "status": 200,
+      "bytes": 265572,
+      "ms": 925,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:53:02-03:00",
+      "url": "https://www.ciclovia.com.py/bicicleta-mtb-scott-contrail-40.html",
+      "status": 200,
+      "bytes": 333287,
+      "ms": 33,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:53:03-03:00",
+      "url": "https://www.ciclovia.com.py/guante-de-mma-talla-l-xl-bravo.html",
+      "status": 200,
+      "bytes": 229757,
+      "ms": 32,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:53:04-03:00",
+      "url": "https://www.ciclovia.com.py/1790293n-guante-negro-mediano-prox.html",
+      "status": 200,
+      "bytes": 190619,
+      "ms": 41,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:53:06-03:00",
+      "url": "https://www.ciclovia.com.py/thule-porta-bici-xpress-970-2b-1-7-8.html",
+      "status": 200,
+      "bytes": 194764,
+      "ms": 33,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    },
+    {
+      "ts": "2026-10-21T15:53:07-03:00",
+      "url": "https://www.ciclovia.com.py/1790026j-casco-pro-x-rojo.html",
+      "status": 200,
+      "bytes": 188285,
+      "ms": 29,
+      "user_agent": "BiciTiendaPoC/1.0 (+scraper secuencial de catalogo; proyecto propio de revendedor; ver poc/README.md)"
+    }
+  ],
+  "completitud": {
+    "sku": {
+      "con_dato": 1316,
+      "pct": 49.1
+    },
+    "precio_final": {
+      "con_dato": 2266,
+      "pct": 84.5
+    },
+    "precio_anterior": {
+      "con_dato": 1913,
+      "pct": 71.4
+    },
+    "imagen": {
+      "con_dato": 2681,
+      "pct": 100.0
+    },
+    "disponibilidad": {
+      "con_dato": 2681,
+      "pct": 100.0
+    },
+    "id_magento": {
+      "con_dato": 2681,
+      "pct": 100.0
+    },
+    "por_rubro": {
+      "autoaccesorios": 22,
+      "bicicletas": 1281,
+      "fitness": 1232,
+      "indumentaria": 140,
+      "promociones": 6
+    },
+    "por_estado_tarjeta": {
+      "con_precio": 1316,
+      "agotado": 1035,
+      "solo_catalogo": 298,
+      "sin_dato": 32
+    },
+    "con_descuento": 1913
+  }
+}

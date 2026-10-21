@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="es-PY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#00a758">
+<title>Jaka Bicicletería — catálogo y pedidos por WhatsApp</title>
+<meta name="description" content="Jaka Bicicletería: bicicletas, accesorios, repuestos, fitness e indumentaria. Armá tu canasta y enviá el pedido por WhatsApp.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Jaka Bicicletería">
+<meta property="og:title" content="Jaka Bicicletería — catálogo y pedidos por WhatsApp">
+<meta property="og:description" content="Bicicletas, accesorios, repuestos, fitness e indumentaria. Pedidos por WhatsApp.">
+<meta property="og:image" content="assets/jaka-og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="shortcut icon" href="assets/favicon.ico">
+<link rel="stylesheet" href="assets/estilos.css">
+<link rel="preload" href="data/indice.json" as="fetch" crossorigin>
+</head>
+<body>
+
+<!-- ================= Encabezado ================= -->
+<header class="cabecera">
+  <div class="cabecera__barra">
+    <button class="icono-btn solo-movil" id="btn-menu-categorias" aria-label="Ver categorías">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+
+    <a class="marca" href="#" id="ir-inicio">
+      <img class="marca__logo" src="assets/jaka-icono.png" alt="Jaka Bicicletería" width="36" height="36">
+      <span class="marca__texto" id="marca-texto">Jaka Bicicletería</span>
+    </a>
+
+    <div class="buscador">
+      <svg class="buscador__icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" id="buscador" placeholder="Buscar bici, casco, repuesto, ropa…" autocomplete="off" aria-label="Buscar productos">
+      <button class="buscador__limpiar oculto" id="buscador-limpiar" aria-label="Limpiar búsqueda">×</button>
+    </div>
+
+    <a class="icono-btn solo-escritorio" id="link-ubicacion" target="_blank" rel="noopener" aria-label="Cómo llegar al local" title="Cómo llegar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+    </a>
+
+    <a class="icono-btn solo-escritorio" id="link-whatsapp-general" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 8.7c.3-.7.6-.7.9-.7h.7c.2 0 .5 0 .7.6s.7 1.7.8 1.8c0 .2.1.3 0 .5l-.4.6c-.1.2-.3.4-.1.7.2.3.7 1.1 1.5 1.8 1 .9 1.8 1.1 2 1.2.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.3.1.2.1.8-.2 1.5-.3.7-1.6 1.4-2.2 1.4-.6 0-2.4-.2-4.5-2.2-1.7-1.6-2.6-3.3-2.9-3.9-.3-.6-1-1.9-.7-3Z" fill="currentColor"/></svg>
+    </a>
+
+    <button class="carrito-btn" id="btn-carrito" aria-label="Ver canasta">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/></svg>
+      <span class="carrito-btn__texto">Canasta</span>
+      <span class="carrito-btn__contador" id="carrito-contador">0</span>
+    </button>
+  </div>
+
+  <nav class="categorias" id="categorias" aria-label="Categorías"></nav>
+  <div class="subcategorias" id="subcategorias" aria-label="Subcategorías"></div>
+</header>
+
+<!-- ================= Aviso superior ================= -->
+<div class="tira" id="tira-aviso">
+  <span class="tira__punto" aria-hidden="true"></span>
+  <span id="tira-texto">Precios actualizados · Pedidos por WhatsApp · Envíos a todo el país</span>
+  <a class="tira__link" id="tira-ubicacion" target="_blank" rel="noopener">Cómo llegar</a>
+</div>
+
+<!-- ================= Contenido ================= -->
+<main class="contenedor" id="contenido">
+  <div class="encabezado-seccion">
+    <div>
+      <h1 id="titulo-seccion">Bicicletas</h1>
+      <p class="subtitulo" id="subtitulo-seccion">Cargando catálogo…</p>
+    </div>
+    <div class="controles">
+      <label class="control">
+        <span>Ordenar</span>
+        <select id="orden">
+          <option value="relevancia">Relevancia</option>
+          <option value="precio-asc">Menor precio</option>
+          <option value="precio-desc">Mayor precio</option>
+          <option value="descuento">Mayor descuento</option>
+          <option value="nombre">Nombre A–Z</option>
+        </select>
+      </label>
+      <label class="control control--check">
+        <input type="checkbox" id="solo-disponibles">
+        <span>Solo disponibles</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="estado-carga" id="estado-carga">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Cargando catálogo…</p>
+  </div>
+
+  <div class="grilla" id="grilla" aria-live="polite"></div>
+
+  <div class="vacio oculto" id="vacio">
+    <p class="vacio__emoji" aria-hidden="true">🔎</p>
+    <h2>No encontramos productos</h2>
+    <p>Probá con otra palabra o cambiá de categoría.</p>
+    <button class="btn btn--secundario" id="btn-limpiar-filtros">Limpiar filtros</button>
+  </div>
+
+  <div class="mas" id="mas-contenedor">
+    <button class="btn btn--secundario" id="btn-mas">Ver más productos</button>
+  </div>
+</main>
+
+<!-- ================= Pie ================= -->
+<footer class="pie">
+  <div class="contenedor pie__interior">
+    <div>
+      <strong id="pie-marca">Jaka Bicicletería</strong>
+      <p>Bicicletas, accesorios, repuestos y fitness. Catálogo actualizado automáticamente; los pedidos se confirman por WhatsApp.</p>
+    </div>
+    <div class="pie__links">
+      <a id="pie-whatsapp" target="_blank" rel="noopener">WhatsApp <span id="pie-numero"></span></a>
+      <a id="pie-ubicacion" target="_blank" rel="noopener">Cómo llegar al local</a>
+      <span class="pie__nota">Imágenes de referencia. Productos sujetos a disponibilidad.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= Canasta ================= -->
+<div class="velo" id="velo" hidden></div>
+
+<aside class="panel" id="panel-carrito" aria-label="Canasta" aria-hidden="true">
+  <header class="panel__cabecera">
+    <h2>Tu canasta</h2>
+    <button class="icono-btn" id="cerrar-carrito" aria-label="Cerrar canasta">×</button>
+  </header>
+  <div class="panel__cuerpo" id="carrito-lineas"></div>
+  <footer class="panel__pie">
+    <div class="totales">
+      <div class="totales__fila"><span>Productos</span><span id="carrito-subtotal">Gs. 0</span></div>
+      <div class="totales__fila"><span>Envío</span><span class="tenue" id="carrito-envio">a coordinar</span></div>
+      <div class="totales__fila totales__fila--total"><span>Total</span><span id="carrito-total">Gs. 0</span></div>
+    </div>
+    <button class="btn btn--wa" id="btn-finalizar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 8.7c.3-.7.6-.7.9-.7h.7c.2 0 .5 0 .7.6s.7 1.7.8 1.8c0 .2.1.3 0 .5l-.4.6c-.1.2-.3.4-.1.7.2.3.7 1.1 1.5 1.8 1 .9 1.8 1.1 2 1.2.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.3.1.2.1.8-.2 1.5-.3.7-1.6 1.4-2.2 1.4-.6 0-2.4-.2-4.5-2.2-1.7-1.6-2.6-3.3-2.9-3.9-.3-.6-1-1.9-.7-3Z" fill="currentColor"/></svg>
+      Finalizar pedido
+    </button>
+    <button class="panel__vaciar" id="btn-vaciar-canasta">Vaciar canasta</button>
+    <p class="panel__nota">El pedido se envía por WhatsApp con el detalle, el total y tu ubicación.</p>
+  </footer>
+</aside>
+
+<!-- ================= Checkout ================= -->
+<div class="modal" id="modal-checkout" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="checkout-titulo">
+  <div class="modal__caja">
+    <header class="modal__cabecera">
+      <h2 id="checkout-titulo">Confirmá tu pedido</h2>
+      <button class="icono-btn" id="cerrar-checkout" aria-label="Cerrar">×</button>
+    </header>
+
+    <div class="modal__cuerpo">
+      <form id="form-pedido" novalidate>
+        <div class="campo">
+          <label for="nombre">Nombre y apellido *</label>
+          <input id="nombre" name="nombre" type="text" autocomplete="name" placeholder="Ej.: María González" required>
+          <span class="error" data-error="nombre"></span>
+        </div>
+
+        <div class="campo">
+          <label for="telefono">Teléfono / WhatsApp *</label>
+          <input id="telefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" placeholder="Ej.: 0981 123 456" required>
+          <span class="error" data-error="telefono"></span>
+        </div>
+
+        <fieldset class="campo campo--entrega">
+          <legend>¿Cómo querés recibirlo? *</legend>
+          <label class="opcion"><input type="radio" name="entrega" value="envio" checked> <span id="opcion-envio">Envío a domicilio</span></label>
+          <label class="opcion"><input type="radio" name="entrega" value="retiro"> <span id="opcion-retiro">Retiro en local</span></label>
+        </fieldset>
+
+        <div id="bloque-envio">
+          <div class="campo">
+            <label for="direccion">Dirección / barrio / ciudad *</label>
+            <input id="direccion" name="direccion" type="text" autocomplete="street-address" placeholder="Ej.: Av. España 1234, Villa Morra, Asunción">
+            <span class="error" data-error="direccion"></span>
+          </div>
+          <div class="campo">
+            <label for="referencia">Referencia para llegar <span class="tenue">(opcional)</span></label>
+            <input id="referencia" name="referencia" type="text" placeholder="Ej.: portón negro, frente a la plaza">
+          </div>
+          <div class="campo">
+            <button type="button" class="btn btn--ubicacion" id="btn-ubicacion">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+              Compartir mi ubicación exacta
+            </button>
+            <p class="ayuda" id="ubicacion-estado">Si estás en el lugar de entrega, compartí tu GPS: nos ayuda a llegar más rápido.</p>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="notas">Notas del pedido <span class="tenue">(opcional)</span></label>
+          <textarea id="notas" name="notas" rows="2" placeholder="Ej.: entregar después de las 17, llamar antes"></textarea>
+        </div>
+      </form>
+
+      <aside class="resumen">
+        <h3>Resumen</h3>
+        <div id="checkout-lineas" class="resumen__lineas"></div>
+        <div class="totales">
+          <div class="totales__fila totales__fila--total"><span>Total productos</span><span id="checkout-total">Gs. 0</span></div>
+        </div>
+        <p class="ayuda" id="checkout-nota"></p>
+        <button class="btn btn--wa btn--grande" id="btn-enviar-pedido" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 8.7c.3-.7.6-.7.9-.7h.7c.2 0 .5 0 .7.6s.7 1.7.8 1.8c0 .2.1.3 0 .5l-.4.6c-.1.2-.3.4-.1.7.2.3.7 1.1 1.5 1.8 1 .9 1.8 1.1 2 1.2.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.3.1.2.1.8-.2 1.5-.3.7-1.6 1.4-2.2 1.4-.6 0-2.4-.2-4.5-2.2-1.7-1.6-2.6-3.3-2.9-3.9-.3-.6-1-1.9-.7-3Z" fill="currentColor"/></svg>
+          Enviar pedido por WhatsApp
+        </button>
+        <button class="btn btn--secundario btn--chico" id="btn-copiar-pedido" type="button">Copiar pedido</button>
+        <p class="ayuda" id="checkout-estado" role="status"></p>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Ficha de producto ================= -->
+<div class="modal" id="modal-producto" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="producto-titulo">
+  <div class="modal__caja modal__caja--producto">
+    <header class="modal__cabecera">
+      <h2 id="producto-titulo">Producto</h2>
+      <button class="icono-btn" id="cerrar-producto" aria-label="Cerrar">×</button>
+    </header>
+    <div class="modal__cuerpo" id="producto-contenido"></div>
+  </div>
+</div>
+
+<!-- ================= Aviso flotante ================= -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/config.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

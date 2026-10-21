@@ -1,0 +1,8 @@
+# La configuración de publicación tiene contraseñas: no se versiona
+publicar.config.ps1
+
+# Logs de cada corrida automática
+logs/
+
+# Reporte de cambios (se regenera en cada corrida)
+data/ultimos_cambios.json

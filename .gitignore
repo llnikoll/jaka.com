@@ -1,0 +1,30 @@
+# =====================================================================
+# Archivos que NO se suben al repositorio
+# =====================================================================
+
+# Ejecutables descargados (se bajan aparte)
+tools/*.exe
+tools/
+
+# Caché del scraper: HTML descargado y sitemap (se regenera solo)
+poc/cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs y temporales
+tienda/logs/
+*.log
+_tmp*
+_debug*
+_qa*
+
+# Configuración con contraseñas
+tienda/publicar.config.ps1
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
