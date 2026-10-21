@@ -227,6 +227,7 @@
       inicializarInterfaz();
       actualizarContadorCanasta();
       aplicarFiltros(true);
+      await abrirDesdeLink();
       if (estado.demo) prepararDemo();
     } catch (err) {
       $('#estado-carga').innerHTML = `
@@ -235,6 +236,36 @@
         <p class="ayuda">Revisá tu conexión y volvé a intentar. (${esc(err.message)})</p>
         <button class="btn btn--secundario" onclick="location.reload()">Reintentar</button>`;
       console.error(err);
+    }
+  }
+
+  /** Link directo a un producto: ?p=<id>&v=<vista> (se usa en los anuncios) */
+  async function abrirDesdeLink() {
+    const params = new URLSearchParams(location.search);
+    const pid = params.get('p');
+    if (!pid) return;
+    const vistaPedida = params.get('v');
+    let producto = null;
+
+    if (vistaPedida && (estado.indice.vistas || []).some((v) => v.slug === vistaPedida)) {
+      await cargarVista(vistaPedida);
+      estado.categoria = vistaPedida;
+      $$('#categorias [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === vistaPedida)));
+      aplicarFiltros(true);
+      producto = buscarProducto(pid);
+    }
+    if (!producto) {
+      await cargarVista('todos');
+      estado.categoria = 'todos';
+      $$('#categorias [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === 'todos')));
+      aplicarFiltros(true);
+      producto = buscarProducto(pid);
+    }
+    if (producto) {
+      document.title = `${producto.n} — ${CONFIG.marca}`;
+      abrirProducto(producto.i);
+    } else {
+      toast('Ese producto ya no está disponible');
     }
   }
 

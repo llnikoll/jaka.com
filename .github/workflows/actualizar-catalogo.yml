@@ -44,11 +44,14 @@ jobs:
       - name: Regenerar el catalogo de la tienda
         run: python tienda/build_catalogo.py
 
+      - name: Generar feed de productos para Meta
+        run: python publicidad/generar_feed.py
+
       - name: Guardar cambios de precios
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tienda/data
+          git add tienda/data tienda/publicidad
           if git diff --cached --quiet; then
             echo "Sin cambios de precios: el catalogo quedo igual."
           else
