@@ -1,9 +1,0 @@
-total 4312
-drwxr-xr-x 2 runner runner    4096 Oct 21 20:29 .
-drwxr-xr-x 4 runner runner    4096 Oct 21 20:25 ..
--rw-r--r-- 1 runner runner    3255 Oct 21 20:29 categorias.csv
--rw-r--r-- 1 runner runner   88081 Oct 21 20:29 estadisticas.json
--rw-r--r-- 1 runner runner   14661 Oct 21 20:29 fichas.jsonl
--rw-r--r-- 1 runner runner 1531171 Oct 21 20:29 productos.csv
--rw-r--r-- 1 runner runner 2758399 Oct 21 20:29 productos.jsonl
--rw-r--r-- 1 runner runner     739 Oct 21 20:29 validacion.json
