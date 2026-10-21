@@ -87,6 +87,10 @@ try {
       }
     }
     'git' {
+      # Sin preguntas interactivas: usa la credencial guardada de Windows y
+      # falla con un error claro si venció (importante para la tarea programada).
+      $env:GIT_TERMINAL_PROMPT = '0'
+      $env:GCM_INTERACTIVE = 'never'
       Push-Location (Split-Path $PSScriptRoot -Parent)
       try {
         $fecha = Get-Date -Format 'yyyy-MM-dd HH:mm'
@@ -100,8 +104,10 @@ try {
           if ($LASTEXITCODE -ne 0) { throw "git commit fallo" }
           if (-not $SoloVerificar) {
             & git push | Out-Host
-            if ($LASTEXITCODE -ne 0) { throw "git push fallo" }
-            Write-Host "Publicado por git push." -ForegroundColor Green
+            if ($LASTEXITCODE -ne 0) {
+              throw "git push fallo. Abrí una consola y corré 'git push' una vez para renovar la credencial de GitHub."
+            }
+            Write-Host "Publicado por git push. GitHub Pages se actualiza en 1-2 minutos." -ForegroundColor Green
           }
         }
       }

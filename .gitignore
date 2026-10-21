@@ -9,6 +9,13 @@ tools/
 # Caché del scraper: HTML descargado y sitemap (se regenera solo)
 poc/cache/
 
+# Datos generados por el scraper (se regeneran en cada corrida)
+poc/data/
+
+# Catálogo completo de respaldo (solo para abrir la tienda sin servidor)
+tienda/data/catalogo.json
+tienda/data/catalogo.js
+
 # Python
 __pycache__/
 *.pyc
