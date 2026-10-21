@@ -42,33 +42,28 @@ tienda/index.html        →  catálogo + canasta + pedido por WhatsApp
   dirección, referencia y **ubicación GPS** del cliente (link de Google Maps).
 - **Sin pagos online, sin clientes registrados, sin panel de administración**: todo se cierra por WhatsApp.
 
-## Actualización automática (ya configurada)
+## Actualización automática (en la nube, sin depender de la PC)
 
-La tarea de Windows **“BiciTienda - actualizar catalogo”** corre **todos los días a las 06:00**:
+El workflow **“Actualizar catalogo y publicar”** (`.github/workflows/actualizar-catalogo.yml`) corre en GitHub
+**todos los días a las 06:00 de Paraguay** (09:00 UTC):
 
 ```
 lee ciclovia.com.py → regenera tienda/data → commit + push → GitHub Pages republica
 ```
 
-**Condición:** la PC tiene que estar encendida (y el usuario con sesión iniciada) alrededor de esa hora. Si estaba
-apagada, Windows la ejecuta cuando vuelve a estar disponible; si la PC está apagada varios días, la tienda mantiene
-la última versión publicada (no se rompe, solo queda desactualizada).
+No necesita que la PC esté encendida, ni tu internet, ni la tarea de Windows (esa quedó desactivada).
 
-```powershell
-.\tienda\programar.ps1 -Estado          # próxima corrida y resultado de la última
-.\tienda\programar.ps1 -EjecutarAhora   # forzar una actualización ahora
-.\tienda\programar.ps1 -Diario -Hora 05:30   # cambiar la hora
-```
+- **Ver corridas:** https://github.com/llnikoll/jaka.com/actions
+- **Forzar una actualización ahora:** Actions → “Actualizar catalogo y publicar” → **Run workflow**
+- **Cambiar la hora:** editar el `cron` del workflow (UTC; Paraguay = UTC-3)
 
-Logs de cada corrida: `tienda\logs\actualizar-*.log`.
-
-> **Sin depender de la PC:** se puede mover la actualización a GitHub Actions (corre en la nube todos los días).
-> Requiere cambiar la tarea local por el workflow programado; está documentado como pendiente.
+> En repositorios públicos, GitHub puede pausar los workflows programados tras 60 días sin actividad. Como este
+> workflow hace commit todos los días, el repositorio queda activo y no se pausa.
 
 Manual (si alguna vez hace falta):
 
 ```powershell
-.\tienda\actualizar.ps1                 # lee + regenera + publica por git
+.\tienda\actualizar.ps1                 # lee + regenera + publica por git desde tu PC
 .\tienda\actualizar.ps1 -SinRed         # regenera desde la caché, 0 requests
 python tienda\servidor.py 8080          # servidor local para probar (con gzip)
 .\tienda\lanzar.ps1                     # servidor + URL temporal de Cloudflare (para mostrar sin hosting)

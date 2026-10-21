@@ -25,6 +25,17 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+try:  # hora de Paraguay aunque el build corra en un servidor en UTC (GitHub Actions)
+    from zoneinfo import ZoneInfo
+    ZONA = ZoneInfo("America/Asuncion")
+except Exception:  # sin tzdata: se usa la hora local del equipo
+    ZONA = None
+
+
+def ahora_local() -> datetime:
+    return datetime.now(ZONA) if ZONA else datetime.now().astimezone()
+
+
 RAIZ = Path(__file__).resolve().parent.parent
 ENTRADA_PRODUCTOS = RAIZ / "poc" / "data" / "productos.jsonl"
 ENTRADA_CATEGORIAS = RAIZ / "poc" / "data" / "categorias.csv"
@@ -273,7 +284,7 @@ def main() -> None:
         })
 
     meta = {
-        "generado": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "generado": ahora_local().isoformat(timespec="seconds"),
         "fuente": "https://www.ciclovia.com.py/",
         "moneda": "PYG",
         "total": len(productos),

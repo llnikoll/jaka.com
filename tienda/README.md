@@ -113,23 +113,18 @@ No hace falta tocar el HTML ni redeployar nada más: la tienda toma los precios 
 
 > Atajo sin red: `.\tienda\actualizar.ps1 -SinRed` regenera desde la caché local (0 requests, útil para probar).
 
-### ¿Se actualiza sola? Sí — ya está programado
+### ¿Se actualiza sola? Sí — en la nube
 
-La tarea de Windows **“BiciTienda - actualizar catalogo”** corre **todos los días a las 06:00**: lee el sitio,
-regenera el catálogo y —si está configurada la publicación— lo sube al hosting. No necesitás acordarte de nada.
+El workflow **`.github/workflows/actualizar-catalogo.yml`** corre en GitHub **todos los días a las 06:00 de
+Paraguay** (09:00 UTC): lee el sitio, regenera el catálogo, hace commit + push y GitHub Pages republica.
+No depende de que la PC esté encendida.
 
-```powershell
-.\tienda\programar.ps1 -Estado          # próxima corrida y resultado de la última
-.\tienda\programar.ps1 -EjecutarAhora   # forzar una corrida ahora
-.\tienda\programar.ps1 -Diario -Hora 05:30   # cambiar a todos los días
-.\tienda\programar.ps1 -CadaHoras 6     # o cada 6 horas
-.\tienda\programar.ps1 -Quitar          # borrar la tarea
-```
+- **Ver corridas / forzar una:** https://github.com/llnikoll/jaka.com/actions → “Actualizar catalogo y publicar”.
+- **Cambiar la hora:** editar el `cron` del workflow (está en UTC; Paraguay = UTC-3).
+- **Si la actualización falla:** la tienda sigue online con la última versión publicada.
 
-- **Logs:** `tienda\logs\actualizar-AAAAMMDD_HHMMSS.log` (guarda los últimos 30).
-- **Si la PC estaba apagada** a la hora programada, corre apenas se encienda.
-- **Diaria** (06:00): cada pasada son ~120 requests y 2–4 min. Si querés otra hora o frecuencia:
-  `.\tienda\programar.ps1 -Diario -Hora 07:30` o `-CadaHoras 6`.
+La tarea de Windows (`programar.ps1`) quedó **desactivada** para que no haya dos publicadores. Si algún día
+querés volver a actualizar desde tu PC: `.\tienda\actualizar.ps1` (lee, regenera y publica por git).
 
 ### Publicación automática en el hosting
 
