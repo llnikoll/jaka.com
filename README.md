@@ -1,5 +1,7 @@
 # Jaka Bicicletería — tienda con catálogo y precios sincronizados
 
+**En línea:** https://llnikoll.github.io/jaka.com/
+
 Tienda propia para revender **CICLOVIA** (`https://www.ciclovia.com.py/`, grupo Chacomer, Paraguay) con el
 catálogo sincronizado desde la página original, un **recargo de margen configurable (+15 % por defecto)** y los
 pedidos llegando por **WhatsApp**.
@@ -42,27 +44,35 @@ tienda/index.html        →  catálogo + canasta + pedido por WhatsApp
 
 ## Actualización automática (ya configurada)
 
-La tarea de Windows **“BiciTienda - actualizar catalogo”** corre **todos los días a las 06:00**: lee el sitio,
-regenera el catálogo y, si está configurada la publicación, lo sube al hosting. Deja un log por corrida en
-`tienda/logs/`.
+La tarea de Windows **“BiciTienda - actualizar catalogo”** corre **todos los días a las 06:00**:
+
+```
+lee ciclovia.com.py → regenera tienda/data → commit + push → GitHub Pages republica
+```
+
+**Condición:** la PC tiene que estar encendida (y el usuario con sesión iniciada) alrededor de esa hora. Si estaba
+apagada, Windows la ejecuta cuando vuelve a estar disponible; si la PC está apagada varios días, la tienda mantiene
+la última versión publicada (no se rompe, solo queda desactualizada).
 
 ```powershell
-.\tienda\programar.ps1 -Estado          # próxima corrida
-.\tienda\programar.ps1 -EjecutarAhora   # forzar ahora
-.\tienda\programar.ps1 -Diario -Hora 05:30   # cambiar a diario
+.\tienda\programar.ps1 -Estado          # próxima corrida y resultado de la última
+.\tienda\programar.ps1 -EjecutarAhora   # forzar una actualización ahora
+.\tienda\programar.ps1 -Diario -Hora 05:30   # cambiar la hora
 ```
+
+Logs de cada corrida: `tienda\logs\actualizar-*.log`.
+
+> **Sin depender de la PC:** se puede mover la actualización a GitHub Actions (corre en la nube todos los días).
+> Requiere cambiar la tarea local por el workflow programado; está documentado como pendiente.
 
 Manual (si alguna vez hace falta):
 
 ```powershell
-.\tienda\lanzar.ps1                     # servidor + URL online (Cloudflare) + abre el navegador
-.\tienda\actualizar.ps1                 # lee + regenera + publica (si hay config)
+.\tienda\actualizar.ps1                 # lee + regenera + publica por git
 .\tienda\actualizar.ps1 -SinRed         # regenera desde la caché, 0 requests
-python tienda\servidor.py 8080          # solo servidor local (con gzip)
+python tienda\servidor.py 8080          # servidor local para probar (con gzip)
+.\tienda\lanzar.ps1                     # servidor + URL temporal de Cloudflare (para mostrar sin hosting)
 ```
-
-Para que la subida sea automática, copiá `tienda/publicar.config.ejemplo.ps1` como `publicar.config.ps1`
-y completá el modo FTP o git (ver `tienda/README.md` §4).
 
 ## Estado de la extracción
 

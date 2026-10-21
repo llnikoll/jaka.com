@@ -1,5 +1,7 @@
 # Jaka Bicicletería — tienda con pedidos por WhatsApp
 
+**En línea:** https://llnikoll.github.io/jaka.com/
+
 Tienda estática con las **2.681 productos** de bicicletas, accesorios, repuestos, fitness e indumentaria,
 **recargo de margen configurable (+15 % por defecto)** y una **canasta que envía el pedido completo a tu WhatsApp**
 (detalle, cantidades, total, datos y ubicación del cliente).
