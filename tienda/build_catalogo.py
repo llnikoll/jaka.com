@@ -162,13 +162,24 @@ def en_vista(producto: dict, vista: str) -> bool:
     return any(c == vista or c.startswith(f"{vista}/") for c in cats)
 
 
+def catalogo_vacio(nuevos: list[dict], primera: bool) -> dict:
+    """Resultado cuando no hay catálogo anterior (primera corrida o JSON dañado)."""
+    return {
+        "primera_vez": primera,
+        "precios": [],
+        "stock": [],
+        "altas": [{"id": str(p["i"]), "nombre": p["n"]} for p in nuevos],
+        "bajas": [],
+    }
+
+
 def comparar_con_anterior(nuevos: list[dict]) -> dict:
     if not SALIDA_COMPLETO.exists():
-        return {"primera_vez": True, "precios": [], "stock": [], "altas": len(nuevos), "bajas": []}
+        return catalogo_vacio(nuevos, primera=True)
     try:
         previo = json.loads(SALIDA_COMPLETO.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
-        return {"primera_vez": True, "precios": [], "stock": [], "altas": len(nuevos), "bajas": []}
+        return catalogo_vacio(nuevos, primera=True)
 
     antes = {str(p.get("i")): p for p in previo.get("productos", [])}
     despues = {str(p.get("i")): p for p in nuevos}
