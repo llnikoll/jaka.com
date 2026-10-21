@@ -1,0 +1,32 @@
+﻿categoria,nombre,categoria_url,estado,total_declarado,paginas_previstas,paginas_bajadas,tarjetas,tarjetas_descartadas,nuevas
+autoaccesorios,AUTOACCESORIOS,https://www.ciclovia.com.py/autoaccesorios.html,ok,22,1,1,22,0,22
+bicicletas,BICICLETAS,https://www.ciclovia.com.py/bicicletas.html,ok,1302,21,21,1302,0,1284
+fitness,FITNESS,https://www.ciclovia.com.py/fitness.html,ok,1233,20,20,1233,0,1229
+indumentaria,INDUMENTARIA,https://www.ciclovia.com.py/indumentaria.html,ok,141,3,3,141,0,140
+bicicletas/mtb,MTB,https://www.ciclovia.com.py/bicicletas/mtb.html,ok,420,7,7,420,0,0
+bicicletas/ruta,RUTA,https://www.ciclovia.com.py/bicicletas/ruta.html,ok,18,1,1,18,0,0
+bicicletas/urbanas,URBANAS,https://www.ciclovia.com.py/bicicletas/urbanas.html,ok,7,1,1,7,0,0
+fitness/cintas,CINTAS,https://www.ciclovia.com.py/fitness/cintas.html,ok,48,1,1,48,0,0
+fitness/elipticas,ELÍPTICAS,https://www.ciclovia.com.py/fitness/elipticas.html,ok,7,1,1,7,0,0
+fitness/bicicletas,BICICLETAS,https://www.ciclovia.com.py/fitness/bicicletas.html,ok,24,1,1,24,0,0
+fitness/accesorios,ACCESORIOS,https://www.ciclovia.com.py/fitness/accesorios.html,ok,974,16,16,974,0,0
+autoaccesorios/portabultos,PORTA EQUIPAJES,https://www.ciclovia.com.py/autoaccesorios/portabultos.html,ok,12,1,1,12,0,0
+autoaccesorios/portabici,PORTABICICLETAS,https://www.ciclovia.com.py/autoaccesorios/portabici.html,ok,9,1,1,9,0,0
+fitness/abdominalera,ABDOMINALERAS,https://www.ciclovia.com.py/fitness/abdominalera.html,ok,3,1,1,3,0,0
+bicicletas/repuestos-de-bicicletas,ACCESORIOS,https://www.ciclovia.com.py/bicicletas/repuestos-de-bicicletas.html,ok,752,12,12,752,0,0
+indumentaria/remeras,REMERAS,https://www.ciclovia.com.py/indumentaria/remeras.html,ok,82,2,2,82,0,0
+indumentaria/abrigos,ABRIGOS,https://www.ciclovia.com.py/indumentaria/abrigos.html,ok,12,1,1,12,0,0
+indumentaria/calzados,CALZADOS,https://www.ciclovia.com.py/indumentaria/calzados.html,ok,12,1,1,12,0,0
+fitness/spinning,SPINNING,https://www.ciclovia.com.py/fitness/spinning.html,ok,11,1,1,11,0,0
+fitness/remos,REMOS,https://www.ciclovia.com.py/fitness/remos.html,ok,13,1,1,13,0,0
+fitness/escaladoras,ESCALADORAS,https://www.ciclovia.com.py/fitness/escaladoras.html,ok,4,1,1,4,0,0
+indumentaria/mochilas,MOCHILAS,https://www.ciclovia.com.py/indumentaria/mochilas.html,ok,7,1,1,7,0,0
+indumentaria/shorts,SHORTS,https://www.ciclovia.com.py/indumentaria/shorts.html,ok,20,1,1,20,0,0
+indumentaria/guantes,GUANTES,https://www.ciclovia.com.py/indumentaria/guantes.html,ok,6,1,1,6,0,0
+indumentaria/lentes,LENTES,https://www.ciclovia.com.py/indumentaria/lentes.html,ok,13,1,1,13,0,0
+fitness/suplementos-alimenticios,SUPLEMENTOS NUTRICIONALES,https://www.ciclovia.com.py/fitness/suplementos-alimenticios.html,ok,67,2,2,67,0,0
+bicicletas/infantil,INFANTIL,https://www.ciclovia.com.py/bicicletas/infantil.html,ok,154,3,3,154,0,0
+bicicletas/electricas,ELECTRICAS,https://www.ciclovia.com.py/bicicletas/electricas.html,ok,7,1,1,7,0,0
+fitness/peso-libre,,https://www.ciclovia.com.py/fitness/peso-libre.html,no_es_categoria,,,0,0,0,0
+promociones,Promociones,https://www.ciclovia.com.py/promociones.html,categoria_sin_grid_server_side,,,0,0,0,0
+cyberday,CYBER DAY,https://www.ciclovia.com.py/cyberday.html,ok,331,6,6,331,0,6
