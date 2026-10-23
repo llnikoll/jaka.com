@@ -200,32 +200,31 @@ Todo lo editable está en **`assets/config.js`**:
 Todo se controla en `assets/config.js`:
 
 ```js
-recargoPct: 15,          // +15 % a todo el catálogo · 0 = precio original
-recargoBajoPct: 20,      // +20 % extra para los productos baratos
-umbralBajo: 300000,      // Gs: si el precio ORIGINAL no supera este monto, se aplica el extra
+recargoPct: 15,          // +15 % para productos de más de Gs 300.000
+recargoBajoPct: 25,      // +25 % para productos de hasta Gs 300.000 (reemplaza al 15 %)
+umbralBajo: 300000,      // Gs: el umbral se mide sobre el precio ORIGINAL
 redondeoPrecio: true,    // Gs 10 / 100 / 1.000 / 10.000 según el monto
 ```
 
-**Cómo se calcula (dos tramos, sumados):**
+**Cómo se calcula (un recargo según el tramo, no se suman):**
 
-- Productos con **precio original > Gs 300.000**: original × **1,15**.
-- Productos con **precio original ≤ Gs 300.000**: original × **1,35** (el 15 % + el 20 % extra **se suman**).
+- Precio original **> Gs 300.000** → original × **1,15**.
+- Precio original **≤ Gs 300.000** → original × **1,25**.
 
-En ambos casos el resultado se redondea hacia arriba (Gs 10 / 100 / 1.000 / 10.000 según el monto).
+El resultado se redondea hacia arriba (Gs 10 / 100 / 1.000 / 10.000 según el monto).
 
 Ejemplos reales del catálogo:
 
-| Original | ¿Aplica extra? | Cálculo | Precio final |
+| Original | Tramo | Cálculo | Precio final |
 |---:|---|---:|---:|
-| Gs 50.000 | sí (≤ 300.000) | × 1,35 | **67.500** |
-| Gs 100.000 | sí | × 1,35 | **135.000** |
-| Gs 150.000 | sí | × 1,35 | **203.000** |
-| Gs 251.500 | sí | × 1,35 | **340.000** |
-| Gs 266.305 | sí | × 1,35 | **360.000** |
-| Gs 301.800 | no (> 300.000) | × 1,15 | **348.000** |
-| Gs 1.000.000 | no | × 1,15 | **1.150.000** |
+| Gs 50.000 | ≤ 300.000 | × 1,25 | **62.500** |
+| Gs 100.000 | ≤ 300.000 | × 1,25 | **125.000** |
+| Gs 150.000 | ≤ 300.000 | × 1,25 | **188.000** |
+| Gs 266.305 | ≤ 300.000 | × 1,25 | **333.000** |
+| Gs 301.800 | > 300.000 | × 1,15 | **348.000** |
+| Gs 1.000.000 | > 300.000 | × 1,15 | **1.150.000** |
 
-Hoy: **1.339 productos** llevan el +35 % total (15 + 20) y **926** quedan solo con el 15 %.
+Hoy: **1.339 productos** llevan el 25 % y **926** el 15 %.
 
 Se aplica en el momento: la tarjeta, la ficha, la canasta, el total y el mensaje de WhatsApp usan el mismo precio.
 No hay que regenerar el catálogo ni esperar la actualización diaria; alcanza con recargar la página

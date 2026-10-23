@@ -12,9 +12,10 @@ https://llnikoll.github.io/jaka.com/publicidad/catalogo-meta.csv
 
 Ese CSV ya tiene el formato que pide Meta: `id, title, description, availability, condition, price, link, image_link, brand, google_product_category` + etiquetas propias (`custom_label_0/1/2`) para armar conjuntos de productos.
 
-- **2.266 productos** con precio (el resto está “a consultar” y no entra).
-- Precio con el **+15 %** incluido, redondeado igual que la tienda.
-- `availability` respeta el stock: 950 productos figuran como `out of stock`.
+- **2.265 productos** con precio (el resto está “a consultar” y no entra).
+- Precio con el recargo ya aplicado (**+25 %** si el original es de hasta Gs 300.000, **+15 %** si es mayor),
+  redondeado igual que la tienda.
+- `availability` respeta el stock: ~950 productos figuran como `out of stock`.
 - Cada `link` abre la ficha del producto en la tienda: `https://llnikoll.github.io/jaka.com/?p=<id>&v=<vista>`.
 
 ## Cómo cargarlo en Meta (una sola vez)
