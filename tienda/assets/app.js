@@ -96,8 +96,8 @@
   // ------------------- Recargo comercial (margen) -------------------
   // Se aplica sobre el precio publicado del catálogo de origen.
   // recargoPct = 15 significa +15 %. recargoPct = 0 deja el precio original.
-  // Segundo tramo: si el precio de venta no supera `umbralBajo`, se suma
-  // `recargoBajoPct` extra (productos baratos que no bancan los gastos fijos).
+  // Segundo tramo: si el precio ORIGINAL no supera `umbralBajo`, se suma
+  // `recargoBajoPct` extra sobre el precio ya aumentado (productos baratos).
   const redondearVenta = (valor) => {
     if (CONFIG.redondeoPrecio === false || Number(CONFIG.redondeoPrecio) === 0) return Math.round(valor);
     // Redondeo hacia arriba para no perder margen nunca (Gs 10 / 100 / 1.000 / 10.000)
@@ -107,12 +107,14 @@
 
   const aplicarRecargo = (valor) => {
     if (valor === null || valor === undefined) return valor;
+    const original = Number(valor);
     const porcentaje = Number(CONFIG.recargoPct) || 0;
-    let precio = porcentaje ? redondearVenta(Number(valor) * (1 + porcentaje / 100)) : Math.round(Number(valor));
+    let precio = porcentaje ? redondearVenta(original * (1 + porcentaje / 100)) : Math.round(original);
 
     const extra = Number(CONFIG.recargoBajoPct) || 0;
     const umbral = Number(CONFIG.umbralBajo) || 0;
-    if (extra > 0 && umbral > 0 && precio <= umbral) {
+    // El umbral se compara contra el precio ORIGINAL (no contra el ya aumentado)
+    if (extra > 0 && umbral > 0 && original <= umbral) {
       precio = redondearVenta(precio * (1 + extra / 100));
     }
     return precio;

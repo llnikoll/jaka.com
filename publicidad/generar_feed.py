@@ -100,7 +100,8 @@ def precio_venta(valor: int, recargo: float, extra: float, umbral: int, redondeo
     if not valor:
         return 0
     precio = redondear(valor * (1 + recargo / 100), redondeo) if recargo else round(valor)
-    if extra > 0 and umbral > 0 and precio <= umbral:
+    # El umbral se compara contra el precio ORIGINAL, no contra el ya aumentado
+    if extra > 0 and umbral > 0 and valor <= umbral:
         precio = redondear(precio * (1 + extra / 100), redondeo)
     return precio
 

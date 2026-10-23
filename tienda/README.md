@@ -202,25 +202,28 @@ Todo se controla en `assets/config.js`:
 ```js
 recargoPct: 15,          // +15 % a todo el catálogo · 0 = precio original
 recargoBajoPct: 20,      // +20 % extra para los productos baratos
-umbralBajo: 300000,      // Gs: si el precio de venta no supera este monto, se aplica el extra
+umbralBajo: 300000,      // Gs: si el precio ORIGINAL no supera este monto, se aplica el extra
 redondeoPrecio: true,    // Gs 10 / 100 / 1.000 / 10.000 según el monto
 ```
 
 **Cómo se calcula (dos tramos):**
 
 1. Precio original × 1,15 (redondeado hacia arriba).
-2. Si ese resultado **no supera Gs 300.000**, se multiplica por 1,20 y se redondea otra vez.
+2. Si el **precio original** no supera **Gs 300.000**, ese resultado se multiplica por 1,20 y se redondea otra vez
+   (es decir, +20 % sobre el precio ya aumentado: +38 % total sobre el original).
 
 Ejemplos reales del catálogo:
 
 | Original | +15 % | ¿Aplica extra? | Precio final |
 |---:|---:|---|---:|
-| Gs 100.000 | 115.000 | sí (≤ 300.000) | **138.000** |
+| Gs 100.000 | 115.000 | sí (original ≤ 300.000) | **138.000** |
 | Gs 251.500 | 290.000 | sí | **348.000** |
-| Gs 266.305 | 307.000 | no (> 300.000) | **307.000** |
+| Gs 266.305 | 307.000 | sí (original 266.305 ≤ 300.000) | **369.000** |
+| Gs 299.000 | 344.000 | sí | **413.000** |
+| Gs 301.800 | 348.000 | no (original > 300.000) | **348.000** |
 | Gs 1.000.000 | 1.150.000 | no | **1.150.000** |
 
-Hoy: **1.275 productos** llevan el extra del 20 % y **991** quedan solo con el 15 %.
+Hoy: **1.339 productos** llevan el extra del 20 % y **926** quedan solo con el 15 %.
 
 Se aplica en el momento: la tarjeta, la ficha, la canasta, el total y el mensaje de WhatsApp usan el mismo precio.
 No hay que regenerar el catálogo ni esperar la actualización diaria; alcanza con recargar la página
