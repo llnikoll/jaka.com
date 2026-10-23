@@ -96,15 +96,26 @@
   // ------------------- Recargo comercial (margen) -------------------
   // Se aplica sobre el precio publicado del catálogo de origen.
   // recargoPct = 15 significa +15 %. recargoPct = 0 deja el precio original.
+  // Segundo tramo: si el precio de venta no supera `umbralBajo`, se suma
+  // `recargoBajoPct` extra (productos baratos que no bancan los gastos fijos).
+  const redondearVenta = (valor) => {
+    if (CONFIG.redondeoPrecio === false || Number(CONFIG.redondeoPrecio) === 0) return Math.round(valor);
+    // Redondeo hacia arriba para no perder margen nunca (Gs 10 / 100 / 1.000 / 10.000)
+    const paso = valor < 1000 ? 10 : valor < 100000 ? 100 : valor < 1000000 ? 1000 : 10000;
+    return Math.ceil(valor / paso) * paso;
+  };
+
   const aplicarRecargo = (valor) => {
     if (valor === null || valor === undefined) return valor;
     const porcentaje = Number(CONFIG.recargoPct) || 0;
-    const conRecargo = Number(valor) * (1 + porcentaje / 100);
-    if (!porcentaje) return Math.round(conRecargo);
-    if (CONFIG.redondeoPrecio === false || Number(CONFIG.redondeoPrecio) === 0) return Math.round(conRecargo);
-    // Redondeo hacia arriba para no perder margen nunca (Gs 10 / 100 / 1.000 / 10.000)
-    const paso = conRecargo < 1000 ? 10 : conRecargo < 100000 ? 100 : conRecargo < 1000000 ? 1000 : 10000;
-    return Math.ceil(conRecargo / paso) * paso;
+    let precio = porcentaje ? redondearVenta(Number(valor) * (1 + porcentaje / 100)) : Math.round(Number(valor));
+
+    const extra = Number(CONFIG.recargoBajoPct) || 0;
+    const umbral = Number(CONFIG.umbralBajo) || 0;
+    if (extra > 0 && umbral > 0 && precio <= umbral) {
+      precio = redondearVenta(precio * (1 + extra / 100));
+    }
+    return precio;
   };
   const precioVenta = (p) => aplicarRecargo(p.p);
   const precioListaVenta = (p) => aplicarRecargo(p.o);

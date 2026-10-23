@@ -200,13 +200,32 @@ Todo lo editable está en **`assets/config.js`**:
 Todo se controla en `assets/config.js`:
 
 ```js
-recargoPct: 15,          // +15 % · 0 = precio original · 20 = +20 %
-redondeoPrecio: true,    // Gs 100 / 1.000 / 10.000 según el monto
+recargoPct: 15,          // +15 % a todo el catálogo · 0 = precio original
+recargoBajoPct: 20,      // +20 % extra para los productos baratos
+umbralBajo: 300000,      // Gs: si el precio de venta no supera este monto, se aplica el extra
+redondeoPrecio: true,    // Gs 10 / 100 / 1.000 / 10.000 según el monto
 ```
+
+**Cómo se calcula (dos tramos):**
+
+1. Precio original × 1,15 (redondeado hacia arriba).
+2. Si ese resultado **no supera Gs 300.000**, se multiplica por 1,20 y se redondea otra vez.
+
+Ejemplos reales del catálogo:
+
+| Original | +15 % | ¿Aplica extra? | Precio final |
+|---:|---:|---|---:|
+| Gs 100.000 | 115.000 | sí (≤ 300.000) | **138.000** |
+| Gs 251.500 | 290.000 | sí | **348.000** |
+| Gs 266.305 | 307.000 | no (> 300.000) | **307.000** |
+| Gs 1.000.000 | 1.150.000 | no | **1.150.000** |
+
+Hoy: **1.275 productos** llevan el extra del 20 % y **991** quedan solo con el 15 %.
 
 Se aplica en el momento: la tarjeta, la ficha, la canasta, el total y el mensaje de WhatsApp usan el mismo precio.
 No hay que regenerar el catálogo ni esperar la actualización diaria; alcanza con recargar la página
-(Ctrl+F5 por la caché del navegador).
+(Ctrl+F5 por la caché del navegador). **El feed de Meta se regenera con la corrida diaria**, para que los precios
+del catálogo coincidan con la web.
 
 **Antes de cambiar el porcentaje tené en cuenta:**
 

@@ -67,32 +67,42 @@ CATEGORIA_POR_DEFECTO = "Sporting Goods"
 PILARES = ("bicicletas", "fitness", "indumentaria", "autoaccesorios")
 
 
-def leer_recargo() -> tuple[float, bool]:
-    """Toma recargoPct y redondeoPrecio de tienda/assets/config.js."""
-    recargo, redondeo = 15.0, True
+def leer_recargo() -> tuple[float, float, int, bool]:
+    """Toma los parámetros de precio de tienda/assets/config.js."""
+    recargo, extra, umbral, redondeo = 15.0, 0.0, 0, True
     try:
         texto = CONFIG.read_text(encoding="utf-8")
         m = re.search(r"recargoPct\s*:\s*([0-9.]+)", texto)
         if m:
             recargo = float(m.group(1))
+        m = re.search(r"recargoBajoPct\s*:\s*([0-9.]+)", texto)
+        if m:
+            extra = float(m.group(1))
+        m = re.search(r"umbralBajo\s*:\s*([0-9.]+)", texto)
+        if m:
+            umbral = int(float(m.group(1)))
         if re.search(r"redondeoPrecio\s*:\s*false", texto):
             redondeo = False
     except OSError:
         pass
-    return recargo, redondeo
+    return recargo, extra, umbral, redondeo
 
 
-def precio_venta(valor: int, recargo: float, redondeo: bool) -> int:
-    """Misma fórmula que la tienda (redondeo hacia arriba para no perder margen)."""
+def redondear(valor: float, redondeo: bool) -> int:
+    if not redondeo:
+        return round(valor)
+    paso = 10 if valor < 1000 else 100 if valor < 100000 else 1000 if valor < 1000000 else 10000
+    return int(math.ceil(valor / paso) * paso)
+
+
+def precio_venta(valor: int, recargo: float, extra: float, umbral: int, redondeo: bool) -> int:
+    """Misma fórmula que la tienda: +recargo y, si queda barato, +extra."""
     if not valor:
         return 0
-    con_recargo = valor * (1 + recargo / 100)
-    if not recargo:
-        return round(con_recargo)
-    if not redondeo:
-        return round(con_recargo)
-    paso = 10 if con_recargo < 1000 else 100 if con_recargo < 100000 else 1000 if con_recargo < 1000000 else 10000
-    return int(math.ceil(con_recargo / paso) * paso)
+    precio = redondear(valor * (1 + recargo / 100), redondeo) if recargo else round(valor)
+    if extra > 0 and umbral > 0 and precio <= umbral:
+        precio = redondear(precio * (1 + extra / 100), redondeo)
+    return precio
 
 
 def vista_de(producto: dict) -> str:
@@ -135,7 +145,7 @@ def main() -> None:
         raise SystemExit(f"No encuentro {ENTRADA}. Corré antes tienda/build_catalogo.py")
 
     productos = json.loads(ENTRADA.read_text(encoding="utf-8"))
-    recargo, redondeo = leer_recargo()
+    recargo, extra, umbral, redondeo = leer_recargo()
 
     filas = []
     for p in productos:
@@ -143,7 +153,7 @@ def main() -> None:
             continue
         if p.get("e") == 1 and args.solo_stock:
             continue
-        precio = precio_venta(p["p"], recargo, redondeo)
+        precio = precio_venta(p["p"], recargo, extra, umbral, redondeo)
         if precio < args.min_precio:
             continue
 
@@ -186,7 +196,7 @@ def main() -> None:
     kb = args.salida.stat().st_size / 1024
     print(f"OK -> {args.salida}")
     print(f"   {len(filas):,} productos · {sin_stock} sin stock · {altos} de ticket alto (>= Gs 800.000)")
-    print(f"   recargo aplicado: {recargo}% · {kb:,.0f} KB")
+    print(f"   recargo aplicado: {recargo}% · extra {extra}% para precios <= Gs {umbral:,}".replace(",", ".") + f" · {kb:,.0f} KB")
     print(f"   URL publicada: {SITIO}publicidad/catalogo-meta.csv")
 
 
