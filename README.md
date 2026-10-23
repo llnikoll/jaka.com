@@ -3,8 +3,8 @@
 **En línea:** https://llnikoll.github.io/jaka.com/
 
 Tienda propia para revender **CICLOVIA** (`https://www.ciclovia.com.py/`, grupo Chacomer, Paraguay) con el
-catálogo sincronizado desde la página original, un **recargo de margen configurable (+15 % general y +20 % extra
-en productos de hasta Gs 300.000)** y los pedidos llegando por **WhatsApp**.
+catálogo sincronizado desde la página original, un **recargo de margen configurable (+15 % general, y +35 % total
+en productos de hasta Gs 300.000: 15 + 20)** y los pedidos llegando por **WhatsApp**.
 
 ## Empezá por acá
 
@@ -31,7 +31,7 @@ tienda/index.html        →  catálogo + canasta + pedido por WhatsApp
 
 ## Lo que hace hoy
 
-- **2.681 productos** publicados con **un solo precio limpio** (+15 % general y +20 % extra en los de hasta
+- **2.681 productos** publicados con **un solo precio limpio** (+15 %, y +35 % total en los de hasta
   Gs 300.000, sin tachado ni porcentajes), stock, marca e imagen.
 - **Abre en Accesorios** (752 productos) y carga cada categoría bajo demanda: la primera pantalla pesa **55 KB**
   comprimida en lugar del catálogo completo.

@@ -96,14 +96,14 @@ def redondear(valor: float, redondeo: bool) -> int:
 
 
 def precio_venta(valor: int, recargo: float, extra: float, umbral: int, redondeo: bool) -> int:
-    """Misma fórmula que la tienda: +recargo y, si queda barato, +extra."""
+    """Igual que la tienda: el extra se SUMA al recargo general si el original es barato."""
     if not valor:
         return 0
-    precio = redondear(valor * (1 + recargo / 100), redondeo) if recargo else round(valor)
+    total = recargo
     # El umbral se compara contra el precio ORIGINAL, no contra el ya aumentado
     if extra > 0 and umbral > 0 and valor <= umbral:
-        precio = redondear(precio * (1 + extra / 100), redondeo)
-    return precio
+        total += extra
+    return redondear(valor * (1 + total / 100), redondeo) if total else round(valor)
 
 
 def vista_de(producto: dict) -> str:

@@ -35,8 +35,8 @@ window.TIENDA_CONFIG = {
   // 15 = +15 % · 0 = precio original · 22.5 = +22,5 %
   recargoPct: 15,
   // Segundo tramo: si el precio ORIGINAL del catálogo no supera `umbralBajo`,
-  // se le suma un recargo extra de `recargoBajoPct` % sobre el precio ya aumentado.
-  // Ejemplo: original Gs 100.000 -> 115.000 (+15%) -> 138.000 (+20% extra)
+  // el recargo extra se SUMA al general (15 + 20 = 35 % total).
+  // Ejemplo: original Gs 100.000 -> 135.000
   recargoBajoPct: 20,
   umbralBajo: 300000,
   // Redondeo del precio de venta: true = a Gs 10 / 100 / 1.000 / 10.000 según el monto
