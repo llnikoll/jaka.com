@@ -125,6 +125,26 @@
     return lista && venta && lista > venta ? Math.round((1 - venta / lista) * 100) : 0;
   };
 
+  // ------------------- Meta Pixel -------------------
+  // Eventos de intención para públicos de remarketing. Si el pixel no carga
+  // (bloqueador de anuncios), la tienda funciona igual.
+  function medir(evento, params) {
+    if (typeof window.fbq === 'function') window.fbq('track', evento, params);
+  }
+
+  function medirProducto(evento, p) {
+    medir(evento, {
+      content_type: 'product',
+      content_ids: [String(p.i)],
+      content_name: p.n,
+      currency: 'PYG',
+      value: conPrecio(p) ? precioVenta(p) : 0
+    });
+  }
+
+  const totalCanasta = () => estado.canasta
+    .reduce((acc, l) => acc + (precioVenta(buscarProducto(l.id)) ?? 0) * l.q, 0);
+
   let temporizadorToast = null;
   function toast(mensaje) {
     const el = $('#toast');
@@ -646,6 +666,7 @@
     const producto = buscarProducto(id);
     if (!producto) return;
     if (!conPrecio(producto)) { consultarProducto(producto); return; }
+    if (delta > 0) medirProducto('AddToCart', producto);
     const linea = lineaDe(id);
     if (linea) {
       linea.q = Math.min(MAX_POR_ITEM, Math.max(0, linea.q + delta));
@@ -779,6 +800,13 @@
   /* ------------------------------------------------------------------ */
   function abrirCheckout() {
     if (!estado.canasta.length) { toast('Tu canasta está vacía'); return; }
+    medir('InitiateCheckout', {
+      content_type: 'product',
+      content_ids: estado.canasta.map((l) => String(l.id)),
+      num_items: estado.canasta.reduce((acc, l) => acc + l.q, 0),
+      currency: 'PYG',
+      value: totalCanasta()
+    });
     abrirPanel(false);
     renderizarCheckout();
     actualizarTipoEntrega();
@@ -937,6 +965,13 @@
       return;
     }
     const mensaje = construirMensaje();
+    medir('Contact', {
+      content_type: 'product',
+      content_ids: estado.canasta.map((l) => String(l.id)),
+      num_items: estado.canasta.reduce((acc, l) => acc + l.q, 0),
+      currency: 'PYG',
+      value: totalCanasta()
+    });
     const url = linkWhatsApp(mensaje);
     const estadoEl = $('#checkout-estado');
     const ventana = window.open(url, '_blank');
@@ -1002,6 +1037,7 @@
   function abrirProducto(id) {
     const p = buscarProducto(id);
     if (!p) return;
+    medirProducto('ViewContent', p);
     estado.productoAbierto = p;
     $('#producto-titulo').textContent = 'Detalle del producto';
     $('#producto-contenido').innerHTML = productoHTML(p);
@@ -1070,6 +1106,7 @@
   }
 
   function consultarProducto(p) {
+    medirProducto('Contact', p);
     const texto = `Hola! Me interesa este producto:\n\n*${p.n}*${p.s ? `\nSKU: ${p.s}` : ''}${conPrecio(p) ? `\nPrecio: ${fmt(precioVenta(p))}` : '\n(Precio a consultar)'}\n\n¿Está disponible?`;
     window.open(linkWhatsApp(texto), '_blank', 'noopener');
   }
