@@ -315,7 +315,8 @@
     const meta = estado.indice.meta || {};
     $('#marca-texto').innerHTML = esc(CONFIG.marca).replace(/(\S+)$/, '<span>$1</span>');
     $('#pie-marca').textContent = CONFIG.marca;
-    document.title = `${CONFIG.marca} — catálogo y pedidos por WhatsApp`;
+    // El <title> SEO se mantiene estático (definido en index.html); solo se cambia
+    // cuando se abre un producto por link directo (?p=...).
     $('#pie-numero').textContent = CONFIG.whatsappVisible || `+${CONFIG.whatsapp}`;
     $('#opcion-envio').textContent = CONFIG.envio.etiqueta;
     $('#opcion-retiro').textContent = CONFIG.retiro.etiqueta;
@@ -635,7 +636,7 @@
     return `
       <article class="card" data-id="${esc(p.i)}">
         <div class="card__foto" data-accion="ver">
-          <img src="${img}" alt="${esc(p.n)}" loading="lazy" decoding="async" width="300" height="300" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
+          <img src="${img}" alt="${esc(p.n)}${p.m ? ' — ' + esc(p.m) : ''} · Jaka Bicicletería, Capiatá" loading="lazy" decoding="async" width="300" height="300" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
           ${CONFIG.mostrarDescuento && desc >= 5 ? `<span class="card__off">-${desc}%</span>` : ''}
           ${p.e === 1
             ? '<span class="card__estado card__estado--agotado">Sin stock</span>'
@@ -1081,7 +1082,7 @@
     const desc = descuentoVenta(p);
     return `
       <div class="producto-foto">
-        <img src="${esc(urlImagen(p, true))}" alt="${esc(p.n)}" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
+        <img src="${esc(urlImagen(p, true))}" alt="${esc(p.n)}${p.m ? ' — ' + esc(p.m) : ''} · Jaka Bicicletería, Capiatá" width="800" height="800" decoding="async" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
       </div>
       <div>
         <p class="producto-marca">${esc(p.m) || '&nbsp;'}</p>

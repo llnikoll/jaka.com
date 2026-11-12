@@ -43,6 +43,29 @@ SALIDA_DIR = Path(__file__).resolve().parent / "data"
 SALIDA_INDICE = SALIDA_DIR / "indice.json"
 SALIDA_VISTAS = SALIDA_DIR / "v"
 SALIDA_COMPLETO = SALIDA_DIR / "catalogo.json"
+SITIO_SEO = "https://www.bicicleteria.capiata.com.py"
+
+
+def escribir_sitemap(fecha_iso: str) -> None:
+    """Sitemap estático con lastmod de hoy (se regenera en cada corrida)."""
+    fecha = fecha_iso[:10]
+    contenido = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>{SITIO_SEO}/</loc>
+    <lastmod>{fecha}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>{SITIO_SEO}/privacidad.html</loc>
+    <lastmod>{fecha}</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>
+"""
+    (RAIZ / "tienda" / "sitemap.xml").write_text(contenido, encoding="utf-8")
 
 PILARES = ["bicicletas", "fitness", "indumentaria", "autoaccesorios"]
 
@@ -353,6 +376,9 @@ def main() -> None:
         "detalle_bajas": cambios["bajas"][:150],
     }
     escribir_json(SALIDA_DIR / "ultimos_cambios.json", resumen)
+
+    # ------------------- Sitemap (SEO) -------------------
+    escribir_sitemap(meta["generado"])
 
     # ------------------- Salida por consola -------------------
     kb = lambda n: f"{n / 1024:,.0f} KB".replace(",", ".")

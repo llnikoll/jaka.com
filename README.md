@@ -43,6 +43,8 @@ tienda/index.html        →  catálogo + canasta + pedido por WhatsApp
 - **Checkout por WhatsApp** al **+595 993 539 237** con: detalle del pedido, cantidades, total, nombre, teléfono,
   dirección, referencia y **ubicación GPS** del cliente (link de Google Maps).
 - **Sin pagos online, sin clientes registrados, sin panel de administración**: todo se cierra por WhatsApp.
+- **SEO local y AEO:** JSON-LD `BikeStore` + `FAQPage`, `llms.txt`, `robots.txt` con crawlers de IA, `sitemap.xml`
+  automático, canonical, Open Graph y una sección de preguntas frecuentes visible (ver `tienda/README.md` §10).
 
 ## Actualización automática (en la nube, sin depender de la PC)
 

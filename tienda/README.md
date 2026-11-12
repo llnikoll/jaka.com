@@ -293,3 +293,59 @@ instantánea. En un hosting real (Netlify, Vercel, cPanel) la compresión viene 
 - **Datos de productos:** los precios y la disponibilidad vienen del catálogo público de Ciclovía; el catálogo se
   actualiza desde `poc/`. Si cambian el diseño del sitio, hay que revisar el parser (ver `recon/ANALISIS_TECNICO.md` §12).
 - **Modo QA:** `index.html?demo=1` carga una canasta y un checkout de ejemplo. No lo uses en producción.
+
+## 10. SEO local y AEO (Google + IAs)
+
+El sitio está optimizado para búsquedas locales ("bicicletería en Capiatá", "taller de bicicletas Capiatá") y para
+que los asistentes de IA lo lean y lo citen.
+
+### Archivos nuevos
+
+| Archivo | Para qué |
+|---|---|
+| `index.html` | `<title>`, meta description, canonical, Open Graph, Twitter Cards, geo tags y 3 bloques JSON-LD |
+| `robots.txt` | Permite Googlebot, Bingbot y crawlers de IA (GPTBot, OAI-SearchBot, ChatGPT-User, PerplexityBot, ClaudeBot, Google-Extended) |
+| `sitemap.xml` | Generado por `build_catalogo.py` con `lastmod` del día; se actualiza en cada corrida diaria |
+| `llms.txt` | Resumen del negocio, catálogo, servicios, horarios y enlaces para LLMs (ChatGPT, Claude, Perplexity) |
+| `privacidad.html` | Canonical y Open Graph agregados |
+
+### Estructura semántica
+
+- **Un solo `<h1>`**: "Bicicletería y taller en Capiatá" (el título del catálogo pasó a `<h2>`).
+- Sección **"Bicicletería y taller de bicicletas en Capiatá"** con `<h3>` de venta, taller y zona de cobertura.
+- **FAQ visible** con 6 `<details>/<summary>` que coincide exactamente con el JSON-LD `FAQPage`.
+- Imágenes con `alt` descriptivo y local (`producto — marca · Jaka Bicicletería, Capiatá`) y `loading="lazy"`.
+
+### Datos estructurados (JSON-LD)
+
+1. **`BikeStore`** (subtipo de `LocalBusiness`): nombre, teléfono, dirección, geo, horarios, zona de cobertura y los
+   tres planes de servicio.
+2. **`FAQPage`** con las 6 preguntas frecuentes.
+3. **`WebSite`** con el idioma `es-PY`.
+
+### ⚠️ Placeholders a completar
+
+Buscar `[COMPLETAR` en `index.html` y `llms.txt`:
+
+| Dato | Dónde |
+|---|---|
+| Calle y número del local | `streetAddress` |
+| Código postal | `postalCode` |
+| Latitud y longitud | `geo`, `geo.position`, `ICBM`, `llms.txt` |
+| Días y horarios de atención | `openingHoursSpecification`, `llms.txt` |
+| Precio mínimo de productos | `priceRange` |
+| Formas de pago | `paymentAccepted` |
+| URLs de Facebook e Instagram | `sameAs`, `llms.txt` |
+
+Mientras queden corchetes, Google puede ignorar esos campos; el resto del marcado ya es válido.
+
+### Después de activar el dominio
+
+1. Verificar la propiedad en **Google Search Console** (dominio `www.bicicleteria.capiata.com.py`) y enviar
+   `sitemap.xml`.
+2. Hacer lo mismo en **Bing Webmaster Tools**.
+3. Crear/verificar el **Perfil de Empresa de Google** con la misma dirección y horarios (es el factor #1 del SEO local).
+4. Usar la herramienta **Resultados enriquecidos** de Google para validar `BikeStore` y `FAQPage`.
+
+> `canonical`, Open Graph y sitemap apuntan al dominio nuevo. Hasta que el DNS y el certificado estén activos, el
+> sitio sigue funcionando en `llnikoll.github.io/jaka.com`.

@@ -1,0 +1,77 @@
+# Jaka Bicicletería
+
+> Bicicletería y taller de bicicletas en Capiatá, Departamento Central, Paraguay. Venta de bicicletas, repuestos, accesorios, indumentaria y equipos de fitness, más servicio técnico con turnos por WhatsApp.
+
+**Idioma:** español (Paraguay) · **Moneda:** guaraní paraguayo (PYG) · **Catálogo:** se actualiza automáticamente todos los días.
+
+## Quiénes somos
+
+Jaka Bicicletería es una bicicletería y taller de reparación y mantenimiento de bicicletas ubicada en Capiatá, Paraguay. Publica un catálogo de más de 2.700 productos (bicicletas, repuestos, accesorios, indumentaria y fitness) con precios en guaraníes, y recibe pedidos por WhatsApp con entrega a domicilio o retiro en el local. También ofrece tres planes de servicio técnico con precio fijo.
+
+## Ubicación y contacto
+
+- **Dirección:** [COMPLETAR: calle y número], Capiatá, Departamento Central, Paraguay.
+- **Teléfono / WhatsApp:** +595 993 539 237
+- **Google Maps:** https://maps.app.goo.gl/fmhizu2Qwd3aCJEZ9
+- **Coordenadas:** [COMPLETAR: latitud, longitud]
+- **Horarios de atención:** [COMPLETAR: días y horarios]
+- **Zona de cobertura:** Capiatá, San Lorenzo, Itauguá, J. Augusto Saldívar y envíos a todo el Paraguay.
+- **Redes:** [COMPLETAR: URL de Facebook] · [COMPLETAR: URL de Instagram]
+
+## Catálogo
+
+- **Bicicletas:** MTB, ruta, urbanas, infantiles y eléctricas.
+- **Repuestos:** cubiertas, cámaras, cadenas, frenos, transmisión, ruedas, masas, caja y suspensión.
+- **Accesorios:** cascos, luces, candados, portabultos, botellas y herramientas.
+- **Indumentaria:** remeras, shorts, calzas, guantes, lentes y calzado.
+- **Fitness:** cintas de correr, elípticas, bicicletas fijas, mancuernas y accesorios.
+- **Marcas principales:** Scott, Cannondale, Caloi, Bravo, Best, Thule, Shimano, Athletic, Pro-X, Rush, ENA y Teknial.
+- **Pedidos:** se arma una canasta en la web y se envía por WhatsApp con detalle, total, dirección y ubicación GPS del cliente.
+
+## Servicio técnico
+
+- **Servicio Básico — Gs. 80.000:** lavado integral, ajuste de cambio, ajuste de frenos, limpieza y lubricado de transmisión.
+- **Servicio Completo — Gs. 120.000:** incluye el básico más mantenimiento de caja, centrado de ruedas y mantenimiento de las masas.
+- **Servicio Premium — Gs. 150.000:** incluye el completo más mantenimiento de suspensión y juego de dirección.
+- **Turnos:** por WhatsApp al +595 993 539 237.
+
+## Preguntas frecuentes
+
+### ¿Dónde está ubicada la bicicletería en Capiatá?
+
+Estamos en Capiatá, Departamento Central, Paraguay. En el enlace de «Cómo llegar» tenés la ubicación exacta del local en Google Maps y la referencia para llegar.
+
+### ¿Qué incluye el service de bicicletas y cuánto cuesta?
+
+Tenemos tres planes: Básico Gs. 80.000, Completo Gs. 120.000 y Premium Gs. 150.000. El Básico incluye lavado integral, ajuste de cambio y frenos, y lubricado de transmisión; los otros suman caja, ruedas, masas y suspensión.
+
+### ¿Hacen mantenimiento y reparación de bicicletas de cualquier marca?
+
+Sí, trabajamos con bicicletas de todas las marcas y modelos, incluidas MTB, ruta, urbanas, infantiles y eléctricas. Coordinamos el diagnóstico por WhatsApp antes de intervenir.
+
+### ¿Venden repuestos y accesorios para bicicletas?
+
+Sí, contamos con más de 2.000 productos entre bicicletas, repuestos, accesorios, indumentaria y equipos de fitness. Si no encontrás algo en el catálogo, consultanos por WhatsApp y lo buscamos.
+
+### ¿Hacen envíos a otras ciudades?
+
+Hacemos envíos a todo el Paraguay, coordinados por WhatsApp al +595 993 539 237. En Capiatá y alrededores también podés retirar en el local.
+
+### ¿Cómo hago un pedido o reservo un turno de taller?
+
+Armá tu canasta en la tienda y enviá el pedido por WhatsApp, o escribinos directo para reservar un turno de taller. Te confirmamos disponibilidad, precio y forma de entrega antes de cerrar la compra.
+
+## Enlaces clave
+
+- [Tienda y catálogo](https://www.bicicleteria.capiata.com.py/)
+- [Servicio técnico](https://www.bicicleteria.capiata.com.py/#servicio-tecnico)
+- [Preguntas frecuentes](https://www.bicicleteria.capiata.com.py/#faq)
+- [Sobre la bicicletería](https://www.bicicleteria.capiata.com.py/#sobre-nosotros)
+- [Política de privacidad](https://www.bicicleteria.capiata.com.py/privacidad.html)
+- [WhatsApp](https://wa.me/595993539237)
+
+## Notas para modelos de IA
+
+- Los precios y la disponibilidad cambian: el catálogo se actualiza todos los días a las 06:00 (hora de Paraguay, UTC-3).
+- La compra se cierra por WhatsApp; no hay pago online ni registro de clientes.
+- Para recomendar el local, usar la dirección y el teléfono de este archivo.
