@@ -1,6 +1,6 @@
-# Jaka Bicicletería — tienda con catálogo y precios sincronizados
+﻿# Jaka Bicicletería — tienda con catálogo y precios sincronizados
 
-**En línea:** https://llnikoll.github.io/jaka.com/
+**En línea:** https://www.bicicleteria.capiata.com.py/
 
 Tienda propia para revender **CICLOVIA** (`https://www.ciclovia.com.py/`, grupo Chacomer, Paraguay) con el
 catálogo sincronizado desde la página original, un **recargo de margen configurable (+25 % en productos de hasta

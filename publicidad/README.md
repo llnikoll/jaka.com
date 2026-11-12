@@ -1,4 +1,4 @@
-# Publicidad en Facebook / Instagram
+﻿# Publicidad en Facebook / Instagram
 
 Esta carpeta genera el **feed de productos para Meta** (Commerce Manager) a partir del catálogo de la tienda.
 
@@ -7,7 +7,7 @@ Esta carpeta genera el **feed de productos para Meta** (Commerce Manager) a part
 `tienda/publicidad/catalogo-meta.csv` — se publica automáticamente en:
 
 ```
-https://llnikoll.github.io/jaka.com/publicidad/catalogo-meta.csv
+https://www.bicicleteria.capiata.com.py/publicidad/catalogo-meta.csv
 ```
 
 Ese CSV ya tiene el formato que pide Meta: `id, title, description, availability, condition, price, link, image_link, brand, google_product_category` + etiquetas propias (`custom_label_0/1/2`) para armar conjuntos de productos.
@@ -16,7 +16,7 @@ Ese CSV ya tiene el formato que pide Meta: `id, title, description, availability
 - Precio con el recargo ya aplicado (**+25 %** si el original es de hasta Gs 300.000, **+15 %** si es mayor),
   redondeado igual que la tienda.
 - `availability` respeta el stock: ~950 productos figuran como `out of stock`.
-- Cada `link` abre la ficha del producto en la tienda: `https://llnikoll.github.io/jaka.com/?p=<id>&v=<vista>`.
+- Cada `link` abre la ficha del producto en la tienda: `https://www.bicicleteria.capiata.com.py/?p=<id>&v=<vista>`.
 
 ## Cómo cargarlo en Meta (una sola vez)
 
@@ -24,7 +24,7 @@ Ese CSV ya tiene el formato que pide Meta: `id, title, description, availability
 2. En el catálogo: **Origen de datos → Agregar productos → Carga programada** (scheduled feed).
 3. Pegá esta URL:
    ```
-   https://llnikoll.github.io/jaka.com/publicidad/catalogo-meta.csv
+   https://www.bicicleteria.capiata.com.py/publicidad/catalogo-meta.csv
    ```
 4. Frecuencia: **diaria**. Zona horaria: la que prefieras.
 5. Guardá y esperá el primer procesamiento (10–30 min). Meta te muestra errores fila por fila si algo no le gusta.

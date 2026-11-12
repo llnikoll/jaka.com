@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Genera el feed de productos para Meta (Facebook/Instagram) a partir del catálogo
 de la tienda. El archivo queda publicado en:
 
-    https://llnikoll.github.io/jaka.com/publicidad/catalogo-meta.csv
+    https://www.bicicleteria.capiata.com.py/publicidad/catalogo-meta.csv
 
 Uso:
     python publicidad/generar_feed.py
@@ -30,7 +30,7 @@ ENTRADA = RAIZ / "tienda" / "data" / "v" / "todos.json"
 CONFIG = RAIZ / "tienda" / "assets" / "config.js"
 SALIDA = RAIZ / "tienda" / "publicidad" / "catalogo-meta.csv"
 
-SITIO = "https://llnikoll.github.io/jaka.com/"
+SITIO = "https://www.bicicleteria.capiata.com.py/"
 IMG_BASE = "https://www.ciclovia.com.py/media/catalog/product/"
 IMG_PARAMS = "?quality=85&fit=bounds&height=800&width=800&canvas=800:800"
 MONEDA = "PYG"

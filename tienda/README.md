@@ -1,6 +1,6 @@
 # Jaka Bicicletería — tienda con pedidos por WhatsApp
 
-**En línea:** https://llnikoll.github.io/jaka.com/
+**En línea:** https://www.bicicleteria.capiata.com.py/
 
 Tienda estática con las **2.681 productos** de bicicletas, accesorios, repuestos, fitness e indumentaria,
 **recargo de margen configurable (+15 % por defecto)** y una **canasta que envía el pedido completo a tu WhatsApp**
@@ -347,5 +347,5 @@ Mientras queden corchetes, Google puede ignorar esos campos; el resto del marcad
 3. Crear/verificar el **Perfil de Empresa de Google** con la misma dirección y horarios (es el factor #1 del SEO local).
 4. Usar la herramienta **Resultados enriquecidos** de Google para validar `BikeStore` y `FAQPage`.
 
-> `canonical`, Open Graph y sitemap apuntan al dominio nuevo. Hasta que el DNS y el certificado estén activos, el
-> sitio sigue funcionando en `llnikoll.github.io/jaka.com`.
+> `canonical`, Open Graph y sitemap apuntan a `https://www.bicicleteria.capiata.com.py/`. El dominio ya está activo
+> con certificado HTTPS de GitHub Pages; `llnikoll.github.io/jaka.com` redirige (301) al dominio propio.
