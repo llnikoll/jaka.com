@@ -48,5 +48,47 @@ window.TIENDA_CONFIG = {
   imagenBase: "https://www.ciclovia.com.py/media/catalog/product/",
   // Tamaño chico para la grilla (rápido) y grande para la ficha
   imagenParams: "?quality=80&fit=bounds&height=300&width=300&canvas=300:300",
-  imagenParamsGrande: "?quality=85&fit=bounds&height=800&width=800&canvas=800:800"
+  imagenParamsGrande: "?quality=85&fit=bounds&height=800&width=800&canvas=800:800",
+  // ------------------- Servicio técnico -------------------
+  // Planes que se muestran en la sección "Servicio técnico" de la tienda.
+  servicios: [
+    {
+      nombre: "Básico",
+      precio: 80000,
+      items: [
+        "Lavado integral",
+        "Ajuste de cambio",
+        "Ajuste de frenos",
+        "Limpieza y lubricado de transmisión"
+      ]
+    },
+    {
+      nombre: "Completo",
+      precio: 120000,
+      items: [
+        "Lavado integral",
+        "Ajuste de cambio",
+        "Ajuste de frenos",
+        "Limpieza y lubricado de transmisión",
+        "Mantenimiento de caja",
+        "Centrado de ruedas",
+        "Mantenimiento de las masas"
+      ]
+    },
+    {
+      nombre: "Premium",
+      precio: 150000,
+      items: [
+        "Lavado integral",
+        "Ajuste de cambio",
+        "Ajuste de frenos",
+        "Limpieza y lubricado de transmisión",
+        "Mantenimiento de caja",
+        "Centrado de ruedas",
+        "Mantenimiento de las masas",
+        "Mantenimiento de suspensión y juego de dirección"
+      ]
+    }
+  ],
+  serviciosNota: "Precios en guaraníes. Repuestos no incluidos. Los turnos se coordinan por WhatsApp."
 };

@@ -180,7 +180,23 @@ Todo lo editable está en **`assets/config.js`**:
 | `porPagina` | Productos que se muestran por tanda |
 | `categoriaInicial` | Vista al abrir (`accesorios` por defecto; también `bicicletas`, `fitness`, `todos`…) |
 | `imagenBase` / `imagenParams` / `imagenParamsGrande` | De dónde salen las fotos y en qué tamaño |
-| `enlaceBase` | Base del link “ver ficha original” |
+| `servicios` | Planes de servicio técnico: nombre, precio y lista de tareas |
+| `serviciosNota` | Aclaración que aparece debajo de los planes |
+
+### Servicio técnico
+
+La sección **“Servicio técnico”** aparece debajo del catálogo (y hay un acceso directo en la franja superior).
+Se genera desde `config.js`:
+
+```js
+servicios: [
+  { nombre: "Básico", precio: 80000, items: ["Lavado integral", "Ajuste de cambio", …] },
+  …
+]
+```
+
+Cada plan muestra nombre, precio y checklist, con un botón **“Reservar por WhatsApp”** que abre el chat con el
+mensaje ya escrito (plan y precio). Para cambiar precios, tareas o agregar un plan, se edita ese arreglo.
 
 ## 6. Reglas que ya están implementadas
 

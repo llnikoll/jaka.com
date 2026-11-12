@@ -36,6 +36,8 @@ tienda/index.html        →  catálogo + canasta + pedido por WhatsApp
 - **Abre en Accesorios** (752 productos) y carga cada categoría bajo demanda: la primera pantalla pesa **55 KB**
   comprimida en lugar del catálogo completo.
 - **Categorías completas:** Accesorios, Bicicletas, Fitness, Indumentaria, Autoaccesorios, Ofertas y Todos.
+- **Sección de Servicio técnico** con 3 planes (Básico Gs. 80.000 · Completo Gs. 120.000 · Premium Gs. 150.000)
+  y botón de reserva por WhatsApp.
 - **Búsqueda** y orden por precio/descuento/nombre; filtro “solo disponibles”.
 - **Canasta** con cantidades, subtotal y total; se guarda en el navegador.
 - **Checkout por WhatsApp** al **+595 993 539 237** con: detalle del pedido, cantidades, total, nombre, teléfono,

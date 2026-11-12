@@ -420,6 +420,35 @@
 
     $('#grilla').addEventListener('click', manejarClicGrilla);
     $('#producto-contenido').addEventListener('click', manejarClicProducto);
+
+    renderizarServicios();
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Servicio técnico                                                    */
+  /* ------------------------------------------------------------------ */
+  function renderizarServicios() {
+    const planes = Array.isArray(CONFIG.servicios) ? CONFIG.servicios : [];
+    const contenedor = $('#servicio-planes');
+    if (!contenedor || !planes.length) return;
+
+    contenedor.innerHTML = planes.map((plan) => `
+      <article class="plan">
+        <header class="plan__cabecera">
+          <h3 class="plan__nombre">Servicio ${esc(plan.nombre)}</h3>
+          <p class="plan__precio">${fmt(plan.precio)}</p>
+        </header>
+        <ul class="plan__lista">
+          ${(plan.items || []).map((item) => `<li>${esc(item)}</li>`).join('')}
+        </ul>
+        <a class="btn btn--wa plan__cta" target="_blank" rel="noopener"
+           href="${esc(linkWhatsApp(`Hola! Quiero reservar un turno de *Servicio ${plan.nombre}* (${fmt(plan.precio)}). ¿Qué días tienen disponibles?`))}">
+          Reservar por WhatsApp
+        </a>
+      </article>`).join('');
+
+    const nota = $('#servicio-nota');
+    if (nota) nota.textContent = CONFIG.serviciosNota || '';
   }
 
   function debounce(fn, ms) {

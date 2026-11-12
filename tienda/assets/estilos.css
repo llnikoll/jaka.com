@@ -264,6 +264,26 @@ h1{font-size:24px;letter-spacing:-.5px;margin:0 0 2px}
 .vacio h2{font-size:18px;color:var(--tinta);margin:0 0 4px}
 .vacio p{margin:0 0 16px;font-size:14px}
 
+/* ------------------------------ Servicio técnico ------------------------------ */
+.servicio{background:#0b1220;color:#e2e8f0;padding:40px 0 46px;margin-top:34px;scroll-margin-top:120px}
+.servicio__etiqueta{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#5eead4;margin:0 0 6px}
+.servicio h2{color:#fff;font-size:25px;letter-spacing:-.5px;margin:0 0 8px}
+.servicio__bajada{color:#94a3b8;font-size:14px;margin:0 0 24px;max-width:620px}
+.servicio__planes{display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:760px){.servicio__planes{grid-template-columns:repeat(3,1fr);gap:18px}}
+.plan{background:#fff;color:var(--tinta);border-radius:16px;padding:18px 16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.plan__cabecera{border-bottom:1px solid var(--linea);padding-bottom:12px}
+.plan__nombre{margin:0;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--verde-oscuro)}
+.plan__precio{margin:6px 0 0;font-size:26px;font-weight:800;letter-spacing:-.7px;color:var(--tinta)}
+.plan__lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;flex:1}
+.plan__lista li{position:relative;padding-left:22px;font-size:13px;line-height:1.35;color:var(--tinta-suave)}
+.plan__lista li::before{content:"✓";position:absolute;left:0;top:0;color:var(--verde);font-weight:800}
+.plan__cta{justify-content:center;text-align:center;font-size:13.5px;padding:11px 12px}
+.servicio__nota{color:#64748b;font-size:12px;margin:18px 0 0;text-align:center}
+.servicio + .pie{margin-top:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
 /* ------------------------------ Pie ------------------------------ */
 .pie{background:#0f172a;color:#cbd5e1;margin-top:10px}
 .pie__interior{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap;padding:26px 16px 30px;font-size:13px}
