@@ -312,7 +312,9 @@ que los asistentes de IA lo lean y lo citen.
 ### Estructura semántica
 
 - **Un solo `<h1>`**: "Bicicletería y taller en Capiatá" (el título del catálogo pasó a `<h2>`).
-- Sección **"Bicicletería y taller de bicicletas en Capiatá"** con `<h3>` de venta, taller y zona de cobertura.
+- Orden de la página: portada → catálogo → **Servicio técnico con precios** → **FAQ** → bloque SEO discreto.
+- El bloque **"Bicicletería y taller de bicicletas en Capiatá"** queda al final, con el texto ampliado dentro de un
+  `<details>` ("Más sobre la bicicletería") para que no ocupe espacio visible pero siga en el HTML para los buscadores.
 - **FAQ visible** con 6 `<details>/<summary>` que coincide exactamente con el JSON-LD `FAQPage`.
 - Imágenes con `alt` descriptivo y local (`producto — marca · Jaka Bicicletería, Capiatá`) y `loading="lazy"`.
 
