@@ -92,40 +92,54 @@ PREFIJO_IMG = "https://www.ciclovia.com.py/media/catalog/product/"
 # Vistas (pestañas). El orden es el que se muestra en la tienda.
 VISTAS = [
     {
-        "slug": "accesorios",
-        "nombre": "Accesorios",
-        "categorias": ["bicicletas/repuestos-de-bicicletas"],
-    },
-    {
         "slug": "bicicletas",
         "nombre": "Bicicletas",
         "categorias": [
             "bicicletas/mtb", "bicicletas/ruta", "bicicletas/urbanas",
             "bicicletas/infantil", "bicicletas/electricas",
-            "bicicletas/repuestos-de-bicicletas",
         ],
+    },
+    {
+        "slug": "mtb",
+        "nombre": "Bicis MTB",
+        "categorias": ["bicicletas/mtb"],
+    },
+    {
+        "slug": "infantil",
+        "nombre": "Infantiles",
+        "categorias": ["bicicletas/infantil"],
+    },
+    {
+        "slug": "ruta",
+        "nombre": "Ruta y Urbanas",
+        "categorias": ["bicicletas/ruta", "bicicletas/urbanas", "bicicletas/electricas"],
+    },
+    {
+        "slug": "accesorios",
+        "nombre": "Accesorios y Repuestos",
+        "categorias": ["bicicletas/repuestos-de-bicicletas", "autoaccesorios/portabultos", "autoaccesorios/portabici"],
     },
     {
         "slug": "fitness",
         "nombre": "Fitness",
         "categorias": [
-            "fitness/cintas", "fitness/elipticas", "fitness/bicicletas",
-            "fitness/accesorios", "fitness/abdominalera", "fitness/spinning",
-            "fitness/remos", "fitness/escaladoras", "fitness/suplementos-alimenticios",
+            "fitness/accesorios", "fitness/suplementos-alimenticios", "fitness/cintas",
+            "fitness/bicicletas", "fitness/spinning", "fitness/remos",
+            "fitness/elipticas", "fitness/escaladoras", "fitness/abdominalera",
         ],
     },
     {
         "slug": "indumentaria",
         "nombre": "Indumentaria",
         "categorias": [
-            "indumentaria/remeras", "indumentaria/abrigos", "indumentaria/calzados",
-            "indumentaria/mochilas", "indumentaria/shorts", "indumentaria/guantes",
-            "indumentaria/lentes",
+            "indumentaria/remeras", "indumentaria/shorts", "indumentaria/lentes",
+            "indumentaria/abrigos", "indumentaria/calzados", "indumentaria/mochilas",
+            "indumentaria/guantes",
         ],
     },
     {
         "slug": "autoaccesorios",
-        "nombre": "Autoaccesorios",
+        "nombre": "Portabicis y Autos",
         "categorias": ["autoaccesorios/portabultos", "autoaccesorios/portabici"],
     },
     {"slug": "ofertas", "nombre": "Ofertas", "categorias": []},

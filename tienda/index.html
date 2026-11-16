@@ -277,7 +277,8 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
         </ul>
         <a class="btn btn--wa plan__cta" href="https://wa.me/595993539237?text=Hola!%20Quiero%20reservar%20un%20turno%20de%20Servicio%20B%C3%A1sico%20(Gs.%2080.000)." target="_blank" rel="noopener">Reservar por WhatsApp</a>
       </article>
-      <article class="plan">
+      <article class="plan plan--destacado">
+        <span class="plan__badge-popular">⭐ Más elegido</span>
         <header class="plan__cabecera">
           <h3 class="plan__nombre">Servicio Completo</h3>
           <p class="plan__precio">Gs. 120.000</p>
@@ -392,6 +393,18 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+</script>
+<button class="btn-subir" id="btn-subir" aria-label="Volver arriba" title="Volver arriba">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+<script>
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('btn-subir');
+  if (btn) btn.classList.toggle('visible', window.scrollY > 320);
+}, { passive: true });
+document.getElementById('btn-subir')?.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 </script>
 </body>
 </html>

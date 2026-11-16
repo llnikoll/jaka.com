@@ -215,31 +215,9 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
     </button>
   </div>
 
-  <!-- Navegación de categorías (funciona sin JS - fallback para usuarios sin JavaScript) -->
-  <nav class="categorias-nativas oculto" id="categorias-nativas" aria-label="Categorías principales">
-    <ul class="categorias-grid">
-      <li><a href="tienda.html?seccion=bicis" class="cat-enlace" data-cat="accesorios"><span>Accesorios</span> <span class="cat-cuenta">(751)</span></a></li>
-      <li><a href="tienda.html?seccion=bicis" class="cat-enlace" data-cat="bicicletas"><span>Bicicletas</span> <span class="cat-cuenta">(1.338)</span></a></li>
-      <li><a href="tienda.html?seccion=bicis" class="cat-enlace" data-cat="fitness"><span>Fitness</span> <span class="cat-cuenta">(1.282)</span></a></li>
-      <li><a href="tienda.html?seccion=bicis" class="cat-enlace" data-cat="indumentaria"><span>Indumentaria</span> <span class="cat-cuenta">(147)</span></a></li>
-      <li><a href="tienda.html?seccion=motos" class="cat-enlace cat-enlace--motos" data-cat="motos"><span>Motos</span> <span class="cat-cuenta">(13.057)</span></a></li>
-      <li><a href="tienda.html?seccion=bicis" class="cat-enlace" data-cat="ofertas"><span>Ofertas</span> <span class="cat-cuenta">(1.150)</span></a></li>
-    </ul>
-  </nav>
-
-  <!-- Navegación dinámica de categorías (solo visible con JS) -->
-  <nav class="categorias oculto" id="categorias" aria-label="Categorías dinámicas"></nav>
-
-  <!-- Subcategorías con colapso -->
-  <div class="subcategorias-container">
-    <details class="subcategorias-collapso" id="subcategorias-collapso" open>
-      <summary class="subcategorias__summary" aria-label="Mostrar subcategorías">
-        <span>Subcategorías</span>
-        <svg class="subcategorias__icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </summary>
-      <div class="subcategorias" id="subcategorias" aria-label="Subcategorías de la categoría actual"></div>
-    </details>
-  </div>
+  <div class="modo-segmentado" id="modo-segmentado" role="tablist" aria-label="Sección del catálogo"></div>
+  <nav class="categorias" id="categorias" aria-label="Categorías"></nav>
+  <div class="subcategorias" id="subcategorias" aria-label="Subcategorías"></div>
 </header>
 
 <!-- ================= Aviso superior ================= -->
@@ -254,6 +232,19 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
 <main class="contenedor" id="contenido">
   <p class="migas"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <strong>Catálogo</strong></p>
   <h1 class="titulo-pagina">Catálogo de bicicletas y motos en Capiatá</h1>
+
+  <div class="chips-busqueda" id="chips-busqueda" aria-label="Sugerencias de búsqueda rápida">
+    <span class="chips-busqueda__titulo">Sugerencias:</span>
+    <button class="chip-busqueda" type="button" data-busqueda="casco">Cascos</button>
+    <button class="chip-busqueda" type="button" data-busqueda="cubierta">Cubiertas</button>
+    <button class="chip-busqueda" type="button" data-busqueda="mtb">Bicis MTB</button>
+    <button class="chip-busqueda" type="button" data-busqueda="shimano">Shimano</button>
+    <button class="chip-busqueda" type="button" data-busqueda="luz">Luces</button>
+    <button class="chip-busqueda" type="button" data-busqueda="cadena">Cadenas</button>
+    <button class="chip-busqueda" type="button" data-busqueda="kenton">Kenton</button>
+  </div>
+
+  <div class="filtros-activos" id="filtros-activos" aria-label="Filtros aplicados" role="region"></div>
 
   <div class="encabezado-seccion">
     <div>
@@ -283,37 +274,14 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
     <p>Cargando catálogo…</p>
   </div>
 
-  <!-- Skeleton view durante carga -->
-  <div class="skeleton oculto" id="skeleton-view" aria-busy="true">
-    <div class="skeleton__grid">
-      <div class="skeleton__card" aria-hidden="true" role="presentation">
-        <div class="skeleton__foto"></div>
-        <div class="skeleton__marca"></div>
-        <div class="skeleton__nombre"></div>
-        <div class="skeleton__precio"></div>
-      </div>
-      <div class="skeleton__card" aria-hidden="true" role="presentation">
-        <div class="skeleton__foto"></div>
-        <div class="skeleton__marca"></div>
-        <div class="skeleton__nombre"></div>
-        <div class="skeleton__precio"></div>
-      </div>
-      <div class="skeleton__card" aria-hidden="true" role="presentation">
-        <div class="skeleton__foto"></div>
-        <div class="skeleton__marca"></div>
-        <div class="skeleton__nombre"></div>
-        <div class="skeleton__precio"></div>
-      </div>
-      <div class="skeleton__card" aria-hidden="true" role="presentation">
-        <div class="skeleton__foto"></div>
-        <div class="skeleton__marca"></div>
-        <div class="skeleton__nombre"></div>
-        <div class="skeleton__precio"></div>
-      </div>
-    </div>
+  <div class="skeleton-grilla oculto" id="skeleton-view" aria-hidden="true">
+    <div class="skeleton-card"><div class="skeleton-foto"></div><div class="skeleton-info"><div class="skeleton-linea skeleton-linea--chica"></div><div class="skeleton-linea skeleton-linea--media"></div><div class="skeleton-linea skeleton-linea--precio"></div><div class="skeleton-linea skeleton-linea--btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-foto"></div><div class="skeleton-info"><div class="skeleton-linea skeleton-linea--chica"></div><div class="skeleton-linea skeleton-linea--media"></div><div class="skeleton-linea skeleton-linea--precio"></div><div class="skeleton-linea skeleton-linea--btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-foto"></div><div class="skeleton-info"><div class="skeleton-linea skeleton-linea--chica"></div><div class="skeleton-linea skeleton-linea--media"></div><div class="skeleton-linea skeleton-linea--precio"></div><div class="skeleton-linea skeleton-linea--btn"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton-foto"></div><div class="skeleton-info"><div class="skeleton-linea skeleton-linea--chica"></div><div class="skeleton-linea skeleton-linea--media"></div><div class="skeleton-linea skeleton-linea--precio"></div><div class="skeleton-linea skeleton-linea--btn"></div></div></div>
   </div>
 
-  <div class="grilla" id="grilla" aria-live="polite" aria-busy="false"></div>
+  <div class="grilla" id="grilla" aria-live="polite"></div>
 
   <div class="vacio oculto" id="vacio">
     <p class="vacio__emoji" aria-hidden="true">🔎</p>
@@ -322,12 +290,11 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
     <button class="btn btn--secundario" id="btn-limpiar-filtros">Limpiar filtros</button>
   </div>
 
-  <!-- Pagination numerada -->
-  <nav class="pagination" id="pagination" aria-label="Navegación de página">
-    <ul class="pagination__lista" id="pagination-lista"></ul>
-  </nav>
-
-  <div class="mas oculto" id="mas-contenedor">
+  <div class="mas" id="mas-contenedor">
+    <div class="progreso-productos" id="progreso-productos">
+      <p id="progreso-texto">Mostrando productos</p>
+      <div class="barra-progreso"><div class="barra-progreso__relleno" id="barra-progreso-relleno" style="width: 0%"></div></div>
+    </div>
     <button class="btn btn--secundario" id="btn-mas">Ver más productos</button>
   </div>
 </main>
@@ -457,204 +424,37 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
   </div>
 </div>
 
+<!-- ================= Elementos Flotantes ================= -->
+<div class="barra-canasta-movil" id="barra-canasta-movil" role="region" aria-label="Resumen de canasta">
+  <div class="barra-canasta-movil__info">
+    <span class="barra-canasta-movil__cant" id="barra-canasta-cant">0 productos</span>
+    <span class="barra-canasta-movil__monto" id="barra-canasta-monto">Gs. 0</span>
+  </div>
+  <button class="barra-canasta-movil__btn" id="barra-canasta-btn" aria-label="Abrir canasta">
+    <span>Ver canasta</span>
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+  </button>
+</div>
+
+<button class="btn-subir" id="btn-subir" aria-label="Volver arriba" title="Volver arriba">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
 <!-- ================= Aviso flotante ================= -->
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<!-- Botón Back to top -->
-<button class="btn-back-to-top" id="btn-back-to-top" aria-label="Ir arriba">
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19l-6-6h12l-6 6Z" fill="currentColor"/></svg>
-</button>
-
-<script>
-// Back to top scroll behavior
-(function() {
-  const btn = document.getElementById('btn-back-to-top');
-  if (!btn) return;
-
-  function toggleVisibility() {
-    if (window.scrollY > 300) {
-      btn.classList.add('visible');
-    } else {
-      btn.classList.remove('visible');
-    }
-  }
-
-  function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  window.addEventListener('scroll', toggleVisibility);
-  btn.addEventListener('click', scrollToTop);
-})();
-</script>
-
 <script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
-
-<!-- Navegación estática (fallback para usuarios sin JavaScript) -->
-<script>
-// Manejo de navegación estática para usuarios sin JavaScript
-(function() {
-  // Si no hay JavaScript, mostrar navegación estática y ocultar elementos dependientes
-  const nativas = document.getElementById('categorias-nativas');
-  const dinamicas = document.getElementById('categorias');
-  const subcategorias = document.getElementById('subcategorias');
-
-  if (!navigator.onLine && nativas) {
-    nativas.classList.remove('oculto');
-    return;
-  }
-
-  // Click en navegación estática - scroll suave a sección
-  if (nativas) {
-    nativas.addEventListener('click', function(ev) {
-      const enlace = ev.target.closest('[data-cat]');
-      if (enlace) {
-        const categoria = enlace.dataset.cat;
-        if (categoria && window.location.pathname.includes('tienda.html')) {
-          ev.preventDefault();
-          // Simular click en el botón de categoría dinámica
-          const btn = dinamicas.querySelector('[data-cat="' + categoria + '"]');
-          if (btn) btn.click();
-        }
-      }
-    });
-  }
-
-  // Colapso de subcategorías
-  const collapso = document.getElementById('subcategorias-collapso');
-  if (collapso) {
-    collapso.addEventListener('toggle', function() {
-      if (!this.open) {
-        this.setAttribute('data-expanded', 'false');
-      } else {
-        this.removeAttribute('data-expanded');
-      }
-    });
-  }
-})();
-</script>
 
 <!-- Service Worker para PWA -->
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then((registration) => {
-        console.log('SW registrado:', registration.scope);
-      })
-      .catch((error) => {
-        console.log('Error al registrar SW:', error);
-      });
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('Service Worker registrado:', reg.scope))
+      .catch(err => console.warn('Service Worker falló:', err));
   });
 }
-
-// Actualizar contador de productos en encabezado
-(function() {
-  const contadores = document.querySelectorAll('.cat-cuenta');
-  contadores.forEach(el => {
-    const texto = el.textContent;
-    const num = texto.replace(/[^0-9]/g, '');
-    if (num) el.textContent = '(' + parseInt(num).toLocaleString('es-PY') + ')';
-  });
-})();
-
-// Mostrar navegación estática cuando JS está disponible (elimina el fallback)
-(function() {
-  const nativas = document.getElementById('categorias-nativas');
-  const dinamicas = document.getElementById('categorias');
-  if (nativas && dinamicas) {
-    nativas.classList.add('oculto');
-  }
-})();
-
-// Focus trap para modales - containment de foco accesible
-(function() {
-  const modales = document.querySelectorAll('.modal[role="dialog"][aria-modal="true"]');
-
-  if (modales.length === 0) return;
-
-  function trapFocus(event, modal) {
-    const focusableElements = modal.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstFocusable = focusableElements[0];
-    const lastFocusable = focusableElements[focusableElements.length - 1];
-
-    if (event.key === 'Tab') {
-      if (event.shiftKey) {
-        // Shift + Tab: ir al elemento anterior, o al último si estamos en el primero
-        if (document.activeElement === firstFocusable) {
-          event.preventDefault();
-          if (lastFocusable) lastFocusable.focus();
-        }
-      } else {
-        // Tab: ir al siguiente, o al primero si estamos en el último
-        if (lastFocusable && document.activeElement === lastFocusable) {
-          event.preventDefault();
-          if (firstFocusable) firstFocusable.focus();
-        }
-      }
-    } else if (event.key === 'Escape') {
-      // Escape: cerrar modal
-      const closeBtn = modal.querySelector('[aria-label="Cerrar"]');
-      if (closeBtn) {
-        event.preventDefault();
-        closeBtn.click();
-      }
-    }
-  }
-
-  modales.forEach(modal => {
-    const focusableElements = modal.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstFocusable = focusableElements[0];
-    let previousFocus = null;
-
-    // Escuchar teclado dentro del modal
-    modal.addEventListener('keydown', function(event) {
-      if (!modal.hasAttribute('data-abierto') || modal.getAttribute('data-abierto') !== 'true') return;
-      trapFocus(event, modal);
-    });
-
-    // Cuando se cierra el modal, devolver foco al elemento precedente
-    const closeButtons = modal.querySelectorAll('[aria-label="Cerrar"]');
-    closeButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
-        // Remover aria-hidden y hidden del modal
-        modal.setAttribute('aria-hidden', 'true');
-        modal.hidden = 'true';
-        modal.removeAttribute('data-abierto');
-
-        // Devolver foco al botón que abrió el modal
-        setTimeout(() => {
-          if (previousFocus && previousFocus.focus) {
-            previousFocus.focus();
-          }
-        }, 100);
-      });
-    });
-
-    // Detectar cuando el modal se abre (aria-hidden cambia a false)
-    const observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        if (mutation.attributeName === 'aria-hidden') {
-          const isHidden = modal.getAttribute('aria-hidden') === 'true';
-          if (!isHidden && previousFocus) {
-            // Modal abierto, mover foco al primer elemento
-            if (firstFocusable) {
-              setTimeout(() => firstFocusable.focus(), 50);
-            }
-            modal.setAttribute('data-abierto', 'true');
-          }
-        }
-      });
-    });
-
-    observer.observe(modal, { attributes: true });
-  });
-})();
 </script>
 </body>
 </html>

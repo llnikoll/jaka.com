@@ -55,10 +55,7 @@
     canasta: [],
     ubicacion: null,
     productoAbierto: null,
-    demo: new URLSearchParams(location.search).has('demo'),
-    // Pagination
-    paginaActual: 1,
-    productosPorPagina: CONFIG.porPagina
+    demo: new URLSearchParams(location.search).has('demo')
   };
 
   /* ------------------------------------------------------------------ */
@@ -310,25 +307,23 @@
 
   function mostrarCargando(texto) {
     const caja = $('#estado-carga');
-    caja.classList.remove('oculto');
-    // Mostrar skeleton view mientras carga
-    if ($('#skeleton-view')) {
-      $('#skeleton-view').classList.remove('oculto');
-      $('#skeleton-view').setAttribute('aria-busy', 'true');
-      $('#grilla').classList.add('oculto');
-      $('#pagination').classList.add('oculto');
+    if (caja) {
+      caja.classList.remove('oculto');
+      caja.innerHTML = `<div class="spinner" aria-hidden="true"></div><p>${esc(texto)}</p>`;
     }
-    caja.innerHTML = `<div class="spinner" aria-hidden="true"></div><p>${esc(texto)}</p>`;
+    const sk = $('#skeleton-view');
+    if (sk) sk.classList.remove('oculto');
+    const grilla = $('#grilla');
+    if (grilla) grilla.classList.add('oculto');
   }
 
   function ocultarCargando() {
-    $('#estado-carga').classList.add('oculto');
-    // Ocultar skeleton view cuando termine la carga
-    if ($('#skeleton-view')) {
-      $('#skeleton-view').classList.add('oculto');
-      $('#skeleton-view').setAttribute('aria-busy', 'false');
-      $('#grilla').classList.remove('oculto');
-    }
+    const caja = $('#estado-carga');
+    if (caja) caja.classList.add('oculto');
+    const sk = $('#skeleton-view');
+    if (sk) sk.classList.add('oculto');
+    const grilla = $('#grilla');
+    if (grilla) grilla.classList.remove('oculto');
   }
 
   /* ------------------------------------------------------------------ */
@@ -336,7 +331,10 @@
   /* ------------------------------------------------------------------ */
   function inicializarInterfaz() {
     const meta = estado.indice.meta || {};
-    $('#marca-texto').innerHTML = esc(CONFIG.marca).replace(/(\S+)$/, '<span>$1</span>');
+    const marcaEl = $('#marca-texto');
+    if (marcaEl) {
+      marcaEl.innerHTML = `<strong>${esc(CONFIG.marca)}</strong><span class="marca__sub">Capiatá · Central</span>`;
+    }
     $('#pie-marca').textContent = CONFIG.marca;
     // El <title> SEO se mantiene estático (definido en index.html); solo se cambia
     // cuando se abre un producto por link directo (?p=...).
@@ -360,11 +358,19 @@
 
     renderizarNav();
 
+    // Segmentado Bicicletas vs Motos
+    $('#modo-segmentado')?.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('[data-modo]');
+      if (!btn) return;
+      cambiarModo(btn.dataset.modo);
+    });
+
     $('#categorias').addEventListener('click', (ev) => {
       const modo = ev.target.closest('[data-modo]');
       if (modo) { cambiarModo(modo.dataset.modo); return; }
       const btn = ev.target.closest('[data-cat]');
       if (!btn) return;
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       if (btn.dataset.cat === 'motos') {
         const sub = btn.dataset.sub || null;
         if (estado.categoria !== 'motos') cambiarModo('motos', sub);
@@ -382,7 +388,49 @@
     $('#subcategorias').addEventListener('click', (ev) => {
       const btn = ev.target.closest('[data-sub]');
       if (!btn) return;
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       estado.subcategoria = btn.dataset.sub || null;
+      estado.mostrados = CONFIG.porPagina;
+      aplicarFiltros(true);
+    });
+
+    // Búsquedas sugeridas
+    $('#chips-busqueda')?.addEventListener('click', async (ev) => {
+      const chip = ev.target.closest('.chip-busqueda');
+      if (!chip) return;
+      const q = chip.dataset.busqueda || chip.textContent.trim();
+      const input = $('#buscador');
+      if (input) input.value = q;
+      estado.busqueda = q;
+      $('#buscador-limpiar').classList.remove('oculto');
+      estado.mostrados = CONFIG.porPagina;
+      if (!estado.vistas.todos) {
+        mostrarCargando('Buscando en catálogo…');
+        try { await cargarVista('todos'); } catch (_) { }
+      }
+      aplicarFiltros(true);
+    });
+
+    // Filtros activos interactivos
+    $('#filtros-activos')?.addEventListener('click', (ev) => {
+      if (ev.target.id === 'btn-limpiar-activos') {
+        limpiarFiltros();
+        return;
+      }
+      const btn = ev.target.closest('[data-quitar]');
+      if (!btn) return;
+      const tipo = btn.dataset.quitar;
+      if (tipo === 'busqueda') {
+        $('#buscador').value = '';
+        estado.busqueda = '';
+        $('#buscador-limpiar').classList.add('oculto');
+      } else if (tipo === 'subcategoria') {
+        estado.subcategoria = null;
+      } else if (tipo === 'disponibles') {
+        estado.soloDisponibles = false;
+        const check = $('#solo-disponibles');
+        if (check) check.checked = false;
+      }
       estado.mostrados = CONFIG.porPagina;
       aplicarFiltros(true);
     });
@@ -421,6 +469,7 @@
     });
 
     $('#btn-carrito').addEventListener('click', () => abrirPanel(true));
+    $('#barra-canasta-btn')?.addEventListener('click', () => abrirPanel(true));
     $('#cerrar-carrito').addEventListener('click', () => abrirPanel(false));
     $('#btn-finalizar').addEventListener('click', abrirCheckout);
     $('#btn-vaciar-canasta').addEventListener('click', () => {
@@ -431,6 +480,15 @@
       renderizarCanasta();
       aplicarFiltros(false);
       toast('Canasta vaciada');
+    });
+
+    // Botón flotante para subir
+    window.addEventListener('scroll', () => {
+      const btn = $('#btn-subir');
+      if (btn) btn.classList.toggle('visible', window.scrollY > 320);
+    }, { passive: true });
+    $('#btn-subir')?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     $('#cerrar-checkout').addEventListener('click', () => cerrarModal('#modal-checkout'));
@@ -495,8 +553,24 @@
   }
 
   function nombreCategoria(slug) {
+    if (!slug) return '';
+    if (slug.startsWith('kw:')) {
+      const mapa = {
+        'kw:casco': 'Cascos',
+        'kw:cubierta|camara|cámara': 'Cubiertas y Cámaras',
+        'kw:luz|faro|reflector': 'Luces y Faros',
+        'kw:freno|disco|pastilla': 'Frenos',
+        'kw:asiento|sillin|sillín': 'Asientos',
+        'kw:cadena|cambio|descarrilador': 'Cadenas y Cambios',
+        'kw:pedal': 'Pedales',
+        'kw:inflador|bomba': 'Infladores',
+        'kw:portabici|porta bici|hangon|rack|gate': 'Portabicicletas',
+        'kw:botella|caramañola': 'Caramañolas'
+      };
+      return mapa[slug] || slug.replace('kw:', '');
+    }
     const c = (estado.indice.categorias || []).find((x) => x.slug === slug);
-    return c ? c.nombre : slug;
+    return c ? c.nombre : slug.split('/').pop().replace(/-/g, ' ');
   }
 
   /* ------------------------------------------------------------------ */
@@ -509,29 +583,39 @@
     const enMotos = estado.categoria === 'motos';
     const motos = vistas.find((v) => v.slug === 'motos');
 
-    const botonModo = (modo, texto) => {
-      const activo = (modo === 'motos') === enMotos;
-      return `<button class="cat-btn cat-btn--modo" data-modo="${modo}" aria-pressed="${String(activo)}">${texto}</button>`;
-    };
+    // Segmentado principal (Bicis vs Motos)
+    const seg = $('#modo-segmentado');
+    if (seg) {
+      seg.innerHTML = `
+        <button class="modo-segmentado__btn ${!enMotos ? 'activo' : ''}" data-modo="bicis" role="tab" aria-selected="${!enMotos}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5L8.5 9h4l2.5 4.5M12 9l3-4h3"/></svg>
+          <span>Bicicletas y Accesorios</span>
+        </button>
+        <button class="modo-segmentado__btn ${enMotos ? 'activo' : ''}" data-modo="motos" role="tab" aria-selected="${enMotos}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="16" r="3"/><circle cx="19" cy="16" r="3"/><path d="M12 16h-3l2-7h4l2 4h2M14 9l1-3h3M9 12h5"/></svg>
+          <span>Motos y Repuestos</span>
+        </button>`;
+    }
 
     let opciones = '';
     if (enMotos && motos) {
       const activo = estado.subcategoria;
-      opciones = `<button class="cat-btn" data-cat="motos" data-sub="" aria-pressed="${String(!activo)}">Todas <span class="cat-btn__n">${motos.total}</span></button>`;
+      opciones = `<button class="cat-btn" data-cat="motos" data-sub="" aria-pressed="${String(!activo)}">Todas <span class="cat-btn__n">${motos.total.toLocaleString('es-PY')}</span></button>`;
       opciones += (motos.subcategorias || []).map((slug) => {
         const c = categorias.find((x) => x.slug === slug);
         const activoSub = activo === slug;
-        return `<button class="cat-btn" data-cat="motos" data-sub="${esc(slug)}" aria-pressed="${String(activoSub)}">${esc(c ? c.nombre : slug)}${c ? ` <span class="cat-btn__n">${c.total}</span>` : ''}</button>`;
+        return `<button class="cat-btn" data-cat="motos" data-sub="${esc(slug)}" aria-pressed="${String(activoSub)}">${esc(c ? c.nombre : slug)}${c ? ` <span class="cat-btn__n">${c.total.toLocaleString('es-PY')}</span>` : ''}</button>`;
       }).join('');
     } else {
       opciones = vistas.filter((v) => v.slug !== 'motos').map((v) => `
         <button class="cat-btn ${v.slug === 'ofertas' ? 'cat-btn--oferta' : ''}"
                 data-cat="${v.slug}" aria-pressed="${String(v.slug === estado.categoria)}">
-          ${esc(v.nombre)}${v.slug !== 'todos' ? ` <span class="cat-btn__n">${v.total}</span>` : ''}
+          ${v.slug === 'ofertas' ? '🔥 ' : ''}${esc(v.nombre)}${v.slug !== 'todos' ? ` <span class="cat-btn__n">${v.total.toLocaleString('es-PY')}</span>` : ''}
         </button>`).join('');
     }
 
-    $('#categorias').innerHTML = `${botonModo('bicis', 'Bicicletas')}${botonModo('motos', 'Motos')}<span class="cat-sep" aria-hidden="true"></span>${opciones}`;
+    const catEl = $('#categorias');
+    if (catEl) catEl.innerHTML = opciones;
   }
 
   async function cambiarModo(modo, subcategoria = null) {
@@ -610,7 +694,14 @@
     const tokens = normalizar(estado.busqueda).split(/\s+/).filter(Boolean);
     let lista = productosBase();
     if (tokens.length) lista = lista.filter((p) => coincideBusqueda(p, tokens));
-    if (estado.subcategoria) lista = lista.filter((p) => p.c.includes(estado.subcategoria));
+    if (estado.subcategoria) {
+      if (estado.subcategoria.startsWith('kw:')) {
+        const rx = new RegExp(estado.subcategoria.slice(3), 'i');
+        lista = lista.filter((p) => rx.test(p.n));
+      } else {
+        lista = lista.filter((p) => p.c.includes(estado.subcategoria));
+      }
+    }
     if (estado.soloDisponibles) lista = lista.filter((p) => p.e !== 1);
     return lista;
   }
@@ -655,11 +746,11 @@
     const lista = ordenar(filtrar());
     estado.resultados = lista;
     if (reset) {
-      estado.paginaActual = 1;
       estado.mostrados = CONFIG.porPagina;
     }
     actualizarTitulo(lista.length);
     actualizarSubcategorias();
+    actualizarFiltrosActivos();
     renderizarGrilla();
   }
 
@@ -682,29 +773,109 @@
     $('#subtitulo-seccion').textContent = partes.join(' · ');
   }
 
+  function actualizarFiltrosActivos() {
+    const cont = $('#filtros-activos');
+    if (!cont) return;
+    const chips = [];
+    if (estado.busqueda) {
+      chips.push(`
+        <span class="filtro-tag">
+          <span>Búsqueda: <strong>“${esc(estado.busqueda)}”</strong></span>
+          <button class="filtro-tag__quitar" data-quitar="busqueda" aria-label="Quitar filtro de búsqueda">×</button>
+        </span>`);
+    }
+    if (estado.subcategoria) {
+      chips.push(`
+        <span class="filtro-tag">
+          <span>Subcategoría: <strong>${esc(nombreCategoria(estado.subcategoria))}</strong></span>
+          <button class="filtro-tag__quitar" data-quitar="subcategoria" aria-label="Quitar subcategoría">×</button>
+        </span>`);
+    }
+    if (estado.soloDisponibles) {
+      chips.push(`
+        <span class="filtro-tag">
+          <span>Solo con stock</span>
+          <button class="filtro-tag__quitar" data-quitar="disponibles" aria-label="Quitar filtro de solo disponibles">×</button>
+        </span>`);
+    }
+
+    if (chips.length > 0) {
+      cont.classList.add('visible');
+      cont.innerHTML = `
+        <span class="filtros-activos__etiqueta">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+          Filtros:
+        </span>
+        ${chips.join('')}
+        <button class="filtros-activos__limpiar" id="btn-limpiar-activos" type="button">Limpiar todos</button>`;
+    } else {
+      cont.classList.remove('visible');
+      cont.innerHTML = '';
+    }
+  }
+
+  const ACCESORIOS_SUBCATS = [
+    { slug: 'kw:casco', nombre: 'Cascos' },
+    { slug: 'kw:cubierta|camara|cámara', nombre: 'Cubiertas y Cámaras' },
+    { slug: 'kw:luz|faro|reflector', nombre: 'Luces' },
+    { slug: 'kw:freno|disco|pastilla', nombre: 'Frenos' },
+    { slug: 'kw:asiento|sillin|sillín', nombre: 'Asientos' },
+    { slug: 'kw:cadena|cambio|descarrilador', nombre: 'Cadenas y Cambios' },
+    { slug: 'kw:pedal', nombre: 'Pedales' },
+    { slug: 'kw:inflador|bomba', nombre: 'Infladores' },
+    { slug: 'kw:portabici|porta bici|hangon|rack|gate', nombre: 'Portabicicletas' },
+    { slug: 'kw:botella|caramañola', nombre: 'Caramañolas' },
+  ];
+
   function actualizarSubcategorias() {
     const cont = $('#subcategorias');
+    if (!cont) return;
     const vista = vistaActual();
     if (estado.categoria === 'motos') {
       cont.classList.remove('visible');
       cont.innerHTML = '';
       return;
     }
-    const hijas = (vista && vista.subcategorias) ? vista.subcategorias : [];
-    if (hijas.length <= 1) {
+
+    let items = [];
+    if (estado.categoria === 'accesorios') {
+      const prods = estado.vistas.accesorios || [];
+      items = ACCESORIOS_SUBCATS.map((sub) => {
+        const rx = new RegExp(sub.slug.slice(3), 'i');
+        const count = prods.filter((p) => rx.test(p.n)).length;
+        return { slug: sub.slug, nombre: sub.nombre, total: count };
+      }).filter((x) => x.total > 0);
+    } else {
+      const hijas = (vista && vista.subcategorias) ? vista.subcategorias : [];
+      if (hijas.length <= 1) {
+        cont.classList.remove('visible');
+        cont.innerHTML = '';
+        return;
+      }
+      items = hijas.map((slug) => {
+        const c = (estado.indice.categorias || []).find((x) => x.slug === slug);
+        return {
+          slug,
+          nombre: c ? c.nombre : slug.split('/').pop().replace(/-/g, ' '),
+          total: c ? c.total : ''
+        };
+      });
+    }
+
+    if (items.length <= 0) {
       cont.classList.remove('visible');
       cont.innerHTML = '';
       return;
     }
+
     cont.classList.add('visible');
     cont.innerHTML = `
       <button class="sub-btn" data-sub="" aria-pressed="${String(estado.subcategoria === null)}">Todas</button>
-      ${hijas.map((slug) => {
-        const c = (estado.indice.categorias || []).find((x) => x.slug === slug);
-        return `<button class="sub-btn" data-sub="${esc(slug)}" aria-pressed="${String(estado.subcategoria === slug)}">
-          ${esc(c ? c.nombre : slug)} <span class="n">${c ? c.total : ''}</span>
-        </button>`;
-      }).join('')}`;
+      ${items.map((sub) => `
+        <button class="sub-btn" data-sub="${esc(sub.slug)}" aria-pressed="${String(estado.subcategoria === sub.slug)}">
+          ${esc(sub.nombre)}${sub.total ? ` <span class="n">${sub.total}</span>` : ''}
+        </button>
+      `).join('')}`;
   }
 
   function renderizarGrilla() {
@@ -712,97 +883,25 @@
     const visibles = lista.slice(0, estado.mostrados);
     ocultarCargando();
 
-    // Skeleton view durante la primera carga
-    $('#skeleton-view').classList.add('oculto');
-
-    const usarPaginacion = !estado.busqueda;
     const grilla = $('#grilla');
     const masContenedor = $('#mas-contenedor');
-    const pagination = $('#pagination');
 
     $('#vacio').classList.toggle('oculto', lista.length > 0);
 
-    if (usarPaginacion) {
-      // Modo paginación numerada (sin filtros)
-      const inicio = (estado.paginaActual - 1) * estado.productosPorPagina;
-      const fin = inicio + estado.productosPorPagina;
-      const visibles = lista.slice(inicio, fin);
-      grilla.innerHTML = visibles.map(tarjetaHTML).join('');
-      masContenedor.classList.add('oculto');
-      pagination.classList.remove('oculto');
-      actualizarPaginacion(lista.length);
-    } else {
-      // Modo "ver más" (con búsqueda o filtros)
-      const visibles = lista.slice(0, estado.mostrados);
-      grilla.innerHTML = visibles.map(tarjetaHTML).join('');
-      masContenedor.classList.toggle('oculto', visibles.length >= lista.length);
-      pagination.classList.add('oculto');
-      const restantes = Math.max(0, lista.length - visibles.length);
-      $('#btn-mas').textContent = `Ver más productos (${Math.min(CONFIG.porPagina, restantes)})`;
+    // Modo "ver más"
+    grilla.innerHTML = visibles.map(tarjetaHTML).join('');
+    masContenedor.classList.toggle('oculto', visibles.length >= lista.length);
+    const restantes = Math.max(0, lista.length - visibles.length);
+    $('#btn-mas').textContent = `Ver más productos (${Math.min(CONFIG.porPagina, restantes)})`;
+
+    // Progreso
+    const progresoTexto = $('#progreso-texto');
+    const progresoRelleno = $('#barra-progreso-relleno');
+    if (progresoTexto && progresoRelleno) {
+      progresoTexto.innerHTML = `Mostrando <strong>${visibles.length}</strong> de <strong>${lista.length.toLocaleString('es-PY')}</strong> productos`;
+      const pct = Math.min(100, Math.round((visibles.length / Math.max(1, lista.length)) * 100));
+      progresoRelleno.style.width = `${pct}%`;
     }
-  }
-
-  function actualizarPaginacion(total) {
-    const nav = $('#pagination');
-    const lista = $('#pagination-lista');
-    if (!nav || !lista) return;
-
-    const numPaginas = Math.ceil(total / estado.productosPorPagina);
-    if (numPaginas <= 1) {
-      nav.classList.add('oculto');
-      return;
-    }
-
-    nav.classList.remove('oculto');
-    let html = '';
-
-    // Botón Anterior
-    if (estado.paginaActual > 1) {
-      html += `<li><button class="pagination__item pagination__item--prev" data-pagina="${estado.paginaActual - 1}" aria-label="Página anterior">«</button></li>`;
-    }
-
-    // Lógica de paginación con puntos suspensivos
-    const delta = 2;
-    const rango = [];
-    for (let i = Math.max(2, estado.paginaActual - delta); i <= Math.min(numPaginas - 1, estado.paginaActual + delta); i++) {
-      rango.push(i);
-    }
-
-    // Primera página
-    if (estado.paginaActual - delta > 2) {
-      html += `<li><button class="pagination__item" data-pagina="1" ${estado.paginaActual === 1 ? 'aria-current="page"' : ''}>1</button></li><li><span class="pagination__item" aria-hidden="true">...</span></li>`;
-    } else {
-      html += `<li><button class="pagination__item" data-pagina="1" ${estado.paginaActual === 1 ? 'aria-current="page"' : ''}>1</button></li>`;
-    }
-
-    // Páginas del rango
-    rango.forEach(i => {
-      html += `<li><button class="pagination__item" data-pagina="${i}" ${estado.paginaActual === i ? 'aria-current="page"' : ''}>${i}</button></li>`;
-    });
-
-    // Últimas páginas
-    if (estado.paginaActual + delta < numPaginas - 1) {
-      html += `<li><span class="pagination__item" aria-hidden="true">...</span></li><li><button class="pagination__item" data-pagina="${numPaginas}" ${estado.paginaActual === numPaginas ? 'aria-current="page"' : ''}>${numPaginas}</button></li>`;
-    } else if (numPaginas > 1) {
-      html += `<li><button class="pagination__item" data-pagina="${numPaginas}" ${estado.paginaActual === numPaginas ? 'aria-current="page"' : ''}>${numPaginas}</button></li>`;
-    }
-
-    // Botón Siguiente
-    if (estado.paginaActual < numPaginas) {
-      html += `<li><button class="pagination__item pagination__item--next" data-pagina="${estado.paginaActual + 1}" aria-label="Página siguiente">»</button></li>`;
-    }
-
-    lista.innerHTML = html;
-
-    // Event listeners para la paginación
-    lista.querySelectorAll('button[data-pagina]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        estado.paginaActual = parseInt(btn.dataset.pagina);
-        const titulo = $('#titulo-seccion');
-        window.scrollTo({ top: titulo.offsetTop - 130, behavior: 'smooth' });
-        renderizarGrilla();
-      });
-    });
   }
 
   function tarjetaHTML(p) {
@@ -821,7 +920,8 @@
       : `<button class="card__btn card__btn--consultar" data-accion="consultar">Consultar precio</button>`;
 
     return `
-      <article class="card" data-id="${esc(p.i)}">
+      <article class="card ${enCanasta ? 'card--en-canasta' : ''}" data-id="${esc(p.i)}">
+        ${enCanasta ? `<span class="card__badge-canasta" aria-label="En tu canasta">✓ En canasta (${enCanasta.q})</span>` : ''}
         <div class="card__foto" data-accion="ver">
           <img src="${img}" alt="${esc(p.n)}${p.m ? ' — ' + esc(p.m) : ''} · Jaka Bicicletería, Capiatá" loading="lazy" decoding="async" width="300" height="300" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
           ${CONFIG.mostrarDescuento && desc >= 5 ? `<span class="card__off">-${desc}%</span>` : ''}
@@ -829,11 +929,11 @@
             ? '<span class="card__estado card__estado--agotado">Sin stock</span>'
             : (p.sc
               ? '<span class="card__estado card__estado--consultar">Stock a confirmar</span>'
-              : (conPrecio(p) ? '' : `<span class="card__estado card__estado--consultar">${est.texto}</span>`))}
+              : (conPrecio(p) ? '<span class="card__estado">✓ En stock</span>' : `<span class="card__estado card__estado--consultar">${est.texto}</span>`))}
         </div>
         <div class="card__info">
           <span class="card__marca">${esc(p.m) || '&nbsp;'}</span>
-          <h3 class="card__nombre" data-accion="ver">${esc(p.n)}</h3>
+          <h3 class="card__nombre" data-accion="ver" title="${esc(p.n)}">${esc(p.n)}</h3>
           <div class="card__precios">
             ${CONFIG.mostrarPrecioAnterior && p.o && p.p ? `<span class="card__antes">${fmt(precioListaVenta(p))}</span>` : ''}
             ${conPrecio(p) ? `<span class="card__ahora">${fmt(precioVenta(p))}</span>` : '<span class="card__sinprecio">Precio a consultar</span>'}
@@ -907,6 +1007,21 @@
     const cont = $('.card__acciones', card);
     const linea = lineaDe(id);
     if (!cont || !producto) return;
+
+    card.classList.toggle('card--en-canasta', !!linea);
+    let badge = $('.card__badge-canasta', card);
+    if (linea) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'card__badge-canasta';
+        badge.setAttribute('aria-label', 'En tu canasta');
+        card.insertBefore(badge, card.firstChild);
+      }
+      badge.textContent = `✓ En canasta (${linea.q})`;
+    } else if (badge) {
+      badge.remove();
+    }
+
     const waBtn = cont.querySelector('.card__btn--wa');
     const nuevo = document.createElement('div');
     nuevo.innerHTML = linea
@@ -923,8 +1038,23 @@
   function actualizarContadorCanasta() {
     const total = estado.canasta.reduce((acc, l) => acc + l.q, 0);
     const el = $('#carrito-contador');
-    el.textContent = total;
-    el.style.background = total > 0 ? 'var(--verde)' : '#94a3b8';
+    if (el) {
+      el.textContent = total;
+      el.style.background = total > 0 ? 'var(--verde)' : '#94a3b8';
+    }
+
+    const barraMovil = $('#barra-canasta-movil');
+    if (barraMovil) {
+      if (total > 0) {
+        barraMovil.classList.add('visible');
+        const cantEl = $('#barra-canasta-cant');
+        const montoEl = $('#barra-canasta-monto');
+        if (cantEl) cantEl.textContent = `${total} ${total === 1 ? 'producto' : 'productos'}`;
+        if (montoEl) montoEl.textContent = fmt(totalCanasta());
+      } else {
+        barraMovil.classList.remove('visible');
+      }
+    }
   }
 
   function renderizarCanasta() {
@@ -1250,7 +1380,7 @@
     const estadoEl = $('#checkout-estado');
     const ventana = window.open(url, '_blank');
     if (!ventana) {
-      estadoEl.innerHTML = `Se bloqueó la ventana de WhatsApp. <a href=”${esc(url)}” target=”_blank” rel=”noopener noreferrer”><strong>Tocá acá para abrir el pedido</strong></a> o usá “Copiar pedido”.`;
+      estadoEl.innerHTML = `Se bloqueó la ventana de WhatsApp. <a href="${esc(url)}" target="_blank" rel="noopener noreferrer"><strong>Tocá acá para abrir el pedido</strong></a> o usá "Copiar pedido".`;
     } else {
       estadoEl.textContent = 'Se abrió WhatsApp con tu pedido. Enviá el mensaje para confirmarlo.';
     }
@@ -1316,6 +1446,20 @@
     $('#producto-titulo').textContent = 'Detalle del producto';
     $('#producto-contenido').innerHTML = productoHTML(p);
     renderizarBotonProducto(p.i);
+
+    $('#btn-compartir-producto')?.addEventListener('click', () => {
+      const enlace = `${location.origin}${location.pathname}?p=${encodeURIComponent(p.s || p.i)}`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(enlace).then(() => {
+          toast('¡Enlace del producto copiado!');
+        }).catch(() => {
+          toast('Enlace: ' + enlace);
+        });
+      } else {
+        toast('Enlace: ' + enlace);
+      }
+    });
+
     const modal = $('#modal-producto');
     modal.classList.add('abierto');
     modal.setAttribute('aria-hidden', 'false');
@@ -1341,9 +1485,18 @@
         <div class="producto-meta">
           <span class="pill ${p.e === 1 ? 'pill--no' : (conPrecio(p) ? 'pill--ok' : 'pill--consultar')}">${est.texto}</span>
           ${p.s ? `<span class="pill">SKU: ${esc(p.s)}</span>` : ''}
-          ${p.c[0] ? `<span class="pill">${esc(nombreCategoria(p.c[0]))}</span>` : ''}
+          ${p.c && p.c[0] ? `<span class="pill">${esc(nombreCategoria(p.c[0]))}</span>` : ''}
+        </div>
+        <div class="producto-confianza">
+          <div class="producto-confianza__item"><span>🚚</span> <span>Envíos a todo el país coordinados por WhatsApp</span></div>
+          <div class="producto-confianza__item"><span>🏪</span> <span>Retiro disponible en nuestro local en Capiatá</span></div>
+          <div class="producto-confianza__item"><span>💬</span> <span>Asesoramiento y soporte técnico directo</span></div>
         </div>
         <div class="producto-acciones" id="producto-acciones"></div>
+        <button type="button" class="producto-compartir" id="btn-compartir-producto">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Copiar y compartir enlace
+        </button>
       </div>`;
   }
 
