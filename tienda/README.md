@@ -380,8 +380,11 @@ python tienda\build_catalogo.py     # genera bicis + llama a build_motos.py al f
 - Los productos se muestran todos (también los que puedan estar sin stock), igual que las bicicletas.
 - Las imágenes se sirven desde el CDN de Chacomer (`imagenBaseMotos` en `config.js`).
 
-### Automatización pendiente
+### Automatización
 
-El workflow diario todavía no ejecuta `scraper_chacomer.py` (requiere permiso `workflow` en GitHub). Mientras
-tanto, la sección queda publicada con los datos de la última corrida; para actualizarla se corre el scraper y
-se hace push, o se agrega el paso al workflow cuando esté el permiso.
+El workflow diario (06:00 Paraguay) ejecuta `tienda/build_catalogo.py`; ese script detecta que corre en GitHub
+Actions (`GITHUB_ACTIONS=true`) y **lanza automáticamente** `poc/scraper_chacomer.py --force` antes de armar el
+catálogo. Si el scraping de motos falla, la tienda se publica igual con los datos de motos anteriores.
+
+En la PC no se dispara solo: `tienda/actualizar.ps1` ya incluye el paso de motos, o se puede correr a mano:
+`python poc\scraper_chacomer.py --force` y después `python tienda\build_catalogo.py`.

@@ -21,7 +21,10 @@ from __future__ import annotations
 import csv
 import html
 import json
+import os
 import re
+import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -246,7 +249,32 @@ def escribir_json(ruta: Path, datos) -> int:
     return len(texto.encode("utf-8"))
 
 
+def scrapear_motos_si_corresponde() -> None:
+    """En GitHub Actions se actualiza también el catálogo de motos.
+
+    El workflow diario solo ejecuta este script, así que el scraping de Chacomer
+    se lanza desde acá (si falla, se sigue con los datos de motos ya publicados).
+    """
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        return
+    scraper = RAIZ / "poc" / "scraper_chacomer.py"
+    if not scraper.exists():
+        return
+    print("\n== Motos: actualizando catálogo de Chacomer ==")
+    try:
+        codigo = subprocess.call(
+            [sys.executable, str(scraper), "--force", "--max-peticiones", "1600"],
+            timeout=3600,
+        )
+        if codigo != 0:
+            print(f"   (motos: el scraper terminó con código {codigo}; se usan los datos anteriores)")
+    except Exception as exc:  # noqa: BLE001
+        print(f"   (motos: no se pudo actualizar -> {exc}; se usan los datos anteriores)")
+
+
 def main() -> None:
+    scrapear_motos_si_corresponde()
+
     if not ENTRADA_PRODUCTOS.exists():
         raise SystemExit(f"No encuentro {ENTRADA_PRODUCTOS}. Corré primero el scraper del PoC.")
 
