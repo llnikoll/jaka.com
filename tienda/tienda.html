@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es-PY">
 <head>
 <meta charset="utf-8">
@@ -41,9 +41,9 @@
 <link rel="preconnect" href="https://www.chacomer.com.py" crossorigin>
 <link rel="dns-prefetch" href="https://www.ciclovia.com.py">
 <link rel="dns-prefetch" href="https://www.chacomer.com.py">
-<link rel="preload" as="style" href="assets/estilos.css">
+<link rel="preload" as="style" href="assets/estilos.css?v=20261116">
 <link rel="preload" as="fetch" crossorigin href="data/indice.json">
-<link rel="preload" as="script" href="assets/app.js">
+<link rel="preload" as="script" href="assets/app.js?v=20261116">
 
 <!-- Geolocalización (SEO local) -->
 <meta name="geo.region" content="PY-11">
@@ -56,7 +56,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="shortcut icon" href="assets/favicon.ico">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="assets/estilos.css">
+<link rel="stylesheet" href="assets/estilos.css?v=20261116">
 <link rel="preload" href="data/indice.json" as="fetch" crossorigin>
 
 <!-- Datos estructurados: negocio local (BikeStore) -->
@@ -443,17 +443,19 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
 <!-- ================= Aviso flotante ================= -->
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="assets/config.js"></script>
-<script src="assets/app.js"></script>
+<script src="assets/config.js?v=20261116"></script>
+<script src="assets/app.js?v=20261116"></script>
 
 <!-- Service Worker para PWA -->
 <script>
+// Limpieza: quita service workers viejos que dejaban la tienda "Cargando..." con archivos en caché
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log('Service Worker registrado:', reg.scope))
-      .catch(err => console.warn('Service Worker falló:', err));
-  });
+  navigator.serviceWorker.getRegistrations()
+    .then(function (regs) { regs.forEach(function (r) { r.unregister(); }); })
+    .catch(function () {});
+}
+if (window.caches && caches.keys) {
+  caches.keys().then(function (claves) { claves.forEach(function (k) { caches.delete(k); }); }).catch(function () {});
 }
 </script>
 </body>

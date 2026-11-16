@@ -46,7 +46,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="shortcut icon" href="assets/favicon.ico">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="assets/estilos.css">
+<link rel="stylesheet" href="assets/estilos.css?v=20261116">
 <link rel="preconnect" href="https://www.ciclovia.com.py" crossorigin>
 <link rel="preconnect" href="https://www.chacomer.com.py" crossorigin>
 <link rel="dns-prefetch" href="https://www.ciclovia.com.py">
@@ -382,16 +382,14 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
 
 <!-- Service Worker para PWA -->
 <script>
+// Limpieza: quita service workers viejos que dejaban la tienda "Cargando..." con archivos en caché
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then((registration) => {
-        console.log('SW registrado:', registration.scope);
-      })
-      .catch((error) => {
-        console.log('Error al registrar SW:', error);
-      });
-  });
+  navigator.serviceWorker.getRegistrations()
+    .then(function (regs) { regs.forEach(function (r) { r.unregister(); }); })
+    .catch(function () {});
+}
+if (window.caches && caches.keys) {
+  caches.keys().then(function (claves) { claves.forEach(function (k) { caches.delete(k); }); }).catch(function () {});
 }
 </script>
 <button class="btn-subir" id="btn-subir" aria-label="Volver arriba" title="Volver arriba">
