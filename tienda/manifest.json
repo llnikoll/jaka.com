@@ -1,0 +1,52 @@
+{
+  "name": "Jaka Bicicletería - Catálogo",
+  "short_name": "Jaka Bicicletería",
+  "description": "Catálogo de bicicletas, motos, repuestos y accesorios en Capiatá, Paraguay. 15.800+ productos actualizados diariamente. Pedidos por WhatsApp.",
+  "start_url": "/tienda.html",
+  "display": "standalone",
+  "background_color": "#f6f7f9",
+  "theme_color": "#00a758",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es-PY",
+  "icons": [
+    {
+      "src": "assets/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "lifestyle", "automotive"],
+  "shortcuts": [
+    {
+      "name": "Ver Bicicletas",
+      "short_name": "Bicicletas",
+      "description": "Catálogo de bicicletas, repuestos y accesorios",
+      "url": "/tienda.html?seccion=bicis",
+      "icons": [{ "src": "assets/jaka-icono.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Ver Motos",
+      "short_name": "Motos",
+      "description": "Catálogo de motos, repuestos y accesorios",
+      "url": "/tienda.html?seccion=motos",
+      "icons": [{ "src": "assets/jaka-icono.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Contactar por WhatsApp",
+      "short_name": "WhatsApp",
+      "description": "Escribinos por WhatsApp",
+      "url": "https://wa.me/595993539237?text=Hola!%20Quiero%20hacer%20una%20consulta.",
+      "icons": [{ "src": "assets/jaka-icono.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}

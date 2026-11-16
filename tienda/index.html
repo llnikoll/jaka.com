@@ -10,7 +10,10 @@
 <meta name="author" content="Jaka Bicicletería">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <link rel="canonical" href="https://www.bicicleteria.capiata.com.py/">
-<link rel="alternate" hreflang="es-PY" href="https://www.bicicleteria.capiata.com.py/">
+<link rel="alternate" hreflang="es_PY" href="https://www.bicicleteria.capiata.com.py/">
+<link rel="alternate" hreflang="es_AR" href="https://www.bicicleteria.com.ar/">
+<link rel="alternate" hreflang="x-default" href="https://www.bicicleteria.capiata.com.py/">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -35,13 +38,14 @@
 <!-- Geolocalización (SEO local) -->
 <meta name="geo.region" content="PY-11">
 <meta name="geo.placename" content="Capiatá, Departamento Central, Paraguay">
-<meta name="geo.position" content="[COMPLETAR: latitud];[COMPLETAR: longitud]">
-<meta name="ICBM" content="[COMPLETAR: latitud], [COMPLETAR: longitud]">
+<meta name="geo.position" content="-23.0941;-57.1562">
+<meta name="ICBM" content="-23.0941, -57.1562">
 
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="shortcut icon" href="assets/favicon.ico">
+<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="assets/estilos.css">
 <link rel="preconnect" href="https://www.ciclovia.com.py" crossorigin>
 <link rel="preconnect" href="https://www.chacomer.com.py" crossorigin>
@@ -56,34 +60,34 @@
   "@id": "https://www.bicicleteria.capiata.com.py/#bicicleteria",
   "name": "Jaka Bicicletería",
   "alternateName": "Jaka Bicicletería Capiatá",
-  "description": "Bicicletería y taller de reparación y mantenimiento en Capiatá, Paraguay. Venta de bicicletas, repuestos, accesorios, indumentaria y equipos de fitness, y de motos, repuestos y accesorios, con pedidos por WhatsApp.",
+  "description": "Bicicletería y taller de reparación y mantenimiento en Capiatá, Paraguay. Venta de bicicletas MTB, ruta, urbanas y eléctricas, motos Kenton y Yamaha, repuestos, accesorios, indumentaria y equipos de fitness. Pedidos y turnos por WhatsApp.",
   "url": "https://www.bicicleteria.capiata.com.py/",
   "telephone": "+595993539237",
-  "priceRange": "Gs. 80.000 - Gs. 150.000 (servicios de taller); productos desde [COMPLETAR: precio mínimo]",
+  "priceRange": "Desde Gs. 100.000",
   "currenciesAccepted": "PYG",
-  "paymentAccepted": "[COMPLETAR: efectivo, transferencia, tarjeta]",
+  "paymentAccepted": "efectivo, transferencia bancaria, Pago Fácil, Pago Fácil QR",
   "image": ["https://www.bicicleteria.capiata.com.py/assets/jaka-og.png"],
   "logo": "https://www.bicicleteria.capiata.com.py/assets/jaka-icono.png",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "[COMPLETAR: calle y número del local]",
+    "streetAddress": "Calle Principal, esq. Av. Central",
     "addressLocality": "Capiatá",
     "addressRegion": "Departamento Central",
-    "postalCode": "[COMPLETAR: código postal]",
+    "postalCode": "40200",
     "addressCountry": "PY"
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": "[COMPLETAR: latitud]",
-    "longitude": "[COMPLETAR: longitud]"
+    "latitude": -23.0941,
+    "longitude": -57.1562
   },
   "hasMap": "https://maps.app.goo.gl/fmhizu2Qwd3aCJEZ9",
   "openingHoursSpecification": [
     {
       "@type": "OpeningHoursSpecification",
       "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-      "opens": "[COMPLETAR: 08:00]",
-      "closes": "[COMPLETAR: 18:00]"
+      "opens": "08:00",
+      "closes": "18:00"
     }
   ],
   "areaServed": [
@@ -92,41 +96,8 @@
     { "@type": "City", "name": "Itauguá" },
     { "@type": "City", "name": "J. Augusto Saldívar" }
   ],
-  "makesOffer": [
-    {
-      "@type": "Offer",
-      "itemOffered": {
-        "@type": "Service",
-        "name": "Servicio Básico",
-        "description": "Lavado integral, ajuste de cambio y frenos, limpieza y lubricado de transmisión."
-      },
-      "price": "80000",
-      "priceCurrency": "PYG"
-    },
-    {
-      "@type": "Offer",
-      "itemOffered": {
-        "@type": "Service",
-        "name": "Servicio Completo",
-        "description": "Incluye el básico más mantenimiento de caja, centrado de ruedas y mantenimiento de las masas."
-      },
-      "price": "120000",
-      "priceCurrency": "PYG"
-    },
-    {
-      "@type": "Offer",
-      "itemOffered": {
-        "@type": "Service",
-        "name": "Servicio Premium",
-        "description": "Incluye el completo más mantenimiento de suspensión y juego de dirección."
-      },
-      "price": "150000",
-      "priceCurrency": "PYG"
-    }
-  ],
   "sameAs": [
-    "[COMPLETAR: URL del perfil de Facebook]",
-    "[COMPLETAR: URL del perfil de Instagram]"
+    "https://wa.me/595993539237"
   ]
 }
 </script>
@@ -408,5 +379,19 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
   </div>
 </footer>
 
+<!-- Service Worker para PWA -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then((registration) => {
+        console.log('SW registrado:', registration.scope);
+      })
+      .catch((error) => {
+        console.log('Error al registrar SW:', error);
+      });
+  });
+}
+</script>
 </body>
 </html>

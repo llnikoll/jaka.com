@@ -55,7 +55,10 @@
     canasta: [],
     ubicacion: null,
     productoAbierto: null,
-    demo: new URLSearchParams(location.search).has('demo')
+    demo: new URLSearchParams(location.search).has('demo'),
+    // Pagination
+    paginaActual: 1,
+    productosPorPagina: CONFIG.porPagina
   };
 
   /* ------------------------------------------------------------------ */
@@ -309,11 +312,24 @@
   function mostrarCargando(texto) {
     const caja = $('#estado-carga');
     caja.classList.remove('oculto');
+    // Mostrar skeleton view mientras carga
+    if ($('#skeleton-view')) {
+      $('#skeleton-view').classList.remove('oculto');
+      $('#skeleton-view').setAttribute('aria-busy', 'true');
+      $('#grilla').classList.add('oculto');
+      $('#pagination').classList.add('oculto');
+    }
     caja.innerHTML = `<div class="spinner" aria-hidden="true"></div><p>${esc(texto)}</p>`;
   }
 
   function ocultarCargando() {
     $('#estado-carga').classList.add('oculto');
+    // Ocultar skeleton view cuando termine la carga
+    if ($('#skeleton-view')) {
+      $('#skeleton-view').classList.add('oculto');
+      $('#skeleton-view').setAttribute('aria-busy', 'false');
+      $('#grilla').classList.remove('oculto');
+    }
   }
 
   /* ------------------------------------------------------------------ */
@@ -460,7 +476,7 @@
         <ul class="plan__lista">
           ${(plan.items || []).map((item) => `<li>${esc(item)}</li>`).join('')}
         </ul>
-        <a class="btn btn--wa plan__cta" target="_blank" rel="noopener"
+        <a class="btn btn--wa plan__cta" target="_blank" rel="noopener noreferrer"
            href="${esc(linkWhatsApp(`Hola! Quiero reservar un turno de *Servicio ${plan.nombre}* (${fmt(plan.precio)}). ¿Qué días tienen disponibles?`))}">
           Reservar por WhatsApp
         </a>
@@ -638,7 +654,10 @@
   function aplicarFiltros(reset) {
     const lista = ordenar(filtrar());
     estado.resultados = lista;
-    if (reset) estado.mostrados = CONFIG.porPagina;
+    if (reset) {
+      estado.paginaActual = 1;
+      estado.mostrados = CONFIG.porPagina;
+    }
     actualizarTitulo(lista.length);
     actualizarSubcategorias();
     renderizarGrilla();
@@ -692,11 +711,113 @@
     const lista = estado.resultados || [];
     const visibles = lista.slice(0, estado.mostrados);
     ocultarCargando();
+
+    // Skeleton view durante la primera carga
+    $('#skeleton-view').classList.add('oculto');
+
+    const usarPaginacion = !estado.busqueda;
+    const grilla = $('#grilla');
+    const masContenedor = $('#mas-contenedor');
+    const pagination = $('#pagination');
+
     $('#vacio').classList.toggle('oculto', lista.length > 0);
-    $('#mas-contenedor').classList.toggle('oculto', visibles.length >= lista.length);
-    $('#grilla').innerHTML = visibles.map(tarjetaHTML).join('');
-    const restantes = Math.max(0, lista.length - visibles.length);
-    $('#btn-mas').textContent = `Ver más productos (${Math.min(CONFIG.porPagina, restantes)})`;
+
+    if (usarPaginacion) {
+      // Modo paginación numerada (sin filtros)
+      const inicio = (estado.paginaActual - 1) * estado.productosPorPagina;
+      const fin = inicio + estado.productosPorPagina;
+      const visibles = lista.slice(inicio, fin);
+      grilla.innerHTML = visibles.map(tarjetaHTML).join('');
+      masContenedor.classList.add('oculto');
+      pagination.classList.remove('oculto');
+      actualizarPaginacion(lista.length);
+    } else {
+      // Modo "ver más" (con búsqueda o filtros)
+      const visibles = lista.slice(0, estado.mostrados);
+      grilla.innerHTML = visibles.map(tarjetaHTML).join('');
+      masContenedor.classList.toggle('oculto', visibles.length >= lista.length);
+      pagination.classList.add('oculto');
+      const restantes = Math.max(0, lista.length - visibles.length);
+      $('#btn-mas').textContent = `Ver más productos (${Math.min(CONFIG.porPagina, restantes)})`;
+    }
+  }
+
+  function actualizarPaginacion(total) {
+    const nav = $('#pagination');
+    const lista = $('#pagination-lista');
+    if (!nav || !lista) return;
+
+    const numPaginas = Math.ceil(total / estado.productosPorPagina);
+    if (numPaginas <= 1) {
+      nav.classList.add('oculto');
+      return;
+    }
+
+    nav.classList.remove('oculto');
+    let html = '';
+
+    // Botón Anterior
+    if (estado.paginaActual > 1) {
+      html += `<li><button class="pagination__item pagination__item--prev" data-pagina="${estado.paginaActual - 1}" aria-label="Página anterior">«</button></li>`;
+    }
+
+    // Lógica de paginación con puntos suspensivos
+    const delta = 2;
+    const rango = [];
+    for (let i = Math.max(2, estado.paginaActual - delta); i <= Math.min(numPaginas - 1, estado.paginaActual + delta); i++) {
+      rango.push(i);
+    }
+
+    // Primera página
+    if (estado.paginaActual - delta > 2) {
+      html += `<li><button class="pagination__item" data-pagina="1" ${estado.paginaActual === 1 ? 'aria-current="page"' : ''}>1</button></li><li><span class="pagination__item" aria-hidden="true">...</span></li>`;
+    } else {
+      html += `<li><button class="pagination__item" data-pagina="1" ${estado.paginaActual === 1 ? 'aria-current="page"' : ''}>1</button></li>`;
+    }
+
+    // Páginas del rango
+    rango.forEach(i => {
+      html += `<li><button class="pagination__item" data-pagina="${i}" ${estado.paginaActual === i ? 'aria-current="page"' : ''}>${i}</button></li>`;
+    });
+
+    // Últimas páginas
+    if (estado.paginaActual + delta < numPaginas - 1) {
+      html += `<li><span class="pagination__item" aria-hidden="true">...</span></li><li><button class="pagination__item" data-pagina="${numPaginas}" ${estado.paginaActual === numPaginas ? 'aria-current="page"' : ''}>${numPaginas}</button></li>`;
+    } else if (numPaginas > 1) {
+      html += `<li><button class="pagination__item" data-pagina="${numPaginas}" ${estado.paginaActual === numPaginas ? 'aria-current="page"' : ''}>${numPaginas}</button></li>`;
+    }
+
+    // Botón Siguiente
+    if (estado.paginaActual < numPaginas) {
+      html += `<li><button class="pagination__item pagination__item--next" data-pagina="${estado.paginaActual + 1}" aria-label="Página siguiente">»</button></li>`;
+    }
+
+    lista.innerHTML = html;
+
+    // Event listeners para la paginación
+    lista.querySelectorAll('button[data-pagina]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        estado.paginaActual = parseInt(btn.dataset.pagina);
+        const titulo = $('#titulo-seccion');
+        window.scrollTo({ top: titulo.offsetTop - 130, behavior: 'smooth' });
+        renderizarGrilla();
+      });
+    });
+  }
+
+  function toggleSkeleton(mostrar) {
+    const skeleton = $('#skeleton-view');
+    if (!skeleton) return;
+    if (mostrar) {
+      skeleton.classList.remove('oculto');
+      skeleton.setAttribute('aria-busy', 'true');
+      $('#grilla')?.classList.add('oculto');
+      $('#pagination')?.classList.add('oculto');
+    } else {
+      skeleton.classList.add('oculto');
+      skeleton.setAttribute('aria-busy', 'false');
+      $('#grilla')?.classList.remove('oculto');
+    }
   }
 
   function tarjetaHTML(p) {
@@ -925,17 +1046,74 @@
     modal.classList.add('abierto');
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('sin-scroll');
-    setTimeout(() => $('#nombre').focus(), 120);
+    // Focus trap
+    setTimeout(() => activarFocusTrap(modal), 120);
+    setTimeout(() => $('#nombre').focus(), 200);
   }
 
   function cerrarModal(sel) {
     const modal = $(sel);
     modal.classList.remove('abierto');
     modal.setAttribute('aria-hidden', 'true');
+    desactivarFocusTrap(modal);
     if (!$$('.modal.abierto').length && !$('#panel-carrito').classList.contains('abierto')) {
       document.body.classList.remove('sin-scroll');
     }
   }
+
+  /* ------------------------------------------------------------------ */
+  /* Focus trap para modales (accesibilidad)                           */
+  /* ------------------------------------------------------------------ */
+  function activarFocusTrap(modal) {
+    if (!modal) return;
+    modal.dataset.focusTrapped = 'true';
+    // Guardar el elemento que tenía foco
+    const trigger = modal.closest('[data-trigger], [aria-controls]')?.closest('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (trigger) {
+      modal.dataset.previousFocus = trigger.id || 'trigger-' + Math.random().toString(36).substr(2, 9);
+    }
+  }
+
+  function desactivarFocusTrap(modal) {
+    if (!modal) return;
+    delete modal.dataset.focusTrapped;
+    const previousId = modal.dataset.previousFocus;
+    if (previousId) {
+      const prev = document.getElementById(previousId.replace('trigger-', ''));
+      prev?.focus();
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Keyboard navigation para focus trap                                */
+  /* ------------------------------------------------------------------ */
+  document.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Tab') {
+      // Detectar tab en modal abierto
+      const modalAbierto = $('.modal.abierto');
+      if (!modalAbierto) return;
+
+      const focusable = modalAbierto.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (focusable.length === 0) return;
+
+      const primerElemento = focusable[0];
+      const ultimoElemento = focusable[focusable.length - 1];
+
+      if (ev.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === primerElemento) {
+          ev.preventDefault();
+          primerElemento.focus();
+        }
+      } else {
+        // Tab normal
+        if (document.activeElement === ultimoElemento) {
+          ev.preventDefault();
+          ultimoElemento.focus();
+        }
+      }
+    }
+  });
 
   function renderizarCheckout() {
     const cont = $('#checkout-lineas');
@@ -1087,7 +1265,7 @@
     const estadoEl = $('#checkout-estado');
     const ventana = window.open(url, '_blank');
     if (!ventana) {
-      estadoEl.innerHTML = `Se bloqueó la ventana de WhatsApp. <a href="${esc(url)}" target="_blank" rel="noopener"><strong>Tocá acá para abrir el pedido</strong></a> o usá “Copiar pedido”.`;
+      estadoEl.innerHTML = `Se bloqueó la ventana de WhatsApp. <a href=”${esc(url)}” target=”_blank” rel=”noopener noreferrer”><strong>Tocá acá para abrir el pedido</strong></a> o usá “Copiar pedido”.`;
     } else {
       estadoEl.textContent = 'Se abrió WhatsApp con tu pedido. Enviá el mensaje para confirmarlo.';
     }
