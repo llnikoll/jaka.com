@@ -1406,6 +1406,33 @@
   /* ------------------------------------------------------------------ */
   /* Geolocalización                                                     */
   /* ------------------------------------------------------------------ */
+  async function reverseGeocodificar(lat, lng) {
+    try {
+      const resp = await fetch(
+        `https://photon.komoot.io/reverse?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}`,
+        { cache: "no-store" }
+      );
+      if (!resp.ok) return "";
+      const datos = await resp.json();
+      const props = (datos && datos.features && datos.features[0] && datos.features[0].properties) || {};
+      const calle = [props.street || props.name, props.housenumber].filter(Boolean).join(" ");
+      const zona = props.district || props.locality || props.suburb || props.county || "";
+      const ciudad = props.city || props.town || props.village || "";
+      const vistos = new Set();
+      const partes = [calle, zona, ciudad]
+        .map((x) => (x || "").trim())
+        .filter((x) => {
+          const clave = x.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+          if (!x || vistos.has(clave)) return false;
+          vistos.add(clave);
+          return true;
+        });
+      return partes.join(", ");
+    } catch (_) {
+      return "";
+    }
+  }
+
   function pedirUbicacion() {
     if (!navigator.geolocation) {
       $('#ubicacion-estado').textContent = 'Tu navegador no permite compartir la ubicación. Escribí la dirección con referencias.';
@@ -1416,21 +1443,37 @@
     const original = boton.innerHTML;
     boton.innerHTML = 'Obteniendo ubicación…';
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        estado.ubicacion = { lat: pos.coords.latitude.toFixed(6), lng: pos.coords.longitude.toFixed(6) };
-        $('#ubicacion-estado').innerHTML = `Ubicación lista: <a href="https://www.google.com/maps?q=${estado.ubicacion.lat},${estado.ubicacion.lng}" target="_blank" rel="noopener noreferrer">ver en el mapa</a>`;
+      async (pos) => {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lng = pos.coords.longitude.toFixed(6);
+        estado.ubicacion = { lat, lng };
+        const mapa = `https://www.google.com/maps?q=${lat},${lng}`;
+        boton.innerHTML = 'Buscando la dirección…';
+        const direccion = await reverseGeocodificar(lat, lng);
+        const campo = $('#direccion');
+        if (direccion && campo && !campo.value.trim()) {
+          campo.value = direccion;
+          campo.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        estado.ubicacion.direccion = direccion || '';
+        $('#ubicacion-estado').innerHTML = direccion
+          ? `Ubicación lista: <strong>${esc(direccion)}</strong> · <a href="${mapa}" target="_blank" rel="noopener noreferrer">ver en el mapa</a>`
+          : `Ubicación lista · <a href="${mapa}" target="_blank" rel="noopener noreferrer">ver en el mapa</a>. No pudimos obtener la dirección: escribila para la entrega.`;
         boton.disabled = false;
-        boton.innerHTML = '✓ Ubicación agregada';
-        toast('Ubicación agregada al pedido');
+        boton.innerHTML = direccion ? '✓ Ubicación y dirección agregadas' : '✓ Ubicación agregada';
+        toast(direccion ? 'Ubicación y dirección agregadas' : 'Ubicación agregada');
       },
       (err) => {
         boton.disabled = false;
         boton.innerHTML = original;
-        $('#ubicacion-estado').textContent = err.code === 1
-          ? 'No nos diste permiso de ubicación. Podés escribir la dirección y una referencia.'
-          : 'No pudimos obtener la ubicación. Escribí la dirección con referencias.';
+        const mensajes = {
+          1: 'No diste permiso de ubicación. Activá “Ubicación” para este sitio en el navegador y volvé a intentar, o escribí la dirección.',
+          2: 'El GPS no está disponible en este momento. Escribí la dirección con una referencia.',
+          3: 'La ubicación tardó demasiado. Probá de nuevo o escribí la dirección.'
+        };
+        $('#ubicacion-estado').textContent = mensajes[err.code] || 'No pudimos obtener la ubicación. Escribí la dirección con referencias.';
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   }
 
