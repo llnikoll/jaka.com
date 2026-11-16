@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>listo</title></head><body style="margin:0">
+<iframe id="f" src="/" width="430" height="1200" style="border:0"></iframe>
+<pre id="res">{"ancho":415,"scrollWidth":415,"culpables":[]}</pre>
+<script>
+const f = document.getElementById('f');
+f.addEventListener('load', () => {
+  setTimeout(() => {
+    const d = f.contentDocument, w = f.contentWindow;
+    const ancho = d.documentElement.clientWidth;
+    const out = { ancho, scrollWidth: d.documentElement.scrollWidth, culpables: [] };
+    for (const el of d.querySelectorAll('*')) {
+      const r = el.getBoundingClientRect();
+      if (r.right > ancho + 1 && r.width > 0) {
+        out.culpables.push({ tag: el.tagName, cls: (el.className || '').toString().slice(0, 40), right: Math.round(r.right), w: Math.round(r.width) });
+      }
+    }
+    out.culpables = out.culpables.slice(0, 12);
+    document.getElementById('res').textContent = JSON.stringify(out);
+    document.title = 'listo';
+  }, 2500);
+});
+</script>
+</body></html>

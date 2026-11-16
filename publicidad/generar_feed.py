@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Genera el feed de productos para Meta (Facebook/Instagram) a partir del catálogo
@@ -175,7 +175,7 @@ def main() -> None:
             "availability": "out of stock" if p.get("e") == 1 else "in stock",
             "condition": "new",
             "price": f"{precio} {MONEDA}",
-            "link": f"{SITIO}?p={p['i']}&v={vista}",
+            "link": f"{SITIO}tienda.html?p={p['i']}&v={vista}",
             "image_link": IMG_BASE + p["img"] + IMG_PARAMS if p.get("img") else "",
             "brand": marca,
             "google_product_category": categoria,

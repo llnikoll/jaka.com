@@ -63,7 +63,10 @@ Armá tu canasta en la tienda y enviá el pedido por WhatsApp, o escribinos dire
 
 ## Enlaces clave
 
-- [Tienda y catálogo](https://www.bicicleteria.capiata.com.py/)
+- [Inicio](https://www.bicicleteria.capiata.com.py/)
+- [Catálogo de bicicletas](https://www.bicicleteria.capiata.com.py/tienda.html?seccion=bicis)
+- [Catálogo de motos](https://www.bicicleteria.capiata.com.py/tienda.html?seccion=motos)
+- [Catálogo completo](https://www.bicicleteria.capiata.com.py/tienda.html)
 - [Servicio técnico](https://www.bicicleteria.capiata.com.py/#servicio-tecnico)
 - [Preguntas frecuentes](https://www.bicicleteria.capiata.com.py/#faq)
 - [Sobre la bicicletería](https://www.bicicleteria.capiata.com.py/#sobre-nosotros)

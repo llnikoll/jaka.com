@@ -249,9 +249,16 @@
       estado.indice = await cargarIndice();
       cargarCanasta();
       const predeterminada = estado.indice.predeterminada || CONFIG.categoriaInicial;
+      // Desde la landing: tienda.html?seccion=bicis | ?seccion=motos
+      const seccion = new URLSearchParams(location.search).get('seccion');
       estado.categoria = (estado.indice.vistas || []).some((v) => v.slug === CONFIG.categoriaInicial)
         ? CONFIG.categoriaInicial
         : predeterminada;
+      if (seccion === 'motos' && (estado.indice.vistas || []).some((v) => v.slug === 'motos')) {
+        estado.categoria = 'motos';
+      } else if (seccion === 'bicis' && (estado.indice.vistas || []).some((v) => v.slug === CONFIG.categoriaInicial)) {
+        estado.categoria = CONFIG.categoriaInicial;
+      }
 
       await cargarVista(estado.categoria);
       inicializarInterfaz();

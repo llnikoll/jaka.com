@@ -61,6 +61,12 @@ def escribir_sitemap(fecha_iso: str) -> None:
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>{SITIO_SEO}/tienda.html</loc>
+    <lastmod>{fecha}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>{SITIO_SEO}/privacidad.html</loc>
     <lastmod>{fecha}</lastmod>
     <changefreq>yearly</changefreq>

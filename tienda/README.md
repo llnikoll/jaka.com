@@ -16,6 +16,13 @@ No necesita base de datos, ni servidor propio, ni pasarela de pago: es HTML + CS
 
 ## 1. Ver la tienda
 
+La web tiene dos páginas:
+
+- **`index.html`** (raíz, `/`): landing de inicio. Muestra la marca y las dos opciones, **Bicicletas** y **Motos**,
+  además del servicio técnico y las preguntas frecuentes.
+- **`tienda.html`**: el catálogo. Se abre con `?seccion=bicis` o `?seccion=motos` según lo elegido en la landing
+  (`/tienda.html?seccion=motos`); también acepta links directos a un producto (`?p=<id>`).
+
 **Para probar en la PC** (servidor local con compresión gzip):
 
 ```powershell
@@ -303,18 +310,21 @@ que los asistentes de IA lo lean y lo citen.
 
 | Archivo | Para qué |
 |---|---|
-| `index.html` | `<title>`, meta description, canonical, Open Graph, Twitter Cards, geo tags y 3 bloques JSON-LD |
+| `index.html` (landing) | `<title>`, meta description, canonical raíz, Open Graph, Twitter Cards, geo tags y 3 bloques JSON-LD |
+| `tienda.html` | Título, descripción y canonical propios (`/tienda.html`); el catálogo (bicis y motos) |
 | `robots.txt` | Permite Googlebot, Bingbot y crawlers de IA (GPTBot, OAI-SearchBot, ChatGPT-User, PerplexityBot, ClaudeBot, Google-Extended) |
-| `sitemap.xml` | Generado por `build_catalogo.py` con `lastmod` del día; se actualiza en cada corrida diaria |
+| `sitemap.xml` | Generado por `build_catalogo.py` con `lastmod` del día; incluye `/`, `/tienda.html` y `/privacidad.html` |
 | `llms.txt` | Resumen del negocio, catálogo, servicios, horarios y enlaces para LLMs (ChatGPT, Claude, Perplexity) |
 | `privacidad.html` | Canonical y Open Graph agregados |
 
 ### Estructura semántica
 
-- **Un solo `<h1>`**: "Bicicletería y taller en Capiatá" (el título del catálogo pasó a `<h2>`).
-- Orden de la página: portada → catálogo → **Servicio técnico con precios** → **FAQ** → bloque SEO discreto.
-- El bloque **"Bicicletería y taller de bicicletas en Capiatá"** queda al final, con el texto ampliado dentro de un
-  `<details>` ("Más sobre la bicicletería") para que no ocupe espacio visible pero siga en el HTML para los buscadores.
+- **Landing (`/`)**: un `<h1>` "Bicicletería y taller en Capiatá", luego la elección **Bicicletas / Motos**, el
+  servicio técnico con precios, la FAQ y el bloque SEO discreto.
+- **Catálogo (`/tienda.html`)**: `<h1>` "Catálogo de bicicletas y motos en Capiatá" y el título dinámico de la
+  sección en `<h2>`; migas de pan ("Inicio › Catálogo").
+- El bloque **"Bicicletería y taller de bicicletas en Capiatá"** queda dentro de un `<details>` ("Más sobre la
+  bicicletería") para que no ocupe espacio visible pero siga en el HTML para los buscadores.
 - **FAQ visible** con 6 `<details>/<summary>` que coincide exactamente con el JSON-LD `FAQPage`.
 - Imágenes con `alt` descriptivo y local (`producto — marca · Jaka Bicicletería, Capiatá`) y `loading="lazy"`.
 

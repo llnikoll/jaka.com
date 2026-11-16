@@ -31,6 +31,8 @@ tienda/index.html        →  catálogo + canasta + pedido por WhatsApp
 
 ## Lo que hace hoy
 
+- **Landing de inicio** con la elección **Bicicletas** o **Motos**; el catálogo vive en `/tienda.html`
+  (`?seccion=bicis` / `?seccion=motos`).
 - **2.681 productos** publicados con **un solo precio limpio** (+25 % en los de hasta Gs 300.000 y +15 % en el
   resto, sin tachado ni porcentajes), stock, marca e imagen.
 - **Abre en Accesorios** (752 productos) y carga cada categoría bajo demanda: la primera pantalla pesa **55 KB**
