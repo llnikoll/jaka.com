@@ -251,16 +251,15 @@
     try {
       estado.indice = await cargarIndice();
       cargarCanasta();
-      const predeterminada = estado.indice.predeterminada || CONFIG.categoriaInicial;
+      const predeterminada = estado.indice.predeterminada || 'accesorios';
       // Desde la landing: tienda.html?seccion=bicis | ?seccion=motos
       const seccion = new URLSearchParams(location.search).get('seccion');
-      estado.categoria = (estado.indice.vistas || []).some((v) => v.slug === CONFIG.categoriaInicial)
-        ? CONFIG.categoriaInicial
-        : predeterminada;
       if (seccion === 'motos' && (estado.indice.vistas || []).some((v) => v.slug === 'motos')) {
         estado.categoria = 'motos';
-      } else if (seccion === 'bicis' && (estado.indice.vistas || []).some((v) => v.slug === CONFIG.categoriaInicial)) {
-        estado.categoria = CONFIG.categoriaInicial;
+      } else if (seccion === 'bicis' && (estado.indice.vistas || []).some((v) => v.slug === 'bicicletas')) {
+        estado.categoria = 'bicicletas';
+      } else {
+        estado.categoria = predeterminada;
       }
 
       await cargarVista(estado.categoria);
@@ -536,7 +535,8 @@
   }
 
   async function cambiarModo(modo, subcategoria = null) {
-    estado.categoria = modo === 'motos' ? 'motos' : CONFIG.categoriaInicial;
+    // 'bicis' -> vista 'bicicletas', 'motos' -> vista 'motos'
+    estado.categoria = modo === 'motos' ? 'motos' : 'bicicletas';
     estado.subcategoria = modo === 'motos' ? subcategoria : null;
     estado.busqueda = '';
     estado.mostrados = CONFIG.porPagina;
@@ -803,21 +803,6 @@
         renderizarGrilla();
       });
     });
-  }
-
-  function toggleSkeleton(mostrar) {
-    const skeleton = $('#skeleton-view');
-    if (!skeleton) return;
-    if (mostrar) {
-      skeleton.classList.remove('oculto');
-      skeleton.setAttribute('aria-busy', 'true');
-      $('#grilla')?.classList.add('oculto');
-      $('#pagination')?.classList.add('oculto');
-    } else {
-      skeleton.classList.add('oculto');
-      skeleton.setAttribute('aria-busy', 'false');
-      $('#grilla')?.classList.remove('oculto');
-    }
   }
 
   function tarjetaHTML(p) {
@@ -1304,7 +1289,7 @@
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         estado.ubicacion = { lat: pos.coords.latitude.toFixed(6), lng: pos.coords.longitude.toFixed(6) };
-        $('#ubicacion-estado').innerHTML = `Ubicación lista: <a href="https://www.google.com/maps?q=${estado.ubicacion.lat},${estado.ubicacion.lng}" target="_blank" rel="noopener">ver en el mapa</a>`;
+        $('#ubicacion-estado').innerHTML = `Ubicación lista: <a href="https://www.google.com/maps?q=${estado.ubicacion.lat},${estado.ubicacion.lng}" target="_blank" rel="noopener noreferrer">ver en el mapa</a>`;
         boton.disabled = false;
         boton.innerHTML = '✓ Ubicación agregada';
         toast('Ubicación agregada al pedido');
@@ -1420,7 +1405,7 @@
         $('#direccion').value = 'Av. España 1234, Villa Morra, Asunción';
         $('#referencia').value = 'Portón negro';
         estado.ubicacion = { lat: '-25.286600', lng: '-57.610600' };
-        $('#ubicacion-estado').innerHTML = `Ubicación lista: <a href="https://www.google.com/maps?q=${estado.ubicacion.lat},${estado.ubicacion.lng}" target="_blank" rel="noopener">ver en el mapa</a>`;
+        $('#ubicacion-estado').innerHTML = `Ubicación lista: <a href="https://www.google.com/maps?q=${estado.ubicacion.lat},${estado.ubicacion.lng}" target="_blank" rel="noopener noreferrer">ver en el mapa</a>`;
         const mensaje = construirMensaje();
         const depuracion = document.createElement('div');
         depuracion.id = 'debug-pedido';
