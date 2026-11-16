@@ -1,4 +1,4 @@
-﻿# Jaka Bicicletería — tienda con catálogo y precios sincronizados
+# Jaka Bicicletería — tienda con catálogo y precios sincronizados
 
 **En línea:** https://www.bicicleteria.capiata.com.py/
 
@@ -35,7 +35,9 @@ tienda/index.html        →  catálogo + canasta + pedido por WhatsApp
   resto, sin tachado ni porcentajes), stock, marca e imagen.
 - **Abre en Accesorios** (752 productos) y carga cada categoría bajo demanda: la primera pantalla pesa **55 KB**
   comprimida en lugar del catálogo completo.
-- **Categorías completas:** Accesorios, Bicicletas, Fitness, Indumentaria, Autoaccesorios, Ofertas y Todos.
+- **Categorías completas:** Accesorios, Bicicletas, Fitness, Indumentaria, Autoaccesorios, Motos, Ofertas y Todos.
+- **Sección Motos** con el catálogo de Chacomer: repuestos, accesorios, cubiertas, baterías, herramientas,
+  eléctricas, Kenton, Yamaha y HD (mismo margen, stock a confirmar por WhatsApp).
 - **Sección de Servicio técnico** con 3 planes (Básico Gs. 80.000 · Completo Gs. 120.000 · Premium Gs. 150.000)
   y botón de reserva por WhatsApp.
 - **Búsqueda** y orden por precio/descuento/nombre; filtro “solo disponibles”.

@@ -90,7 +90,8 @@
   const urlImagen = (p, grande = false) => {
     if (!p.img) return '';
     if (p.img.startsWith('http')) return p.img;
-    return CONFIG.imagenBase + p.img + (grande ? CONFIG.imagenParamsGrande : CONFIG.imagenParams);
+    const base = p.ch ? (CONFIG.imagenBaseMotos || CONFIG.imagenBase) : CONFIG.imagenBase;
+    return base + p.img + (grande ? CONFIG.imagenParamsGrande : CONFIG.imagenParams);
   };
 
   // ------------------- Recargo comercial (margen) -------------------
@@ -504,7 +505,12 @@
   /* Filtros y render                                                    */
   /* ------------------------------------------------------------------ */
   function productosBase() {
-    if (estado.busqueda.length >= 2) return estado.vistas.todos || estado.vistas[estado.categoria] || [];
+    const vista = vistaActual();
+    if (estado.busqueda.length >= 2) {
+      // Motos: busca dentro del catálogo de motos (no en el de bicicletas)
+      if (vista && vista.motos) return estado.vistas[estado.categoria] || [];
+      return estado.vistas.todos || estado.vistas[estado.categoria] || [];
+    }
     return estado.vistas[estado.categoria] || [];
   }
 
@@ -640,7 +646,9 @@
           ${CONFIG.mostrarDescuento && desc >= 5 ? `<span class="card__off">-${desc}%</span>` : ''}
           ${p.e === 1
             ? '<span class="card__estado card__estado--agotado">Sin stock</span>'
-            : (conPrecio(p) ? '' : `<span class="card__estado card__estado--consultar">${est.texto}</span>`)}
+            : (p.sc
+              ? '<span class="card__estado card__estado--consultar">Stock a confirmar</span>'
+              : (conPrecio(p) ? '' : `<span class="card__estado card__estado--consultar">${est.texto}</span>`))}
         </div>
         <div class="card__info">
           <span class="card__marca">${esc(p.m) || '&nbsp;'}</span>

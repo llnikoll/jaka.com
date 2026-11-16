@@ -353,6 +353,13 @@ def main() -> None:
         encoding="utf-8",
     )
 
+    # ------------------- Motos (Chacomer), si ya se scrapearon -------------------
+    try:
+        from build_motos import parchear_indice  # mismo directorio
+        parchear_indice()
+    except Exception as exc:  # noqa: BLE001 - si no hay datos de motos, se ignora
+        print(f"   (motos: no se agregaron -> {exc})")
+
     # ------------------- Catálogo completo (respaldo / compatibilidad) -------------------
     cambios = comparar_con_anterior(productos)
     completo = {"meta": meta, "categorias": arbol, "productos": productos}

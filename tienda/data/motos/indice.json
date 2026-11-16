@@ -1,0 +1,57 @@
+{
+ "generado": "2026-11-16T16:19:25-0300",
+ "total": 13057,
+ "categorias": [
+  {
+   "slug": "repuestos",
+   "nombre": "Repuestos y aceites",
+   "total": 11958
+  },
+  {
+   "slug": "accesorios",
+   "nombre": "Accesorios",
+   "total": 284
+  },
+  {
+   "slug": "cubiertas",
+   "nombre": "Cubiertas y cámaras",
+   "total": 251
+  },
+  {
+   "slug": "baterias",
+   "nombre": "Baterías",
+   "total": 42
+  },
+  {
+   "slug": "herramientas",
+   "nombre": "Herramientas",
+   "total": 41
+  },
+  {
+   "slug": "electricas",
+   "nombre": "Eléctricas",
+   "total": 3
+  },
+  {
+   "slug": "kenton",
+   "nombre": "Kenton",
+   "total": 61
+  },
+  {
+   "slug": "yamaha",
+   "nombre": "Yamaha",
+   "total": 19
+  },
+  {
+   "slug": "hd",
+   "nombre": "Indumentaria de seguridad",
+   "total": 579
+  },
+  {
+   "slug": "equipate",
+   "nombre": "Equipate",
+   "total": 10
+  }
+ ],
+ "archivo": "motos/v/todos.json"
+}

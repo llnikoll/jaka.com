@@ -46,6 +46,8 @@ window.TIENDA_CONFIG = {
   // Base de las imágenes. Para rehospedar fotos, cambiá esto por "img/" y
   // poné las imágenes en la carpeta img/ de la tienda.
   imagenBase: "https://www.ciclovia.com.py/media/catalog/product/",
+  // Imágenes de motos (catálogo de Chacomer)
+  imagenBaseMotos: "https://www.chacomer.com.py/media/catalog/product/",
   // Tamaño chico para la grilla (rápido) y grande para la ficha
   imagenParams: "?quality=80&fit=bounds&height=300&width=300&canvas=300:300",
   imagenParamsGrande: "?quality=85&fit=bounds&height=800&width=800&canvas=800:800",

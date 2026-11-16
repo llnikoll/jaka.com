@@ -351,3 +351,37 @@ Mientras queden corchetes, Google puede ignorar esos campos; el resto del marcad
 
 > `canonical`, Open Graph y sitemap apuntan a `https://www.bicicleteria.capiata.com.py/`. El dominio ya está activo
 > con certificado HTTPS de GitHub Pages; `llnikoll.github.io/jaka.com` redirige (301) al dominio propio.
+
+## 11. Motos (catálogo de Chacomer)
+
+La tienda incluye una sección **Motos** con el catálogo de motos de `chacomer.com.py` (repuestos, accesorios,
+cubiertas, baterías, herramientas, eléctricas y las marcas Kenton, Yamaha y HD).
+
+### Cómo se genera
+
+```powershell
+python poc\scraper_chacomer.py      # recorre /moto/ completo (todas las páginas)
+python tienda\build_catalogo.py     # genera bicis + llama a build_motos.py al final
+```
+
+- `poc/scraper_chacomer.py`: descubre las categorías de `/moto.html`, recorre cada una página por página
+  (`?p=N`), extrae nombre, marca, precio habitual/especial, imagen y link, y deduplica por producto.
+  Guarda `poc/data/motos.jsonl` y `poc/data/motos_categorias.json`; el HTML crudo queda en
+  `poc/cache/chacomer/` (reprocesable con `--sin-red`).
+- `tienda/build_motos.py`: arma `tienda/data/motos/v/todos.json`, su índice y **agrega la vista “Motos”** al
+  `tienda/data/indice.json` de la tienda. Si no hay scraping nuevo, reutiliza los datos ya generados.
+
+### Reglas
+
+- **Mismo margen** que las bicis: +25 % hasta Gs 300.000 y +15 % arriba (sobre el precio de Chacomer, con el
+  descuento online ya aplicado).
+- **Stock:** el listado de Chacomer no informa disponibilidad, así que las tarjetas muestran
+  **“Stock a confirmar”** y se confirma por WhatsApp.
+- Los productos se muestran todos (también los que puedan estar sin stock), igual que las bicicletas.
+- Las imágenes se sirven desde el CDN de Chacomer (`imagenBaseMotos` en `config.js`).
+
+### Automatización pendiente
+
+El workflow diario todavía no ejecuta `scraper_chacomer.py` (requiere permiso `workflow` en GitHub). Mientras
+tanto, la sección queda publicada con los datos de la última corrida; para actualizarla se corre el scraper y
+se hace push, o se agrega el paso al workflow cuando esté el permiso.

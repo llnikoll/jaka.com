@@ -1,4 +1,4 @@
-﻿# =====================================================================
+# =====================================================================
 # Actualiza el catálogo de la tienda desde ciclovia.com.py
 #
 #   .\actualizar.ps1              # lee el sitio, regenera y publica si hay config
@@ -90,7 +90,7 @@ try {
   }
   Write-Host "Python: $py" -ForegroundColor DarkGray
 
-  Write-Host "`n== 1/3 Leyendo el catálogo de ciclovia.com.py ==" -ForegroundColor Cyan
+  Write-Host "`n== 1/4 Leyendo el catálogo de ciclovia.com.py ==" -ForegroundColor Cyan
   $argumentos = @('poc\scraper_ciclovia.py', '--modo', 'todo', '--incluir-raices')
   if ($SinRed) {
     $argumentos += '--sin-red'
@@ -102,11 +102,17 @@ try {
   $codigo = Ejecutar -Exe $py -Argumentos (@('-X', 'utf8') + $argumentos)
   if ($codigo -ne 0) { throw "El scraper terminó con código $codigo" }
 
-  Write-Host "`n== 2/3 Regenerando el catálogo de la tienda ==" -ForegroundColor Cyan
+  Write-Host "`n== 2/4 Leyendo el catálogo de motos de chacomer.com.py ==" -ForegroundColor Cyan
+  $argumentosMotos = @('poc\scraper_chacomer.py')
+  if ($SinRed) { $argumentosMotos += '--sin-red' } else { $argumentosMotos += '--force' }
+  $codigo = Ejecutar -Exe $py -Argumentos (@('-X', 'utf8') + $argumentosMotos)
+  if ($codigo -ne 0) { Write-Warning "El scraper de motos terminó con código $codigo (se sigue con los datos anteriores)" }
+
+  Write-Host "`n== 3/4 Regenerando el catálogo de la tienda ==" -ForegroundColor Cyan
   $codigo = Ejecutar -Exe $py -Argumentos @('-X', 'utf8', 'tienda\build_catalogo.py')
   if ($codigo -ne 0) { throw "build_catalogo.py terminó con código $codigo" }
 
-  Write-Host "`n== 3/3 Publicando en el hosting ==" -ForegroundColor Cyan
+  Write-Host "`n== 4/4 Publicando en el hosting ==" -ForegroundColor Cyan
   $publicar = Join-Path $PSScriptRoot 'publicar.ps1'
   if ($SinPublicar) {
     Write-Host "Publicación omitida (-SinPublicar)." -ForegroundColor Yellow
