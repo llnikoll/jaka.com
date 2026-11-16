@@ -287,14 +287,14 @@
     if (vistaPedida && (estado.indice.vistas || []).some((v) => v.slug === vistaPedida)) {
       await cargarVista(vistaPedida);
       estado.categoria = vistaPedida;
-      $$('#categorias [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === vistaPedida)));
+      renderizarNav();
       aplicarFiltros(true);
       producto = buscarProducto(pid);
     }
     if (!producto) {
       await cargarVista('todos');
       estado.categoria = 'todos';
-      $$('#categorias [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === 'todos')));
+      renderizarNav();
       aplicarFiltros(true);
       producto = buscarProducto(pid);
     }
@@ -343,15 +343,25 @@
       else el.classList.add('oculto');
     });
 
-    $('#categorias').innerHTML = (estado.indice.vistas || []).map((v) => `
-      <button class="cat-btn ${v.slug === 'ofertas' ? 'cat-btn--oferta' : ''}"
-              data-cat="${v.slug}" aria-pressed="${String(v.slug === estado.categoria)}">
-        ${esc(v.nombre)}${v.slug !== 'todos' ? ` <span class="cat-btn__n">${v.total}</span>` : ''}
-      </button>`).join('');
+    renderizarNav();
 
     $('#categorias').addEventListener('click', (ev) => {
+      const modo = ev.target.closest('[data-modo]');
+      if (modo) { cambiarModo(modo.dataset.modo); return; }
       const btn = ev.target.closest('[data-cat]');
-      if (btn) seleccionarCategoria(btn.dataset.cat);
+      if (!btn) return;
+      if (btn.dataset.cat === 'motos') {
+        const sub = btn.dataset.sub || null;
+        if (estado.categoria !== 'motos') cambiarModo('motos', sub);
+        else {
+          estado.subcategoria = sub;
+          estado.mostrados = CONFIG.porPagina;
+          aplicarFiltros(true);
+          renderizarNav();
+        }
+        return;
+      }
+      seleccionarCategoria(btn.dataset.cat);
     });
 
     $('#subcategorias').addEventListener('click', (ev) => {
@@ -474,6 +484,58 @@
     return c ? c.nombre : slug;
   }
 
+  /* ------------------------------------------------------------------ */
+  /* Navegación: Bicicletas | Motos                                     */
+  /* ------------------------------------------------------------------ */
+  function renderizarNav() {
+    const indice = estado.indice || {};
+    const vistas = indice.vistas || [];
+    const categorias = indice.categorias || [];
+    const enMotos = estado.categoria === 'motos';
+    const motos = vistas.find((v) => v.slug === 'motos');
+
+    const botonModo = (modo, texto) => {
+      const activo = (modo === 'motos') === enMotos;
+      return `<button class="cat-btn cat-btn--modo" data-modo="${modo}" aria-pressed="${String(activo)}">${texto}</button>`;
+    };
+
+    let opciones = '';
+    if (enMotos && motos) {
+      const activo = estado.subcategoria;
+      opciones = `<button class="cat-btn" data-cat="motos" data-sub="" aria-pressed="${String(!activo)}">Todas <span class="cat-btn__n">${motos.total}</span></button>`;
+      opciones += (motos.subcategorias || []).map((slug) => {
+        const c = categorias.find((x) => x.slug === slug);
+        const activoSub = activo === slug;
+        return `<button class="cat-btn" data-cat="motos" data-sub="${esc(slug)}" aria-pressed="${String(activoSub)}">${esc(c ? c.nombre : slug)}${c ? ` <span class="cat-btn__n">${c.total}</span>` : ''}</button>`;
+      }).join('');
+    } else {
+      opciones = vistas.filter((v) => v.slug !== 'motos').map((v) => `
+        <button class="cat-btn ${v.slug === 'ofertas' ? 'cat-btn--oferta' : ''}"
+                data-cat="${v.slug}" aria-pressed="${String(v.slug === estado.categoria)}">
+          ${esc(v.nombre)}${v.slug !== 'todos' ? ` <span class="cat-btn__n">${v.total}</span>` : ''}
+        </button>`).join('');
+    }
+
+    $('#categorias').innerHTML = `${botonModo('bicis', 'Bicicletas')}${botonModo('motos', 'Motos')}<span class="cat-sep" aria-hidden="true"></span>${opciones}`;
+  }
+
+  async function cambiarModo(modo, subcategoria = null) {
+    estado.categoria = modo === 'motos' ? 'motos' : CONFIG.categoriaInicial;
+    estado.subcategoria = modo === 'motos' ? subcategoria : null;
+    estado.busqueda = '';
+    estado.mostrados = CONFIG.porPagina;
+    const buscador = $('#buscador');
+    if (buscador) buscador.value = '';
+    $('#buscador-limpiar').classList.add('oculto');
+    if (!estado.vistas[estado.categoria]) {
+      mostrarCargando('Cargando catálogo…');
+      $('#grilla').innerHTML = '';
+    }
+    try { await cargarVista(estado.categoria); } catch (_) { }
+    renderizarNav();
+    aplicarFiltros(true);
+  }
+
   async function seleccionarCategoria(slug) {
     if (slug === estado.categoria) return;
     const token = ++estado.tokenCarga;
@@ -491,6 +553,7 @@
     }
     try { await cargarVista(slug); } catch (_) { }
     if (token !== estado.tokenCarga) return;
+    renderizarNav();
     aplicarFiltros(true);
   }
 
@@ -603,6 +666,11 @@
   function actualizarSubcategorias() {
     const cont = $('#subcategorias');
     const vista = vistaActual();
+    if (estado.categoria === 'motos') {
+      cont.classList.remove('visible');
+      cont.innerHTML = '';
+      return;
+    }
     const hijas = (vista && vista.subcategorias) ? vista.subcategorias : [];
     if (hijas.length <= 1) {
       cont.classList.remove('visible');

@@ -116,6 +116,11 @@ a{color:inherit;text-decoration:none}
 .cat-btn:hover{border-color:#cbd5e1;background:#f8fafc}
 .cat-btn[aria-pressed="true"]{background:var(--verde);border-color:var(--verde);color:#fff}
 .cat-btn--oferta[aria-pressed="true"]{background:var(--rojo);border-color:var(--rojo)}
+/* Selector de sección: Bicicletas | Motos */
+.cat-btn--modo{font-weight:800;background:#0f172a;border-color:#0f172a;color:#fff}
+.cat-btn--modo:hover{background:#1e293b;border-color:#1e293b;color:#fff}
+.cat-btn--modo[aria-pressed="true"]{background:var(--verde);border-color:var(--verde);color:#fff}
+.cat-sep{width:1px;height:22px;background:var(--linea);margin:0 4px;flex:none}
 .cat-btn__n{font-weight:600;opacity:.65;font-size:12px;margin-left:2px}
 .cat-btn[aria-pressed="true"] .cat-btn__n{opacity:.85}
 
