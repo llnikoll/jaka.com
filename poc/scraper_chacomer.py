@@ -230,7 +230,7 @@ def descubrir_categorias(desc: Descargador) -> list[dict]:
     return [{"slug": s, "nombre": n, "url": f"{BASE}/moto/{s}.html"} for s, n in vistas.items()]
 
 
-def raspar_categoria(desc: Descargador, cat: dict, verbose: bool = True) -> tuple[list[dict], int]:
+def raspar_categoria(desc: Descargador, cat: dict, verbose: bool = True, max_paginas: int = 700) -> tuple[list[dict], int]:
     productos: dict[str, dict] = {}
     primera = None
     paginas = 0
@@ -245,6 +245,7 @@ def raspar_categoria(desc: Descargador, cat: dict, verbose: bool = True) -> tupl
         if p > 1 and primera and items[0]["i"] == primera:
             break  # el sitio repite la página 1 al pasarse del máximo
         primera = primera or items[0]["i"]
+        nuevos = 0
         for it in items:
             actual = productos.get(it["i"])
             if actual:
@@ -252,10 +253,14 @@ def raspar_categoria(desc: Descargador, cat: dict, verbose: bool = True) -> tupl
                     actual["c"].append(cat["slug"])
             else:
                 productos[it["i"]] = it
+                nuevos += 1
+        if p > 1 and nuevos == 0:
+            break  # página repetida / sin productos nuevos: fin de la categoría
         if verbose and p % 25 == 0:
             print(f"    {cat['slug']}: página {p} · {len(productos)} productos", flush=True)
         p += 1
-        if p > 1500:
+        if p > max_paginas:
+            print(f"    {cat['slug']}: tope de {max_paginas} páginas (¿cambió el listado?)", flush=True)
             break
     return list(productos.values()), paginas
 
@@ -265,6 +270,7 @@ def main() -> None:
     ap.add_argument("--force", action="store_true", help="ignorar la caché y descargar de nuevo")
     ap.add_argument("--sin-red", action="store_true", help="solo reprocesar la caché")
     ap.add_argument("--max-peticiones", type=int, default=1200)
+    ap.add_argument("--max-paginas", type=int, default=700, help="tope de páginas por categoría")
     ap.add_argument("--categoria", default="", help="solo una categoría (para pruebas)")
     args = ap.parse_args()
 
@@ -283,7 +289,7 @@ def main() -> None:
     inicio = time.time()
     for i, cat in enumerate(categorias, 1):
         print(f"[{i}/{len(categorias)}] {cat['nombre']} ({cat['slug']})", flush=True)
-        items, paginas = raspar_categoria(desc, cat)
+        items, paginas = raspar_categoria(desc, cat, max_paginas=args.max_paginas)
         for it in items:
             actual = todos.get(it["i"])
             if actual:

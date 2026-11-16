@@ -263,8 +263,9 @@ def scrapear_motos_si_corresponde() -> None:
     print("\n== Motos: actualizando catálogo de Chacomer ==")
     try:
         codigo = subprocess.call(
-            [sys.executable, str(scraper), "--force", "--max-peticiones", "1600"],
-            timeout=3600,
+            [sys.executable, str(scraper), "--force",
+             "--max-peticiones", "900", "--max-paginas", "600"],
+            timeout=2400,
         )
         if codigo != 0:
             print(f"   (motos: el scraper terminó con código {codigo}; se usan los datos anteriores)")
