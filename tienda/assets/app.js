@@ -463,7 +463,6 @@
 
     $('#btn-mas').addEventListener('click', () => { estado.mostrados += CONFIG.porPagina; renderizarGrilla(); });
     $('#btn-limpiar-filtros').addEventListener('click', limpiarFiltros);
-    $('#ir-inicio').addEventListener('click', (ev) => { ev.preventDefault(); limpiarFiltros(); });
     $('#btn-menu-categorias').addEventListener('click', () => {
       $('#categorias').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });

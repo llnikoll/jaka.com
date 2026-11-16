@@ -1748,11 +1748,15 @@ fieldset.campo legend { font-size: 12.5px; font-weight: 700; color: var(--tinta-
 
 /* Servicio Técnico */
 .servicio {
-  background: #0b1220;
+  background: linear-gradient(180deg, #0b1220 0%, #0f1a2e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   color: #e2e8f0;
-  padding: 44px 0 50px;
+  padding: 38px 34px 44px;
   border-radius: var(--radio-xl);
   margin: 20px 0 30px;
+}
+@media (max-width: 700px) {
+  .servicio { padding: 28px 18px 32px; }
 }
 .servicio__etiqueta {
   display: inline-block;
@@ -1786,22 +1790,6 @@ fieldset.campo legend { font-size: 12.5px; font-weight: 700; color: var(--tinta-
 }
 .plan:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(0,0,0,0.25); }
 
-/* Plan destacado ("Más elegido") */
-.plan--destacado {
-  border: 2px solid var(--verde);
-}
-.plan__badge-popular {
-  position: absolute;
-  top: -12px;
-  right: 18px;
-  background: var(--verde);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 3px 10px;
-  border-radius: var(--radio-pill);
-  box-shadow: 0 2px 6px rgba(0, 167, 88, 0.4);
-}
 
 .plan__cabecera { border-bottom: 1px solid var(--linea); padding-bottom: 14px; }
 .plan__nombre { margin: 0; font-size: 13.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--verde-oscuro); }
