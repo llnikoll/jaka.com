@@ -41,9 +41,9 @@
 <link rel="preconnect" href="https://www.chacomer.com.py" crossorigin>
 <link rel="dns-prefetch" href="https://www.ciclovia.com.py">
 <link rel="dns-prefetch" href="https://www.chacomer.com.py">
-<link rel="preload" as="style" href="assets/estilos.css?v=20261116c">
+<link rel="preload" as="style" href="assets/estilos.css?v=20261116d">
 <link rel="preload" as="fetch" crossorigin href="data/indice.json">
-<link rel="preload" as="script" href="assets/app.js?v=20261116c">
+<link rel="preload" as="script" href="assets/app.js?v=20261116d">
 
 <!-- Geolocalización (SEO local) -->
 <meta name="geo.region" content="PY-11">
@@ -56,7 +56,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="shortcut icon" href="assets/favicon.ico">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="assets/estilos.css?v=20261116c">
+<link rel="stylesheet" href="assets/estilos.css?v=20261116d">
 <link rel="preload" href="data/indice.json" as="fetch" crossorigin>
 
 <!-- Datos estructurados: negocio local (BikeStore) -->
@@ -366,8 +366,18 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
 
         <fieldset class="campo campo--entrega">
           <legend>¿Cómo querés recibirlo? *</legend>
-          <label class="opcion"><input type="radio" name="entrega" value="envio" checked> <span id="opcion-envio">Envío a domicilio</span></label>
-          <label class="opcion"><input type="radio" name="entrega" value="retiro"> <span id="opcion-retiro">Retiro en local</span></label>
+          <label class="opcion opcion--entrega">
+            <input type="radio" name="entrega" value="envio" checked>
+            <span class="opcion__icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h10v9H3z"/><path d="M13 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg></span>
+            <span class="opcion__texto"><strong id="opcion-envio">Envío a domicilio</strong><small>Coordinado por WhatsApp</small></span>
+            <span class="opcion__marca" aria-hidden="true"></span>
+          </label>
+          <label class="opcion opcion--entrega">
+            <input type="radio" name="entrega" value="retiro">
+            <span class="opcion__icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v10H4z"/><path d="M4 10l8-6 8 6"/><path d="M9 20v-5h6v5"/></svg></span>
+            <span class="opcion__texto"><strong id="opcion-retiro">Retiro en local</strong><small>Sin costo de envío</small></span>
+            <span class="opcion__marca" aria-hidden="true"></span>
+          </label>
         </fieldset>
 
         <div id="bloque-envio">
@@ -443,8 +453,8 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
 <!-- ================= Aviso flotante ================= -->
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="assets/config.js?v=20261116c"></script>
-<script src="assets/app.js?v=20261116c"></script>
+<script src="assets/config.js?v=20261116d"></script>
+<script src="assets/app.js?v=20261116d"></script>
 
 <!-- Service Worker para PWA -->
 <script>
