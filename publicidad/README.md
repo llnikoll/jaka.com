@@ -1,4 +1,4 @@
-﻿# Publicidad en Facebook / Instagram
+# Publicidad en Facebook / Instagram
 
 Esta carpeta genera el **feed de productos para Meta** (Commerce Manager) a partir del catálogo de la tienda.
 
@@ -10,13 +10,18 @@ Esta carpeta genera el **feed de productos para Meta** (Commerce Manager) a part
 https://www.bicicleteria.capiata.com.py/publicidad/catalogo-meta.csv
 ```
 
-Ese CSV ya tiene el formato que pide Meta: `id, title, description, availability, condition, price, link, image_link, brand, google_product_category` + etiquetas propias (`custom_label_0/1/2`) para armar conjuntos de productos.
+Ese CSV ya tiene el formato que pide Meta: `id, title, description, availability, condition, price, link, image_link, brand, google_product_category` + etiquetas propias (`custom_label_0/1/2/3`) para armar conjuntos de productos.
 
-- **2.265 productos** con precio (el resto está “a consultar” y no entra).
+- **14.399 productos**: **2.772** de bicicletas/accesorios y **13.057 de motos** (repuestos, accesorios, cubiertas,
+  baterías, herramientas, motos Kenton/Yamaha y más).
 - Precio con el recargo ya aplicado (**+25 %** si el original es de hasta Gs 300.000, **+15 %** si es mayor),
   redondeado igual que la tienda.
-- `availability` respeta el stock: ~950 productos figuran como `out of stock`.
-- Cada `link` abre la ficha del producto en la tienda: `https://www.bicicleteria.capiata.com.py/?p=<id>&v=<vista>`.
+- `custom_label_0` separa **bicis** (vista) de **motos** (`motos`); `custom_label_3` trae la categoría fina
+  (`motos/repuestos`, `bicicletas/mtb`, etc.).
+- `availability`: las bicis respetan el stock; las motos figuran **`in stock`** porque el listado de Chacomer no
+  informa stock y se confirma por WhatsApp (“Stock a confirmar” en la web).
+- Cada `link` abre la ficha del producto en la tienda:
+  `https://www.bicicleteria.capiata.com.py/tienda.html?p=<id>&v=<vista>`.
 
 ## Cómo cargarlo en Meta (una sola vez)
 
@@ -46,6 +51,8 @@ Ese CSV ya tiene el formato que pide Meta: `id, title, description, availability
 | `ticket-alto` | `custom_label_2` es `ticket-alto` |
 | `en-stock` | `custom_label_1` es `stock` |
 | `bicicletas` | `custom_label_0` es `bicicletas` |
+| `motos` | `custom_label_0` es `motos` |
+| `motos-repuestos` | `custom_label_3` es `motos/repuestos` |
 | `ofertas` | precio con descuento (requiere campo `sale_price`, no incluido) |
 
 Para anuncios de venta directa empezá por **`ticket-alto` + `en-stock`**: son los que soportan el costo publicitario con un margen del 15 %.

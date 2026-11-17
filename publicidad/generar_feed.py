@@ -23,15 +23,18 @@ import csv
 import json
 import math
 import re
+import urllib.parse
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 ENTRADA = RAIZ / "tienda" / "data" / "v" / "todos.json"
+ENTRADA_MOTOS = RAIZ / "tienda" / "data" / "motos" / "v" / "todos.json"
 CONFIG = RAIZ / "tienda" / "assets" / "config.js"
 SALIDA = RAIZ / "tienda" / "publicidad" / "catalogo-meta.csv"
 
 SITIO = "https://www.bicicleteria.capiata.com.py/"
 IMG_BASE = "https://www.ciclovia.com.py/media/catalog/product/"
+IMG_BASE_MOTOS = "https://www.chacomer.com.py/media/catalog/product/"
 IMG_PARAMS = "?quality=85&fit=bounds&height=800&width=800&canvas=800:800"
 MONEDA = "PYG"
 MARCA_FALLBACK = "Jaka"
@@ -63,6 +66,18 @@ CATEGORIA_GOOGLE = {
     "autoaccesorios/portabici": "Vehicles & Parts > Vehicle Parts & Accessories",
 }
 CATEGORIA_POR_DEFECTO = "Sporting Goods"
+CATEGORIA_GOOGLE_MOTOS = {
+    "repuestos": "Vehicles & Parts > Vehicle Parts & Accessories",
+    "accesorios": "Vehicles & Parts > Vehicle Parts & Accessories",
+    "cubiertas": "Vehicles & Parts > Vehicle Parts & Accessories",
+    "baterias": "Vehicles & Parts > Vehicle Parts & Accessories",
+    "herramientas": "Vehicles & Parts > Vehicle Parts & Accessories",
+    "hd": "Vehicles & Parts > Vehicle Parts & Accessories",
+    "equipate": "Vehicles & Parts > Vehicle Parts & Accessories",
+    "kenton": "Vehicles & Parts",
+    "yamaha": "Vehicles & Parts",
+    "electricas": "Vehicles & Parts",
+}
 
 PILARES = ("bicicletas", "fitness", "indumentaria", "autoaccesorios")
 
@@ -146,7 +161,14 @@ def main() -> None:
         raise SystemExit(f"No encuentro {ENTRADA}. Corré antes tienda/build_catalogo.py")
 
     productos = json.loads(ENTRADA.read_text(encoding="utf-8"))
+    motos = json.loads(ENTRADA_MOTOS.read_text(encoding="utf-8")) if ENTRADA_MOTOS.exists() else []
     recargo, extra, umbral, redondeo = leer_recargo()
+
+    def imagen_meta(img: str, base: str) -> str:
+        return base + urllib.parse.quote(img, safe="/") + IMG_PARAMS if img else ""
+
+    def etiqueta_ticket(precio: int) -> str:
+        return "ticket-alto" if precio >= 800000 else ("ticket-medio" if precio >= 300000 else "ticket-bajo")
 
     filas = []
     for p in productos:
@@ -176,15 +198,49 @@ def main() -> None:
             "condition": "new",
             "price": f"{precio} {MONEDA}",
             "link": f"{SITIO}tienda.html?p={p['i']}&v={vista}",
-            "image_link": IMG_BASE + p["img"] + IMG_PARAMS if p.get("img") else "",
+            "image_link": imagen_meta(p.get("img"), IMG_BASE),
             "brand": marca,
             "google_product_category": categoria,
             "custom_label_0": vista,
             "custom_label_1": "agotado" if p.get("e") == 1 else "stock",
-            "custom_label_2": "ticket-alto" if precio >= 800000 else ("ticket-medio" if precio >= 300000 else "ticket-bajo"),
+            "custom_label_2": etiqueta_ticket(precio),
+            "custom_label_3": (p.get("c") or [""])[0],
         })
 
-    filas.sort(key=lambda f: f["id"])
+    for p in motos:
+        if not p.get("p"):
+            continue
+        precio = precio_venta(p["p"], recargo, extra, umbral, redondeo)
+        if precio < args.min_precio:
+            continue
+        cats = p.get("c") or []
+        sub = next((c.split("/", 1)[1] for c in cats if c.startswith("motos/")), "repuestos")
+        nombre = limpiar(p.get("n"), 150)
+        marca = limpiar(p.get("m"), 60) or MARCA_FALLBACK
+        categoria = CATEGORIA_GOOGLE_MOTOS.get(sub, "Vehicles & Parts")
+        descripcion = (
+            f"{nombre}. {marca}. {categoria}. "
+            "Repuesto/accesorio de moto disponible en Jaka Bicicletería — Capiatá, Paraguay. "
+            "Pedidos por WhatsApp con entrega en todo el país."
+        )
+        filas.append({
+            "id": p["i"],
+            "title": nombre,
+            "description": descripcion,
+            "availability": "in stock",
+            "condition": "new",
+            "price": f"{precio} {MONEDA}",
+            "link": f"{SITIO}tienda.html?p={urllib.parse.quote(p['i'], safe='')}&v=motos",
+            "image_link": imagen_meta(p.get("img"), IMG_BASE_MOTOS),
+            "brand": marca,
+            "google_product_category": categoria,
+            "custom_label_0": "motos",
+            "custom_label_1": "stock",
+            "custom_label_2": etiqueta_ticket(precio),
+            "custom_label_3": f"motos/{sub}",
+        })
+
+    filas.sort(key=lambda f: str(f["id"]))
     args.salida.parent.mkdir(parents=True, exist_ok=True)
     campos = list(filas[0].keys()) if filas else []
     with args.salida.open("w", encoding="utf-8", newline="") as fh:
@@ -196,7 +252,8 @@ def main() -> None:
     altos = sum(1 for f in filas if f["custom_label_2"] == "ticket-alto")
     kb = args.salida.stat().st_size / 1024
     print(f"OK -> {args.salida}")
-    print(f"   {len(filas):,} productos · {sin_stock} sin stock · {altos} de ticket alto (>= Gs 800.000)")
+    print(f"   {len(filas):,} productos ({len(productos):,} bicis/accesorios + {len(motos):,} motos)")
+    print(f"   {sin_stock} sin stock · {altos} de ticket alto (>= Gs 800.000)")
     print(f"   recargo aplicado: {recargo}% · extra {extra}% para precios <= Gs {umbral:,}".replace(",", ".") + f" · {kb:,.0f} KB")
     print(f"   URL publicada: {SITIO}publicidad/catalogo-meta.csv")
 
