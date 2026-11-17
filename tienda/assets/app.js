@@ -142,7 +142,7 @@
   }
 
   const totalCanasta = () => estado.canasta
-    .reduce((acc, l) => acc + (precioVenta(buscarProducto(l.id)) ?? 0) * l.q, 0);
+    .reduce((acc, l) => acc + (precioVenta(productoDeLinea(l)) ?? 0) * l.q, 0);
 
   let temporizadorToast = null;
   function toast(mensaje) {
@@ -165,7 +165,14 @@
       if (!Array.isArray(datos)) return;
       estado.canasta = datos
         .filter((l) => l && l.id)
-        .map((l) => ({ id: String(l.id), q: Math.min(MAX_POR_ITEM, Math.max(1, parseInt(l.q, 10) || 1)) }));
+        .map((l) => {
+          const linea = {
+            id: String(l.id),
+            q: Math.min(MAX_POR_ITEM, Math.max(1, parseInt(l.q, 10) || 1))
+          };
+          if (l.snap && l.snap.n) linea.snap = l.snap;
+          return linea;
+        });
     } catch (_) { estado.canasta = []; }
   }
 
@@ -751,6 +758,7 @@
     actualizarSubcategorias();
     actualizarFiltrosActivos();
     renderizarGrilla();
+    refrescarSnapshots();
   }
 
   function actualizarTitulo(total) {
@@ -971,6 +979,44 @@
     return null;
   }
 
+  /* Guardamos una copia mínima del producto en la canasta para que no se pierda
+     al recargar o cambiar de sección (aunque su vista no esté cargada). */
+  const CAMPOS_SNAPSHOT = ['i', 'n', 'm', 'c', 'p', 'o', 'e', 'img', 'ch', 'sc', 's', 'of'];
+  function snapshotProducto(p) {
+    const copia = {};
+    CAMPOS_SNAPSHOT.forEach((k) => { if (p[k] !== undefined) copia[k] = p[k]; });
+    return copia;
+  }
+  function productoDeLinea(linea) {
+    const vivo = buscarProducto(linea.id);
+    if (vivo) {
+      linea.snap = snapshotProducto(vivo);
+      return vivo;
+    }
+    return (linea.snap && linea.snap.n) ? linea.snap : null;
+  }
+  function refrescarSnapshots() {
+    let cambio = false;
+    estado.canasta.forEach((l) => {
+      if (!l.snap || !l.snap.n) {
+        const p = buscarProducto(l.id);
+        if (p) { l.snap = snapshotProducto(p); cambio = true; }
+      }
+    });
+    if (cambio) guardarCanasta();
+  }
+  async function asegurarProductosCarrito() {
+    const pendientes = () => estado.canasta.filter((l) => !buscarProducto(l.id) && !(l.snap && l.snap.n));
+    if (!pendientes().length) return;
+    try { await cargarVista('todos'); } catch (_) { }
+    if (pendientes().length && (estado.indice.vistas || []).some((v) => v.slug === 'motos')) {
+      try { await cargarVista('motos'); } catch (_) { }
+    }
+    refrescarSnapshots();
+    actualizarContadorCanasta();
+    if ($('#panel-carrito')?.classList.contains('abierto')) renderizarCanasta();
+  }
+
   /* ------------------------------------------------------------------ */
   /* Canasta                                                             */
   /* ------------------------------------------------------------------ */
@@ -984,11 +1030,13 @@
     if (!conPrecio(producto)) { consultarProducto(producto); return; }
     if (delta > 0) medirProducto('AddToCart', producto);
     const linea = lineaDe(id);
+    const snap = snapshotProducto(producto);
     if (linea) {
       linea.q = Math.min(MAX_POR_ITEM, Math.max(0, linea.q + delta));
+      linea.snap = snap;
       if (linea.q === 0) estado.canasta = estado.canasta.filter((l) => l !== linea);
     } else if (delta > 0) {
-      estado.canasta.push({ id: String(id), q: 1 });
+      estado.canasta.push({ id: String(id), q: 1, snap });
       toast(`${producto.n.slice(0, 38)}${producto.n.length > 38 ? '…' : ''} se agregó a la canasta`);
     }
     guardarCanasta();
@@ -1072,8 +1120,17 @@
     }
 
     cont.innerHTML = estado.canasta.map((linea) => {
-      const p = buscarProducto(linea.id);
-      if (!p) return '';
+      const p = productoDeLinea(linea);
+      if (!p) {
+        return `<div class="linea linea--pendiente" data-linea="${esc(linea.id)}">
+          <div class="linea__foto"></div>
+          <div class="linea__info">
+            <p class="linea__nombre">Producto no disponible</p>
+            <span class="linea__precio">—</span>
+            <div class="linea__fila"><button class="linea__quitar" data-quitar="${esc(linea.id)}">Quitar</button></div>
+          </div>
+        </div>`;
+      }
       const desc = descuentoVenta(p);
       return `
         <div class="linea" data-linea="${esc(p.i)}">
@@ -1096,13 +1153,14 @@
     }).join('');
 
     const subtotal = estado.canasta.reduce((acc, l) => {
-      const p = buscarProducto(l.id);
+      const p = productoDeLinea(l);
       const precio = p ? precioVenta(p) : null;
       return acc + (precio ? precio * l.q : 0);
     }, 0);
     $('#carrito-subtotal').textContent = fmt(subtotal);
     $('#carrito-total').textContent = fmt(subtotal);
     $('#carrito-envio').textContent = 'a coordinar';
+    refrescarSnapshots();
 
     cont.querySelectorAll('.stepper').forEach((st) => {
       const id = st.dataset.id;
@@ -1129,6 +1187,7 @@
     const velo = $('#velo');
     if (abrir) {
       renderizarCanasta();
+      asegurarProductosCarrito();
       panel.classList.add('abierto');
       panel.setAttribute('aria-hidden', 'false');
       velo.hidden = false;
@@ -1144,8 +1203,9 @@
   /* ------------------------------------------------------------------ */
   /* Checkout                                                            */
   /* ------------------------------------------------------------------ */
-  function abrirCheckout() {
+  async function abrirCheckout() {
     if (!estado.canasta.length) { toast('Tu canasta está vacía'); return; }
+    await asegurarProductosCarrito();
     medir('InitiateCheckout', {
       content_type: 'product',
       content_ids: estado.canasta.map((l) => String(l.id)),
@@ -1237,7 +1297,7 @@
       return;
     }
     cont.innerHTML = estado.canasta.map((l) => {
-      const p = buscarProducto(l.id);
+      const p = productoDeLinea(l);
       if (!p) return '';
       return `<div class="resumen__linea">
         <span>${l.q} × ${esc(p.n)}</span>
@@ -1245,7 +1305,7 @@
       </div>`;
     }).join('');
     const total = estado.canasta.reduce((acc, l) => {
-      const p = buscarProducto(l.id);
+      const p = productoDeLinea(l);
       const precio = p ? precioVenta(p) : null;
       return acc + (precio ? precio * l.q : 0);
     }, 0);
@@ -1318,7 +1378,7 @@
     let n = 0;
 
     estado.canasta.forEach((l) => {
-      const p = buscarProducto(l.id);
+      const p = productoDeLinea(l);
       if (!p) return;
       n += 1;
       const precio = precioVenta(p) || 0;
