@@ -1,11 +1,11 @@
 {
- "generado": "2026-11-17T18:35:28+0000",
- "total": 13045,
+ "generado": "2026-11-18T18:12:04+0000",
+ "total": 13038,
  "categorias": [
   {
    "slug": "repuestos",
    "nombre": "Repuestos y aceites",
-   "total": 11955
+   "total": 11943
   },
   {
    "slug": "accesorios",
@@ -35,7 +35,7 @@
   {
    "slug": "kenton",
    "nombre": "Kenton",
-   "total": 57
+   "total": 61
   },
   {
    "slug": "yamaha",
@@ -45,7 +45,7 @@
   {
    "slug": "hd",
    "nombre": "Indumentaria de seguridad",
-   "total": 577
+   "total": 578
   },
   {
    "slug": "equipate",
