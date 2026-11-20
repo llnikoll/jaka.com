@@ -595,11 +595,11 @@
       seg.innerHTML = `
         <button class="modo-segmentado__btn ${!enMotos ? 'activo' : ''}" data-modo="bicis" role="tab" aria-selected="${!enMotos}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5L8.5 9h4l2.5 4.5M12 9l3-4h3"/></svg>
-          <span>Bicicletas y Accesorios</span>
+          <span class="modo__largo">Bicicletas y Accesorios</span><span class="modo__corto">Bicicletas</span>
         </button>
         <button class="modo-segmentado__btn ${enMotos ? 'activo' : ''}" data-modo="motos" role="tab" aria-selected="${enMotos}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="16" r="3"/><circle cx="19" cy="16" r="3"/><path d="M12 16h-3l2-7h4l2 4h2M14 9l1-3h3M9 12h5"/></svg>
-          <span>Motos y Repuestos</span>
+          <span class="modo__largo">Motos y Repuestos</span><span class="modo__corto">Motos</span>
         </button>`;
     }
 
@@ -1037,7 +1037,7 @@
       if (linea.q === 0) estado.canasta = estado.canasta.filter((l) => l !== linea);
     } else if (delta > 0) {
       estado.canasta.push({ id: String(id), q: 1, snap });
-      toast(`${producto.n.slice(0, 38)}${producto.n.length > 38 ? '…' : ''} se agregó a la canasta`);
+      toast('✓ Agregado a la canasta');
     }
     guardarCanasta();
     actualizarContadorCanasta();
