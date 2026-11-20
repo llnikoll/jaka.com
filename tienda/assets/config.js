@@ -31,13 +31,13 @@ window.TIENDA_CONFIG = {
   mostrarPrecioAnterior: false,
   mostrarDescuento: false,
   // ------------------- Margen de ganancia -------------------
-  // Recargo aplicado al precio original del catálogo.
+  // Recargo aplicado al precio original del catálogo: +15 % para TODOS los productos.
   recargoPct: 15,
-  // Productos con precio ORIGINAL de hasta `umbralBajo` usan `recargoBajoPct`
-  // EN LUGAR del general (no se suman).
-  // Ejemplo: original Gs 100.000 -> 125.000 · original Gs 400.000 -> 460.000
-  recargoBajoPct: 25,
-  umbralBajo: 300000,
+  // Recargo extra para productos baratos: desactivado (0).
+  // Si algún día querés un margen mayor en los baratos, poné recargoBajoPct > 0
+  // y umbralBajo > 0: esos productos usan recargoBajoPct EN LUGAR del general.
+  recargoBajoPct: 0,
+  umbralBajo: 0,
   // Redondeo del precio de venta: true = a Gs 10 / 100 / 1.000 / 10.000 según el monto
   // (false = número exacto, puede quedar Gs 9.324.315)
   redondeoPrecio: true,

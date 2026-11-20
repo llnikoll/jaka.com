@@ -3,8 +3,8 @@
 **En línea:** https://www.bicicleteria.capiata.com.py/
 
 Tienda propia para revender **CICLOVIA** (`https://www.ciclovia.com.py/`, grupo Chacomer, Paraguay) con el
-catálogo sincronizado desde la página original, un **recargo de margen configurable (+25 % en productos de hasta
-Gs 300.000 y +15 % en el resto)** y los pedidos llegando por **WhatsApp**.
+catálogo sincronizado desde la página original, un **recargo de margen configurable (+15 % en todos los
+productos)** y los pedidos llegando por **WhatsApp**.
 
 ## Empezá por acá
 
@@ -33,8 +33,8 @@ tienda/index.html        →  catálogo + canasta + pedido por WhatsApp
 
 - **Landing de inicio** con la elección **Bicicletas** o **Motos**; el catálogo vive en `/tienda.html`
   (`?seccion=bicis` / `?seccion=motos`).
-- **2.681 productos** publicados con **un solo precio limpio** (+25 % en los de hasta Gs 300.000 y +15 % en el
-  resto, sin tachado ni porcentajes), stock, marca e imagen.
+- **Todo el catálogo** (bicis + motos) publicado con **un solo precio limpio** (+15 % sobre el precio original,
+  sin tachado ni porcentajes), stock, marca e imagen.
 - **Abre en Accesorios** (752 productos) y carga cada categoría bajo demanda: la primera pantalla pesa **55 KB**
   comprimida en lugar del catálogo completo.
 - **Categorías completas:** Accesorios, Bicicletas, Fitness, Indumentaria, Autoaccesorios, Motos, Ofertas y Todos.

@@ -14,8 +14,7 @@ Ese CSV ya tiene el formato que pide Meta: `id, title, description, availability
 
 - **14.399 productos**: **2.772** de bicicletas/accesorios y **13.057 de motos** (repuestos, accesorios, cubiertas,
   baterías, herramientas, motos Kenton/Yamaha y más).
-- Precio con el recargo ya aplicado (**+25 %** si el original es de hasta Gs 300.000, **+15 %** si es mayor),
-  redondeado igual que la tienda.
+- Precio con el recargo ya aplicado (**+15 %** sobre el original en todos los productos), redondeado igual que la tienda.
 - `custom_label_0` separa **bicis** (vista) de **motos** (`motos`); `custom_label_3` trae la categoría fina
   (`motos/repuestos`, `bicicletas/mtb`, etc.).
 - `availability`: las bicis respetan el stock; las motos figuran **`in stock`** porque el listado de Chacomer no

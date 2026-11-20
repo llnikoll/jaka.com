@@ -223,31 +223,28 @@ mensaje ya escrito (plan y precio). Para cambiar precios, tareas o agregar un pl
 Todo se controla en `assets/config.js`:
 
 ```js
-recargoPct: 15,          // +15 % para productos de más de Gs 300.000
-recargoBajoPct: 25,      // +25 % para productos de hasta Gs 300.000 (reemplaza al 15 %)
-umbralBajo: 300000,      // Gs: el umbral se mide sobre el precio ORIGINAL
+recargoPct: 15,          // +15 % para TODOS los productos
+recargoBajoPct: 0,       // sin recargo extra por tramo (desactivado)
+umbralBajo: 0,           // sin umbral: todos usan recargoPct
 redondeoPrecio: true,    // Gs 10 / 100 / 1.000 / 10.000 según el monto
 ```
 
-**Cómo se calcula (un recargo según el tramo, no se suman):**
+**Cómo se calcula:**
 
-- Precio original **> Gs 300.000** → original × **1,15**.
-- Precio original **≤ Gs 300.000** → original × **1,25**.
+- Precio original **de cualquier monto** → original × **1,15**.
 
 El resultado se redondea hacia arriba (Gs 10 / 100 / 1.000 / 10.000 según el monto).
 
 Ejemplos reales del catálogo:
 
-| Original | Tramo | Cálculo | Precio final |
-|---:|---|---:|---:|
-| Gs 50.000 | ≤ 300.000 | × 1,25 | **62.500** |
-| Gs 100.000 | ≤ 300.000 | × 1,25 | **125.000** |
-| Gs 150.000 | ≤ 300.000 | × 1,25 | **188.000** |
-| Gs 266.305 | ≤ 300.000 | × 1,25 | **333.000** |
-| Gs 301.800 | > 300.000 | × 1,15 | **348.000** |
-| Gs 1.000.000 | > 300.000 | × 1,15 | **1.150.000** |
-
-Hoy: **1.339 productos** llevan el 25 % y **926** el 15 %.
+| Original | Cálculo | Precio final |
+|---:|---|---:|
+| Gs 50.000 | × 1,15 | **57.500** |
+| Gs 100.000 | × 1,15 | **115.000** |
+| Gs 150.000 | × 1,15 | **173.000** |
+| Gs 266.305 | × 1,15 | **307.000** |
+| Gs 301.800 | × 1,15 | **348.000** |
+| Gs 1.000.000 | × 1,15 | **1.150.000** |
 
 Se aplica en el momento: la tarjeta, la ficha, la canasta, el total y el mensaje de WhatsApp usan el mismo precio.
 No hay que regenerar el catálogo ni esperar la actualización diaria; alcanza con recargar la página
@@ -383,8 +380,7 @@ python tienda\build_catalogo.py     # genera bicis + llama a build_motos.py al f
 
 ### Reglas
 
-- **Mismo margen** que las bicis: +25 % hasta Gs 300.000 y +15 % arriba (sobre el precio de Chacomer, con el
-  descuento online ya aplicado).
+- **Mismo margen** que las bicis: +15 % sobre el precio de Chacomer (con el descuento online ya aplicado).
 - **Stock:** el listado de Chacomer no informa disponibilidad, así que las tarjetas muestran
   **“Stock a confirmar”** y se confirma por WhatsApp.
 - Los productos se muestran todos (también los que puedan estar sin stock), igual que las bicicletas.
