@@ -1,11 +1,11 @@
 {
- "generado": "2026-11-19T18:25:01+0000",
- "total": 13047,
+ "generado": "2026-11-20T18:03:22+0000",
+ "total": 13105,
  "categorias": [
   {
    "slug": "repuestos",
    "nombre": "Repuestos y aceites",
-   "total": 11955
+   "total": 12009
   },
   {
    "slug": "accesorios",
@@ -15,7 +15,7 @@
   {
    "slug": "cubiertas",
    "nombre": "Cubiertas y cámaras",
-   "total": 249
+   "total": 250
   },
   {
    "slug": "baterias",
@@ -45,7 +45,7 @@
   {
    "slug": "hd",
    "nombre": "Indumentaria de seguridad",
-   "total": 578
+   "total": 581
   },
   {
    "slug": "equipate",
