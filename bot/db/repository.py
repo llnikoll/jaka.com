@@ -50,22 +50,15 @@ def get_or_create_contact(phone_e164: str, display_name: str | None = None) -> d
 
 
 def get_or_create_conversation(contact_id: str, channel: str = "whatsapp") -> dict[str, Any]:
-    """Devuelve la conversación abierta existente o crea una nueva."""
+    """Devuelve o crea atómicamente la conversación abierta del contacto/canal."""
     with connection() as conn:
-        row = conn.execute(
-            """
-            SELECT * FROM conversations
-            WHERE contact_id = %s AND channel = %s AND status <> 'closed'
-            ORDER BY created_at DESC LIMIT 1
-            """,
-            (contact_id, channel),
-        ).fetchone()
-        if row:
-            return row
         return conn.execute(
             """
             INSERT INTO conversations (contact_id, channel)
-            VALUES (%s, %s) RETURNING *
+            VALUES (%s, %s)
+            ON CONFLICT (contact_id, channel) WHERE status <> 'closed'
+            DO UPDATE SET updated_at = conversations.updated_at
+            RETURNING *
             """,
             (contact_id, channel),
         ).fetchone()
