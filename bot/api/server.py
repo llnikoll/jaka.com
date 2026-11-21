@@ -280,7 +280,12 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_OPTIONS(self):
-        self.send_json(204, {})
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", ALLOWED_ORIGIN)
+        self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.send_header("Content-Length", "0")
+        self.end_headers()
 
     def do_GET(self):
         parsed = urlparse(self.path)
