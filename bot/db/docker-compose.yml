@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jaka-chatbot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-jaka_chatbot}
+      POSTGRES_USER: ${POSTGRES_USER:-jaka_bot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copiá .env.example a .env y configurá POSTGRES_PASSWORD}
+      TZ: America/Asuncion
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - jaka_postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jaka_bot} -d ${POSTGRES_DB:-jaka_chatbot}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  jaka_postgres_data:
