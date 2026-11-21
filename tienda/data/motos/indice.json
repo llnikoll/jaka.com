@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-20T18:03:22+0000",
+ "generado": "2026-11-21T16:57:23+0000",
  "total": 13105,
  "categorias": [
   {
@@ -15,7 +15,7 @@
   {
    "slug": "cubiertas",
    "nombre": "Cubiertas y cámaras",
-   "total": 250
+   "total": 249
   },
   {
    "slug": "baterias",
@@ -45,7 +45,7 @@
   {
    "slug": "hd",
    "nombre": "Indumentaria de seguridad",
-   "total": 581
+   "total": 582
   },
   {
    "slug": "equipate",
