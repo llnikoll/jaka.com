@@ -93,5 +93,28 @@ PostgreSQL guardará contactos, conversaciones, mensajes, estados bot/humano, pe
 - Devuelve 404 para ID inexistente y 400 para parámetros inválidos.
 - Pruebas unitarias pasan.
 
+## Estado de validación de la primera etapa
+
+Validada contra el snapshot real del repositorio (catálogo del 21/11/2026), no contra datos de ejemplo:
+
+| Chequeo | Resultado |
+|---|---|
+| Productos cargados por la API | **15.884** (2.779 bicicletas/accesorios + 13.105 motos), igual al total de `indice.json` |
+| Precio de venta vs. tienda | **15.884 fichas comparadas, 0 diferencias**. Se compara contra el código real de `tienda/assets/app.js` (extraído y ejecutado con Node), no contra una copia de la fórmula |
+| Recargo y redondeo | La API lee `recargoPct`, `recargoBajoPct`, `umbralBajo` y `redondeoPrecio` de `config.js` y coinciden con el frontend |
+| Servicios técnicos | Los 3 planes y sus ítems se leen de `config.js`; coinciden en nombre, precio y detalle |
+| Códigos de stock | La distribución 1.355 / 1.099 / 298 / 27 (estados 0/1/2/3) coincide con `por_estado` del índice |
+| Motos | 13.105 de 13.105 quedan con disponibilidad `confirm`; ninguna se informa como stock confirmado |
+| Productos sin precio | 1.424 fichas de Ciclovía devuelven `price: null`; no se inventa precio |
+| Rutas HTTP | 200 / 400 / 404 conforme a la especificación, verificadas sobre un servidor real |
+
+No hizo falta corregir diferencias de precio ni de estructura: la etapa 1 cumple los criterios de aceptación.
+
 ## Siguiente trabajo
-Ejecutar pruebas con el snapshot local del repositorio, corregir cualquier diferencia de precio o estructura, añadir tests de integración con productos reales y luego integrar n8n/IA. No activar WhatsApp real antes de validar coexistencia.
+
+Integrar n8n e IA (etapas 2 y 4). Antes hay que decidir el proveedor de modelo y montar el flujo
+recepción → intención → API de catálogo → respuesta. La base PostgreSQL de la etapa 4 ya está en la rama
+`feat/chatbot-conversations-db`, pero todavía no se probó en Windows con Docker.
+
+No activar WhatsApp real antes de validar coexistencia con el número actual.
+
