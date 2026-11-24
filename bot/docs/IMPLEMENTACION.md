@@ -110,11 +110,28 @@ Validada contra el snapshot real del repositorio (catálogo del 21/11/2026), no 
 
 No hizo falta corregir diferencias de precio ni de estructura: la etapa 1 cumple los criterios de aceptación.
 
+## Estado de validación de la cuarta etapa (persistencia)
+
+La rama `feat/chatbot-conversations-db` quedó validada contra PostgreSQL real:
+
+| Chequeo | Resultado |
+|---|---|
+| Versión | PostgreSQL **16.9**, misma versión mayor que `postgres:16-alpine` del compose |
+| Esquema en base vacía | Crea las 6 tablas (`contacts`, `conversations`, `messages`, `orders`, `order_items`, `audit_log`) y los 2 índices únicos parciales |
+| Pruebas | **18/18**. Alta idempotente de contactos, teléfono inválido rechazado por el `CHECK`, una sola conversación abierta por contacto, conversación nueva al cerrar la anterior, deduplicación por id externo, auditoría del cambio bot/humano, subtotal del pedido y rollback completo cuando falla un renglón |
+| Validación de entrada | `delivery_method` se valida en Python; antes un valor inválido salía como `CheckViolation` de psycopg |
+
+Lo que **no** quedó probado: el `docker compose up` en sí (la máquina de validación no tiene Docker
+Desktop) y el comportamiento con volumen persistente entre reinicios.
+
 ## Siguiente trabajo
 
 Integrar n8n e IA (etapas 2 y 4). Antes hay que decidir el proveedor de modelo y montar el flujo
-recepción → intención → API de catálogo → respuesta. La base PostgreSQL de la etapa 4 ya está en la rama
-`feat/chatbot-conversations-db`, pero todavía no se probó en Windows con Docker.
+recepción → intención → API de catálogo → respuesta.
+
+Falta además cerrar dos huecos de la capa de datos para que la etapa 2 la pueda usar: no hay función
+para **leer el historial** de una conversación (el asistente necesita contexto) ni para **cambiar el
+estado de un pedido** (`confirmed` / `rejected`, que hoy solo existe como valor del `CHECK`).
 
 No activar WhatsApp real antes de validar coexistencia con el número actual.
 
