@@ -128,17 +128,32 @@ La rama `feat/chatbot-conversations-db` quedó validada contra PostgreSQL real:
 Lo que **no** quedó probado: el `docker compose up` en sí (la máquina de validación no tiene Docker
 Desktop) y el comportamiento con volumen persistente entre reinicios.
 
+## Estado de la segunda etapa (asistente local)
+
+Implementado en `bot/service/`, corriendo en local y sin WhatsApp. Se probó de punta a punta
+con conversaciones reales contra el catálogo publicado.
+
+| Chequeo | Resultado |
+|---|---|
+| Precio inventado | **Imposible por diseño**: si la búsqueda no devuelve nada, no se llama al modelo para redactar y se responde con una plantilla honesta |
+| Precio real | Los importes salen de la API de catálogo; se verificaron contra ella (cámara, cubierta 700x25, casco, planes de service) |
+| Contexto | "y cuánto sale el más barato?" después de "tenés cascos scott?" resuelve la referencia con el historial |
+| Producto inexistente | "bici voladora láser" → responde que no lo tiene y ofrece el WhatsApp del taller |
+| Consulta con modificadores | "cámaras 26 para mtb" no daba resultados (la API exige todas las palabras); se agregó reintento soltando la última palabra |
+| Latencia | 1,0–2,9 s por respuesta con `gemini-3.1-flash-lite`. `gemini-3.5-flash` tardó 17–35 s y `gemini-3.8-flash` devolvió 503: por eso el default es el lite |
+| Historial | Guarda en PostgreSQL cuando hay `DATABASE_URL` + psycopg; si no, en memoria. El `/health` informa cuál está activo |
+| Pruebas | **17/17** con dobles del modelo y del catálogo, sin red ni API key |
+
+Lo que **no** hace todavía: no recibe WhatsApp, no agenda turnos (explica los planes pero no
+reserva), no arma pedidos y el "quiero hablar con una persona" no avisa a nadie.
+
 ## Siguiente trabajo
 
-Integrar n8n e IA (etapas 2 y 4). Antes hay que decidir el proveedor de modelo y montar el flujo
-recepción → intención → API de catálogo → respuesta.
+Conectar el servicio al webhook de WhatsApp (etapa 3). Antes hay que validar la coexistencia
+del número actual con la Cloud API y conseguir las credenciales de Meta.
 
-La capa de datos ya tiene todo lo que la etapa 2 necesita: resolver el contacto y su conversación
-abierta, leer el historial para dar contexto al modelo, guardar los mensajes sin duplicar reintentos,
-armar el pedido pendiente y confirmarlo o rechazarlo dejando auditoría.
-
-Queda pendiente el puente entre las dos piezas: un proceso que reciba el webhook, consulte la API de
-catálogo y llame a la IA. Eso es la etapa 2 y no está empezado.
+Después, cerrar el circuito comercial: que el asistente use `create_pending_order` para armar
+el pedido y `set_order_status` para que una persona lo confirme.
 
 No activar WhatsApp real antes de validar coexistencia con el número actual.
 

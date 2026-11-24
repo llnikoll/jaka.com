@@ -11,6 +11,10 @@ productos)** y los pedidos llegando por **WhatsApp**.
 | Archivo | Para qué sirve |
 |---|---|
 | **[tienda/index.html](tienda/index.html)** | **La tienda** (abrir en el navegador). Catálogo + canasta + pedido por WhatsApp |
+| **[bot/service/README.md](bot/service/README.md)** | **El chatbot en local**: probá el asistente en el navegador, sin WhatsApp |
+| **[bot/api/README.md](bot/api/README.md)** | API local de catálogo que usa el chatbot (precios y stock reales) |
+| **[bot/db/README.md](bot/db/README.md)** | PostgreSQL local para conversaciones, pedidos y auditoría |
+| **[bot/docs/IMPLEMENTACION.md](bot/docs/IMPLEMENTACION.md)** | Cómo está armado el chatbot por etapas y qué falta |
 | **[tienda/README.md](tienda/README.md)** | Cómo publicarla, cómo actualizar precios y cómo configurarla |
 | **[PLAN.md](PLAN.md)** | Análisis de viabilidad y plan completo: arquitectura, reglas, fases, costos y riesgos |
 | **[poc/REPORTE.md](poc/REPORTE.md)** | Prueba de extracción: 2.681 productos, 100 % de cobertura de los 4 pilares |

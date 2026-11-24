@@ -38,3 +38,6 @@ desktop.ini
 
 # Secretos y datos locales del chatbot
 bot/db/.env
+
+# Secretos de los servicios del chatbot (una .env por servicio)
+bot/*/.env
