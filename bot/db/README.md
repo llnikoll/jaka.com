@@ -70,6 +70,35 @@ No pegues la contraseña en chats, capturas ni repositorios.
 - No ejecutar `docker compose down -v`: elimina el volumen y los datos persistidos.
 - El esquema se ejecuta automáticamente solo al crear el volumen por primera vez. En instalaciones existentes, aplicar migraciones explícitas.
 
+## Pruebas
+
+Con PostgreSQL levantado y `DATABASE_URL` configurada en la terminal:
+
+```powershell
+py -3 -m pip install -r bot/db/requirements.txt
+$env:DATABASE_URL = "postgresql://jaka_bot:TU_CLAVE@127.0.0.1:5432/jaka_chatbot"
+py -m unittest discover -s bot/db/tests -t . -v
+```
+
+Son **18 pruebas contra la base real**, no contra un doble: alta idempotente de contactos, teléfono
+inválido rechazado por el `CHECK`, una sola conversación abierta por contacto, apertura de una nueva al
+cerrar la anterior, deduplicación de mensajes por id externo del proveedor, auditoría del cambio
+bot/humano, subtotal del pedido y **rollback completo** cuando un renglón falla después de insertar el
+pedido.
+
+Los tests aplican `schema.sql` al empezar (es idempotente) y borran sus propios datos al terminar, así
+que se pueden correr contra la base de desarrollo sin dejar basura. Sin `DATABASE_URL` se saltean en vez
+de fallar.
+
+### Validación realizada
+
+- PostgreSQL **16.9**, la misma versión mayor que la imagen `postgres:16-alpine` del compose.
+- Esquema aplicado sobre una base **vacía**: crea las 6 tablas y los 2 índices únicos parciales.
+- 18/18 pruebas en verde.
+
+Lo que **no** quedó probado: el `docker compose up` en sí (la máquina donde se validó no tiene Docker
+Desktop) y el comportamiento con volumen persistente entre reinicios.
+
 ## Limitación de esta entrega
 
 Es la base de persistencia local. No incluye aún panel web, API de conversaciones, automatizaciones, envío de mensajes ni integración real de WhatsApp.

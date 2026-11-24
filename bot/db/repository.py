@@ -17,6 +17,10 @@ except ImportError:  # Permite importar el módulo y mostrar un error claro al u
     dict_row = None
 
 
+# Valores aceptados por orders.delivery_method en schema.sql.
+DELIVERY_METHODS = {"pickup", "delivery", "to_coordinate"}
+
+
 def database_url() -> str:
     value = os.getenv("DATABASE_URL", "").strip()
     if not value:
@@ -151,6 +155,12 @@ def create_pending_order(
     """
     if not items:
         raise ValueError("El pedido debe contener al menos un producto")
+    if delivery_method is not None and delivery_method not in DELIVERY_METHODS:
+        # Sin esto, un "envio" del asistente llegaba hasta el CHECK de la tabla y salía
+        # como CheckViolation de psycopg, que no dice nada útil sobre qué corregir.
+        raise ValueError(
+            "delivery_method debe ser pickup, delivery o to_coordinate"
+        )
     allowed = {"available_in_catalog", "out_of_stock", "confirm", "no_data"}
     subtotal = 0
     normalized = []
