@@ -59,8 +59,12 @@ La API carga los archivos al iniciar el proceso. Tras una actualización de cat�
 ## Pruebas
 
 ```bash
-python -m unittest discover -s bot/api/tests -v
+python -m unittest discover -s bot/api/tests -t . -v
 ```
+
+El `-t .` no es opcional: fija la raíz del repositorio como punto de partida para que los tests
+puedan importar `bot.api.server`. Sin él, `unittest` intenta importar los módulos como si estuvieran
+sueltos y falla con `Start directory is not importable`.
 
 Hay dos niveles:
 
