@@ -208,3 +208,186 @@ def create_pending_order(
             (conversation_id, str(order["id"]), len(normalized)),
         )
         return order
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Lectura del historial (lo que el asistente necesita para tener contexto)
+# ─────────────────────────────────────────────────────────────────────────
+
+
+def get_recent_messages(
+    conversation_id: str,
+    limit: int = 20,
+    *,
+    include_internal: bool = False,
+) -> list[dict[str, Any]]:
+    """
+    Los últimos `limit` mensajes de una conversación, del más viejo al más nuevo.
+
+    Devuelve en orden cronológico a propósito: el orden inverso (de más nuevo a más
+    viejo) es cómodo para la consulta pero incómodo para armar el contexto del modelo,
+    y es el error clásico al conectar esto. El recorte a `limit` sí se hace por el final.
+
+    `include_internal` deja afuera los mensajes con direction='internal' (notas del
+    dueño, por ejemplo): el asistente no debe leer sus propias notas de trabajo.
+
+    Se ordena por `created_at` y se desempata con `id` para que dos mensajes guardados
+    en el mismo instante salgan siempre en el mismo orden. El id es un UUID, así que no
+    representa el orden real de llegada; si algún día importa, hace falta una columna
+    serial en `messages`.
+    """
+    try:
+        limite = max(1, min(int(limit), 200))
+    except (TypeError, ValueError):
+        raise ValueError("limit debe ser un número entre 1 y 200")
+
+    with connection() as conn:
+        filas = conn.execute(
+            """
+            SELECT id, direction, body, message_type, delivery_status, created_at
+            FROM messages
+            WHERE conversation_id = %s
+              AND (%s::boolean OR direction <> 'internal')
+            ORDER BY created_at DESC, id DESC
+            LIMIT %s
+            """,
+            (conversation_id, include_internal, limite),
+        ).fetchall()
+
+    return list(reversed(filas))
+
+
+def get_conversation_history(
+    contact_id: str,
+    channel: str = "whatsapp",
+    limit: int = 20,
+    *,
+    include_internal: bool = False,
+) -> dict[str, Any]:
+    """
+    La conversación abierta del contacto y sus últimos mensajes.
+
+    Es la llamada que hace el asistente al recibir un mensaje: una sola función que
+    resuelve a qué conversación pertenece y qué se dijeron antes.
+
+    Si el contacto todavía no tiene conversación abierta, devuelve
+    {"conversation": None, "messages": []} en vez de crear una: leer no debe escribir.
+    """
+    with connection() as conn:
+        conversacion = conn.execute(
+            """
+            SELECT * FROM conversations
+            WHERE contact_id = %s AND channel = %s AND status <> 'closed'
+            ORDER BY updated_at DESC
+            LIMIT 1
+            """,
+            (contact_id, channel),
+        ).fetchone()
+
+    if conversacion is None:
+        return {"conversation": None, "messages": []}
+
+    return {
+        "conversation": conversacion,
+        "messages": get_recent_messages(
+            conversacion["id"], limit, include_internal=include_internal
+        ),
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Pedidos: lectura y cambio de estado
+# ─────────────────────────────────────────────────────────────────────────
+
+# Estados posibles de un pedido (deben coincidir con el CHECK de orders.status).
+ORDER_STATUSES = ("pending_confirmation", "confirmed", "rejected", "cancelled")
+
+# A qué estados se puede pasar desde cada uno. Los estados finales no vuelven atrás:
+# un pedido rechazado o cancelado no se "des-cancela", se crea uno nuevo, así queda
+# la traza de qué pasó.
+ORDER_TRANSITIONS: dict[str, set[str]] = {
+    "pending_confirmation": {"confirmed", "rejected", "cancelled"},
+    "confirmed": {"cancelled"},
+    "rejected": set(),
+    "cancelled": set(),
+}
+
+
+def get_order(order_id: str) -> dict[str, Any]:
+    """Un pedido con sus renglones. Lanza ValueError si no existe."""
+    with connection() as conn:
+        pedido = conn.execute("SELECT * FROM orders WHERE id = %s", (order_id,)).fetchone()
+        if pedido is None:
+            raise ValueError("Pedido no encontrado")
+        pedido["items"] = conn.execute(
+            """
+            SELECT id, product_id, product_name_snapshot, quantity, unit_price,
+                   availability_snapshot
+            FROM order_items
+            WHERE order_id = %s
+            ORDER BY created_at, id
+            """,
+            (order_id,),
+        ).fetchall()
+        return pedido
+
+
+def set_order_status(
+    order_id: str,
+    status: str,
+    *,
+    actor: str,
+    reason: str | None = None,
+) -> dict[str, Any]:
+    """
+    Confirma, rechaza o cancela un pedido, y deja constancia en la auditoría.
+
+    No descuenta stock ni cobra nada: el pedido es un registro comercial, la venta se
+    cierra por WhatsApp. Sí bloquea la fila con FOR UPDATE para que dos operadores que
+    confirman al mismo tiempo no se pisen ni generen dos eventos de auditoría
+    contradictorios.
+
+    Volver a poner el estado que ya tiene es idempotente (no falla ni duplica auditoría):
+    un reintento de n8n no debería romper.
+    """
+    if status not in ORDER_STATUSES:
+        raise ValueError(f"status debe ser uno de: {', '.join(ORDER_STATUSES)}")
+
+    with connection() as conn:
+        pedido = conn.execute(
+            "SELECT * FROM orders WHERE id = %s FOR UPDATE", (order_id,)
+        ).fetchone()
+        if pedido is None:
+            raise ValueError("Pedido no encontrado")
+
+        actual = pedido["status"]
+        if status == actual:
+            return pedido
+
+        permitidos = ORDER_TRANSITIONS.get(actual, set())
+        if status not in permitidos:
+            opciones = ", ".join(sorted(permitidos)) or "ninguno (estado final)"
+            raise ValueError(
+                f"No se puede pasar un pedido de '{actual}' a '{status}'. "
+                f"Desde '{actual}' solo se puede pasar a: {opciones}."
+            )
+
+        actualizado = conn.execute(
+            "UPDATE orders SET status = %s, updated_at = NOW() WHERE id = %s RETURNING *",
+            (status, order_id),
+        ).fetchone()
+
+        detalles = {
+            "order_id": str(order_id),
+            "from": actual,
+            "to": status,
+            "reason": reason,
+        }
+        conn.execute(
+            """
+            INSERT INTO audit_log (conversation_id, actor, action, details)
+            VALUES (%s, %s, 'order.status_changed', %s::jsonb)
+            """,
+            (pedido["conversation_id"], actor, json.dumps(detalles, ensure_ascii=False)),
+        )
+        return actualizado

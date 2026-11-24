@@ -57,7 +57,67 @@ No pegues la contraseña en chats, capturas ni repositorios.
 
 ## API de repositorio
 
-`repository.py` ofrece funciones para crear/recuperar contactos y conversaciones, guardar mensajes idempotentes, cambiar el modo bot/humano y crear pedidos pendientes. Es una capa interna Python, no un endpoint HTTP público. Todavía no está conectada a WhatsApp, n8n ni al servidor de catálogo.
+`repository.py` es una capa interna Python, no un endpoint HTTP público. Hoy no está conectada a
+WhatsApp, n8n ni al servidor de catálogo.
+
+| Función | Para qué |
+|---|---|
+| `get_or_create_contact(phone, nombre)` | Alta o actualización del contacto por teléfono E.164 |
+| `get_or_create_conversation(contact_id)` | Devuelve la conversación abierta o crea una nueva |
+| `save_message(...)` | Guarda un mensaje y deduplica por id externo del proveedor |
+| `set_conversation_mode(id, modo, actor=)` | Alterna `bot_active` / `human` / `closed` con auditoría |
+| `create_pending_order(...)` | Arma un pedido `pending_confirmation` con sus renglones |
+| `get_recent_messages(conv, limit, include_internal=)` | Historial en orden cronológico, para el contexto del asistente |
+| `get_conversation_history(contact_id)` | Conversación abierta + últimos mensajes en una sola llamada |
+| `get_order(order_id)` | Pedido con sus renglones |
+| `set_order_status(order_id, estado, actor=)` | Confirma, rechaza o cancela, con auditoría y transiciones controladas |
+
+### Transiciones de pedido
+
+```
+pending_confirmation ──► confirmed ──► cancelled
+        │
+        ├──► rejected
+        └──► cancelled
+```
+
+`rejected` y `cancelled` son finales: un pedido cancelado no se "des-cancela", se crea uno nuevo, así
+queda la traza de qué pasó. Repetir el estado que ya tiene es idempotente, para que un reintento de n8n
+no rompa ni duplique la auditoría. El cambio bloquea la fila con `FOR UPDATE`, así dos operadores
+confirmando a la vez no generan dos eventos contradictorios.
+
+Ningún cambio de estado descuenta stock ni cobra nada: el pedido es un registro comercial y la venta se
+cierra por WhatsApp.
+
+## Pruebas
+
+Con PostgreSQL levantado y `DATABASE_URL` configurada en la terminal:
+
+```powershell
+py -3 -m pip install -r bot/db/requirements.txt
+$env:DATABASE_URL = "postgresql://jaka_bot:TU_CLAVE@127.0.0.1:5432/jaka_chatbot"
+py -m unittest discover -s bot/db/tests -t . -v
+```
+
+Son **35 pruebas contra la base real**, no contra un doble: alta idempotente de contactos, teléfono
+inválido rechazado por el `CHECK`, una sola conversación abierta por contacto, apertura de una nueva al
+cerrar la anterior, deduplicación de mensajes por id externo, auditoría del cambio bot/humano, subtotal
+del pedido, **rollback completo** cuando un renglón falla después de insertar el pedido, orden
+cronológico del historial, exclusión de mensajes internos, transiciones de estado inválidas y
+confirmación concurrente del mismo pedido.
+
+Los tests aplican `schema.sql` al empezar (es idempotente) y borran sus propios datos al terminar, así
+que se pueden correr contra la base de desarrollo sin dejar basura. Sin `DATABASE_URL` se saltean en vez
+de fallar.
+
+### Validación realizada
+
+- PostgreSQL **16.9**, la misma versión mayor que la imagen `postgres:16-alpine` del compose.
+- Esquema aplicado sobre una base **vacía**: crea las 6 tablas y los 2 índices únicos parciales.
+- 35/35 pruebas en verde, tres corridas seguidas.
+
+Lo que **no** quedó probado: el `docker compose up` en sí (la máquina donde se validó no tiene Docker
+Desktop) y el comportamiento con volumen persistente entre reinicios.
 
 ## Seguridad y operación
 
@@ -70,35 +130,7 @@ No pegues la contraseña en chats, capturas ni repositorios.
 - No ejecutar `docker compose down -v`: elimina el volumen y los datos persistidos.
 - El esquema se ejecuta automáticamente solo al crear el volumen por primera vez. En instalaciones existentes, aplicar migraciones explícitas.
 
-## Pruebas
-
-Con PostgreSQL levantado y `DATABASE_URL` configurada en la terminal:
-
-```powershell
-py -3 -m pip install -r bot/db/requirements.txt
-$env:DATABASE_URL = "postgresql://jaka_bot:TU_CLAVE@127.0.0.1:5432/jaka_chatbot"
-py -m unittest discover -s bot/db/tests -t . -v
-```
-
-Son **18 pruebas contra la base real**, no contra un doble: alta idempotente de contactos, teléfono
-inválido rechazado por el `CHECK`, una sola conversación abierta por contacto, apertura de una nueva al
-cerrar la anterior, deduplicación de mensajes por id externo del proveedor, auditoría del cambio
-bot/humano, subtotal del pedido y **rollback completo** cuando un renglón falla después de insertar el
-pedido.
-
-Los tests aplican `schema.sql` al empezar (es idempotente) y borran sus propios datos al terminar, así
-que se pueden correr contra la base de desarrollo sin dejar basura. Sin `DATABASE_URL` se saltean en vez
-de fallar.
-
-### Validación realizada
-
-- PostgreSQL **16.9**, la misma versión mayor que la imagen `postgres:16-alpine` del compose.
-- Esquema aplicado sobre una base **vacía**: crea las 6 tablas y los 2 índices únicos parciales.
-- 18/18 pruebas en verde.
-
-Lo que **no** quedó probado: el `docker compose up` en sí (la máquina donde se validó no tiene Docker
-Desktop) y el comportamiento con volumen persistente entre reinicios.
-
 ## Limitación de esta entrega
 
 Es la base de persistencia local. No incluye aún panel web, API de conversaciones, automatizaciones, envío de mensajes ni integración real de WhatsApp.
+

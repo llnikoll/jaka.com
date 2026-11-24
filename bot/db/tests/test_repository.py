@@ -23,6 +23,7 @@ from __future__ import annotations
 import os
 import unittest
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 try:
@@ -307,6 +308,195 @@ class RepositorioTest(unittest.TestCase):
                 "SELECT count(*) AS n FROM orders WHERE conversation_id = %s", (conv["id"],)
             ).fetchone()
         self.assertEqual(pedidos["n"], 0, "quedó un pedido a medio crear")
+
+
+    # ── historial de conversación ────────────────────────────────────
+
+    def test_historial_devuelve_los_mensajes_en_orden_cronologico(self):
+        contacto = repository.get_or_create_contact(self.telefono)
+        conv = repository.get_or_create_conversation(contacto["id"])
+        for texto in ("Hola", "¿Tenés cámaras 26?", "Sale con envío"):
+            repository.save_message(conv["id"], "inbound", texto)
+
+        mensajes = repository.get_recent_messages(conv["id"])
+
+        self.assertEqual(
+            [m["body"] for m in mensajes],
+            ["Hola", "¿Tenés cámaras 26?", "Sale con envío"],
+            "el historial no vino en orden cronológico",
+        )
+
+    def test_historial_recorta_por_el_final(self):
+        contacto = repository.get_or_create_contact(self.telefono)
+        conv = repository.get_or_create_conversation(contacto["id"])
+        for i in range(5):
+            repository.save_message(conv["id"], "inbound", f"mensaje {i}")
+
+        mensajes = repository.get_recent_messages(conv["id"], limit=2)
+
+        self.assertEqual([m["body"] for m in mensajes], ["mensaje 3", "mensaje 4"])
+
+    def test_historial_no_expone_mensajes_internos_por_defecto(self):
+        contacto = repository.get_or_create_contact(self.telefono)
+        conv = repository.get_or_create_conversation(contacto["id"])
+        repository.save_message(conv["id"], "inbound", "Hola")
+        repository.save_message(conv["id"], "internal", "Nota del dueño: cliente conflictivo")
+
+        publicos = repository.get_recent_messages(conv["id"])
+        completos = repository.get_recent_messages(conv["id"], include_internal=True)
+
+        self.assertEqual([m["body"] for m in publicos], ["Hola"])
+        self.assertEqual(len(completos), 2)
+
+    def test_historial_de_conversacion_vacia(self):
+        contacto = repository.get_or_create_contact(self.telefono)
+        conv = repository.get_or_create_conversation(contacto["id"])
+        self.assertEqual(repository.get_recent_messages(conv["id"]), [])
+
+    def test_historial_rechaza_limite_invalido(self):
+        contacto = repository.get_or_create_contact(self.telefono)
+        conv = repository.get_or_create_conversation(contacto["id"])
+        with self.assertRaises(ValueError):
+            repository.get_recent_messages(conv["id"], limit="muchos")
+
+    def test_contexto_trae_conversacion_y_mensajes(self):
+        contacto = repository.get_or_create_contact(self.telefono)
+        conv = repository.get_or_create_conversation(contacto["id"])
+        repository.save_message(conv["id"], "inbound", "Hola")
+        repository.save_message(conv["id"], "outbound", "Hola! ¿Qué necesitás?")
+
+        contexto = repository.get_conversation_history(contacto["id"])
+
+        self.assertEqual(contexto["conversation"]["id"], conv["id"])
+        self.assertEqual(len(contexto["messages"]), 2)
+
+    def test_contexto_sin_conversacion_no_crea_una(self):
+        contacto = repository.get_or_create_contact(self.telefono)
+
+        contexto = repository.get_conversation_history(contacto["id"])
+
+        self.assertIsNone(contexto["conversation"])
+        self.assertEqual(contexto["messages"], [])
+        with psycopg.connect(repository.database_url(), row_factory=dict_row) as conn:
+            cuantas = conn.execute(
+                "SELECT count(*) AS n FROM conversations WHERE contact_id = %s",
+                (contacto["id"],),
+            ).fetchone()
+        self.assertEqual(cuantas["n"], 0, "leer el contexto creó una conversación")
+
+    # ── estado de los pedidos ────────────────────────────────────────
+
+    def _pedido_pendiente(self):
+        contacto, conv = self._conversacion()
+        pedido = repository.create_pending_order(
+            conv["id"], contacto["id"],
+            [{"product_id": "x", "product_name": "Cámara 26", "quantity": 1,
+              "unit_price": 100000, "availability": "confirm"}],
+        )
+        return contacto, conv, pedido
+
+    def _auditoria_de_pedido(self, conversation_id):
+        with psycopg.connect(repository.database_url(), row_factory=dict_row) as conn:
+            return conn.execute(
+                "SELECT actor, action, details FROM audit_log "
+                "WHERE conversation_id = %s AND action = 'order.status_changed'",
+                (conversation_id,),
+            ).fetchall()
+
+    def test_pedido_pendiente_se_confirma_y_queda_auditado(self):
+        _, conv, pedido = self._pedido_pendiente()
+
+        confirmado = repository.set_order_status(
+            pedido["id"], "confirmed", actor="op-1", reason="pagó en el local"
+        )
+
+        self.assertEqual(confirmado["status"], "confirmed")
+        auditoria = self._auditoria_de_pedido(conv["id"])
+        self.assertEqual(len(auditoria), 1)
+        self.assertEqual(auditoria[0]["actor"], "op-1")
+        self.assertEqual(auditoria[0]["details"]["from"], "pending_confirmation")
+        self.assertEqual(auditoria[0]["details"]["to"], "confirmed")
+        self.assertEqual(auditoria[0]["details"]["reason"], "pagó en el local")
+
+    def test_pedido_confirmado_se_puede_cancelar(self):
+        _, _, pedido = self._pedido_pendiente()
+        repository.set_order_status(pedido["id"], "confirmed", actor="op-1")
+
+        cancelado = repository.set_order_status(pedido["id"], "cancelled", actor="op-1")
+        self.assertEqual(cancelado["status"], "cancelled")
+
+    def test_estado_final_no_vuelve_atras(self):
+        _, _, pedido = self._pedido_pendiente()
+        repository.set_order_status(pedido["id"], "rejected", actor="op-1")
+
+        with self.assertRaises(ValueError):
+            repository.set_order_status(pedido["id"], "confirmed", actor="op-1")
+
+    def test_transicion_no_permitida_explica_las_opciones(self):
+        _, _, pedido = self._pedido_pendiente()
+        repository.set_order_status(pedido["id"], "confirmed", actor="op-1")
+
+        with self.assertRaises(ValueError) as ctx:
+            repository.set_order_status(pedido["id"], "rejected", actor="op-1")
+        self.assertIn("confirmed", str(ctx.exception))
+
+    def test_repetir_el_mismo_estado_no_duplica_auditoria(self):
+        _, conv, pedido = self._pedido_pendiente()
+        repository.set_order_status(pedido["id"], "confirmed", actor="op-1")
+
+        otra_vez = repository.set_order_status(pedido["id"], "confirmed", actor="op-1")
+
+        self.assertEqual(otra_vez["status"], "confirmed")
+        self.assertEqual(len(self._auditoria_de_pedido(conv["id"])), 1)
+
+    def test_estado_de_pedido_invalido_se_rechaza(self):
+        _, _, pedido = self._pedido_pendiente()
+        with self.assertRaises(ValueError):
+            repository.set_order_status(pedido["id"], "entregado", actor="op-1")
+
+    def test_pedido_inexistente_lanza_error(self):
+        with self.assertRaises(ValueError):
+            repository.set_order_status(str(uuid.uuid4()), "confirmed", actor="op-1")
+
+    def test_get_order_devuelve_los_renglones(self):
+        _, _, pedido = self._pedido_pendiente()
+
+        completo = repository.get_order(pedido["id"])
+
+        self.assertEqual(completo["id"], pedido["id"])
+        self.assertEqual(len(completo["items"]), 1)
+        self.assertEqual(completo["items"][0]["product_name_snapshot"], "Cámara 26")
+
+    def test_cambiar_estado_no_toca_el_subtotal_y_mueve_updated_at(self):
+        _, _, pedido = self._pedido_pendiente()
+        antes = repository.get_order(pedido["id"])
+
+        despues = repository.set_order_status(pedido["id"], "confirmed", actor="op-1")
+
+        self.assertEqual(despues["subtotal"], antes["subtotal"])
+        self.assertGreaterEqual(despues["updated_at"], antes["updated_at"])
+
+    def test_dos_confirmaciones_simultaneas_no_duplican_auditoria(self):
+        """
+        Dos operadores (o dos reintentos de n8n) confirmando a la vez.
+
+        El FOR UPDATE hace que la segunda transacción espere a la primera: cuando entra,
+        encuentra el pedido ya en 'confirmed' y sale por la rama idempotente. Sin el
+        bloqueo, las dos verían 'pending_confirmation' y quedarían dos eventos de
+        auditoría contradictorios.
+        """
+        _, conv, pedido = self._pedido_pendiente()
+
+        def confirmar(actor):
+            return repository.set_order_status(pedido["id"], "confirmed", actor=actor)
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            resultados = list(pool.map(confirmar, ["op-1", "op-2"]))
+
+        self.assertTrue(all(r["status"] == "confirmed" for r in resultados))
+        self.assertEqual(
+            len(self._auditoria_de_pedido(conv["id"])), 1, "se auditó la confirmación dos veces"
+        )
 
 
 if __name__ == "__main__":
