@@ -1,11 +1,11 @@
 {
- "generado": "2026-11-23T21:15:07+0000",
- "total": 13102,
+ "generado": "2026-11-24T20:17:55+0000",
+ "total": 13091,
  "categorias": [
   {
    "slug": "repuestos",
    "nombre": "Repuestos y aceites",
-   "total": 12008
+   "total": 11998
   },
   {
    "slug": "accesorios",
@@ -15,7 +15,7 @@
   {
    "slug": "cubiertas",
    "nombre": "Cubiertas y cámaras",
-   "total": 248
+   "total": 246
   },
   {
    "slug": "baterias",
