@@ -95,26 +95,50 @@ PostgreSQL guardará contactos, conversaciones, mensajes, estados bot/humano, pe
 
 ## Estado de validación de la primera etapa
 
-Validada contra el snapshot real del repositorio (catálogo del 21/11/2026), no contra datos de ejemplo:
+Validada contra el snapshot real del repositorio, no contra datos de ejemplo. Se corrió dos veces: sobre
+el catálogo de la rama (15.884 fichas, 21/11) y después sobre el snapshot publicado hoy en producción
+(15.871 fichas, 24/11), para que el resultado no dependa de datos viejos.
 
 | Chequeo | Resultado |
 |---|---|
-| Productos cargados por la API | **15.884** (2.779 bicicletas/accesorios + 13.105 motos), igual al total de `indice.json` |
-| Precio de venta vs. tienda | **15.884 fichas comparadas, 0 diferencias**. Se compara contra el código real de `tienda/assets/app.js` (extraído y ejecutado con Node), no contra una copia de la fórmula |
+| Productos cargados por la API | **15.871** en el snapshot de producción, igual al total de `indice.json` |
+| Precio de venta vs. tienda | **15.871 fichas comparadas, 0 diferencias** (y 15.884 en el snapshot anterior). Se compara contra el código real de `tienda/assets/app.js` (extraído y ejecutado con Node), no contra una copia de la fórmula |
 | Recargo y redondeo | La API lee `recargoPct`, `recargoBajoPct`, `umbralBajo` y `redondeoPrecio` de `config.js` y coinciden con el frontend |
 | Servicios técnicos | Los 3 planes y sus ítems se leen de `config.js`; coinciden en nombre, precio y detalle |
-| Códigos de stock | La distribución 1.355 / 1.099 / 298 / 27 (estados 0/1/2/3) coincide con `por_estado` del índice |
-| Motos | 13.105 de 13.105 quedan con disponibilidad `confirm`; ninguna se informa como stock confirmado |
-| Productos sin precio | 1.424 fichas de Ciclovía devuelven `price: null`; no se inventa precio |
+| Códigos de stock | La distribución por estado coincide con `por_estado` del índice en los dos snapshots |
+| Motos | Las 13.105 quedan con disponibilidad `confirm`; ninguna se informa como stock confirmado |
+| Productos sin precio | Las fichas de Ciclovía sin precio devuelven `price: null`; no se inventa precio |
 | Rutas HTTP | 200 / 400 / 404 conforme a la especificación, verificadas sobre un servidor real |
 
 No hizo falta corregir diferencias de precio ni de estructura: la etapa 1 cumple los criterios de aceptación.
 
+## Estado de validación de la cuarta etapa (persistencia)
+
+La rama `feat/chatbot-conversations-db` quedó validada contra PostgreSQL real:
+
+| Chequeo | Resultado |
+|---|---|
+| Versión | PostgreSQL **16.9**, misma versión mayor que `postgres:16-alpine` del compose |
+| Esquema en base vacía | Crea las 6 tablas (`contacts`, `conversations`, `messages`, `orders`, `order_items`, `audit_log`) y los 2 índices únicos parciales |
+| Pruebas | **35/35**. Alta idempotente de contactos, teléfono inválido rechazado por el `CHECK`, una sola conversación abierta por contacto, conversación nueva al cerrar la anterior, deduplicación por id externo, auditoría del cambio bot/humano, subtotal del pedido, rollback completo cuando falla un renglón, orden cronológico del historial, exclusión de mensajes internos, transiciones de estado inválidas y confirmación concurrente del mismo pedido |
+| Validación de entrada | `delivery_method` se valida en Python; antes un valor inválido salía como `CheckViolation` de psycopg |
+| Lectura de contexto | `get_recent_messages` y `get_conversation_history` devuelven el historial en orden cronológico y dejan afuera los mensajes internos; leer no crea conversaciones |
+| Estado de pedidos | `set_order_status` con transiciones controladas, auditoría por cambio, idempotencia ante reintentos y `FOR UPDATE` contra confirmaciones simultáneas |
+
+Lo que **no** quedó probado: el `docker compose up` en sí (la máquina de validación no tiene Docker
+Desktop) y el comportamiento con volumen persistente entre reinicios.
+
 ## Siguiente trabajo
 
 Integrar n8n e IA (etapas 2 y 4). Antes hay que decidir el proveedor de modelo y montar el flujo
-recepción → intención → API de catálogo → respuesta. La base PostgreSQL de la etapa 4 ya está en la rama
-`feat/chatbot-conversations-db`, pero todavía no se probó en Windows con Docker.
+recepción → intención → API de catálogo → respuesta.
+
+La capa de datos ya tiene todo lo que la etapa 2 necesita: resolver el contacto y su conversación
+abierta, leer el historial para dar contexto al modelo, guardar los mensajes sin duplicar reintentos,
+armar el pedido pendiente y confirmarlo o rechazarlo dejando auditoría.
+
+Queda pendiente el puente entre las dos piezas: un proceso que reciba el webhook, consulte la API de
+catálogo y llame a la IA. Eso es la etapa 2 y no está empezado.
 
 No activar WhatsApp real antes de validar coexistencia con el número actual.
 
