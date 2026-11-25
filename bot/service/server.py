@@ -15,9 +15,11 @@ from __future__ import annotations
 import json
 import logging
 import sys
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs, urlparse
 
-from bot.service import asistente, catalogo, config, memoria
+from bot.service import asistente, catalogo, config, memoria, whatsapp
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,6 +29,51 @@ logging.basicConfig(
 logger = logging.getLogger("jaka")
 
 TELEFONO_PRUEBA = "local-prueba"
+
+
+def responder_con_acciones(texto: str, historial: list[dict], telefono: str) -> dict:
+    """El asistente con las acciones conectadas: pedidos, turnos y derivación."""
+    return asistente.responder(
+        texto,
+        historial,
+        crear_pedido=lambda lineas: memoria.crear_pedido(telefono, lineas),
+        crear_turno=lambda servicio, fecha: memoria.crear_turno(telefono, servicio, fecha),
+        marcar_humano=lambda: memoria.marcar_humano(telefono),
+    )
+
+
+def procesar_webhook(payload: dict) -> None:
+    """
+    Atiende un webhook de WhatsApp fuera del ciclo de la respuesta.
+
+    Corre en un hilo aparte porque Meta espera el 200 en unos 5 segundos y el asistente
+    tarda 2-3: si se procesara antes de contestar, Meta reintentaría y el cliente
+    recibiría la misma respuesta varias veces.
+    """
+    try:
+        procesados = whatsapp.atender(
+            payload,
+            responder=responder_con_acciones,
+            historial_de=lambda telefono: memoria.contexto(telefono, config.MAX_HISTORIAL),
+        )
+    except Exception as e:  # noqa: BLE001
+        logger.exception(f"Error procesando el webhook: {e}")
+        return
+
+    for item in procesados:
+        resultado = item["resultado"]
+        if not resultado.get("error"):
+            memoria.guardar(
+                item["telefono"],
+                item["texto"],
+                resultado["respuesta"],
+                mensaje_id=item["mensaje_id"] or None,
+                provider="meta",
+            )
+        logger.info(
+            f"[{item['telefono']}] -> {resultado.get('intencion')} "
+            f"({resultado.get('ms')} ms)"
+        )
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -51,11 +98,58 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(datos)
 
+    def _texto(self, estado: int, cuerpo: str) -> None:
+        datos = cuerpo.encode("utf-8")
+        self.send_response(estado)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.send_header("Content-Length", str(len(datos)))
+        self.end_headers()
+        self.wfile.write(datos)
+
+    def _verificar_webhook(self) -> None:
+        """Verificación GET que hace Meta una sola vez, al configurar el webhook."""
+        params = parse_qs(urlparse(self.path).query)
+        modo = (params.get("hub.mode") or [""])[0]
+        token = (params.get("hub.verify_token") or [""])[0]
+        reto = (params.get("hub.challenge") or [""])[0]
+
+        if modo == "subscribe" and token == config.META_VERIFY_TOKEN:
+            logger.info("Webhook verificado por Meta")
+            # Meta exige el challenge tal cual, como texto plano.
+            return self._texto(200, reto)
+
+        logger.warning("Verificación de webhook rechazada: verify token incorrecto")
+        return self._texto(403, "verify token incorrecto")
+
+    def _recibir_webhook(self) -> None:
+        """POST de Meta: se valida la firma, se contesta 200 y se procesa aparte."""
+        try:
+            largo = int(self.headers.get("Content-Length") or 0)
+            cuerpo = self.rfile.read(largo)
+        except (ValueError, OSError):
+            return self._json(400, {"error": "no se pudo leer el cuerpo"})
+
+        firma = self.headers.get("X-Hub-Signature-256")
+        if not whatsapp.verificar_firma(cuerpo, firma):
+            return self._json(401, {"error": "firma inválida"})
+
+        try:
+            payload = json.loads(cuerpo.decode("utf-8") or "{}")
+        except (ValueError, UnicodeDecodeError):
+            # Un payload ilegible no se reintenta: devolver 200 evita que Meta insista.
+            logger.error("El webhook trajo algo que no es JSON")
+            return self._json(200, {"status": "ignorado"})
+
+        self._json(200, {"status": "ok"})
+        threading.Thread(target=procesar_webhook, args=(payload,), daemon=True).start()
+
     # ── rutas ────────────────────────────────────────────────────────
 
     def do_GET(self):  # noqa: N802
         ruta = self.path.split("?", 1)[0].rstrip("/") or "/"
 
+        if ruta == "/webhook":
+            return self._verificar_webhook()
         if ruta == "/":
             return self._html(PAGINA)
         if ruta == "/health":
@@ -64,6 +158,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):  # noqa: N802
         ruta = self.path.split("?", 1)[0].rstrip("/")
+
+        if ruta == "/webhook":
+            return self._recibir_webhook()
 
         if ruta == "/limpiar":
             memoria.limpiar(TELEFONO_PRUEBA)
@@ -84,13 +181,7 @@ class Handler(BaseHTTPRequestHandler):
 
         telefono = (datos.get("telefono") or TELEFONO_PRUEBA).strip()
         historial = memoria.contexto(telefono, config.MAX_HISTORIAL)
-        resultado = asistente.responder(
-            texto,
-            historial,
-            crear_pedido=lambda lineas: memoria.crear_pedido(telefono, lineas),
-            crear_turno=lambda servicio, fecha: memoria.crear_turno(telefono, servicio, fecha),
-            marcar_humano=lambda: memoria.marcar_humano(telefono),
-        )
+        resultado = responder_con_acciones(texto, historial, telefono)
 
         # Los avisos técnicos no se guardan como si fueran una respuesta del agente.
         if not resultado.get("error"):
@@ -117,6 +208,8 @@ def estado_servicio() -> dict:
         "modelo": config.GEMINI_MODEL,
         "ia": "configurada" if config.hay_ia() else "falta GEMINI_API_KEY",
         "base_de_datos": "postgresql" if memoria.hay_base() else f"memoria ({memoria.motivo_sin_base()})",
+        "whatsapp": "configurado" if config.whatsapp_configurado()
+        else f"falta {config.falta_para_whatsapp()}",
     }
     try:
         estado = catalogo.estado()
@@ -144,6 +237,10 @@ def main() -> int:
     print(f"  Modelo:                {config.GEMINI_MODEL}")
     print(f"  Catálogo:              {config.CATALOG_API_URL}")
     print(f"  Historial:             {'PostgreSQL' if memoria.hay_base() else 'memoria'}")
+    if config.whatsapp_configurado():
+        print(f"  WhatsApp:              webhook en /webhook (API {config.META_API_VERSION})")
+    else:
+        print(f"  WhatsApp:              sin configurar ({config.falta_para_whatsapp()})")
     print("  Ctrl+C para detener.")
     print()
 

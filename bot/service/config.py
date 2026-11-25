@@ -56,7 +56,35 @@ MAX_HISTORIAL = int(os.getenv("MAX_HISTORIAL") or "10")
 # y encarece la llamada.
 MAX_PRODUCTOS_CONTEXTO = 5
 
+# ── WhatsApp Cloud API ────────────────────────────────────────────────
+# Las cuatro son de la app de Meta. Sin ellas el servicio igual arranca: el chat local
+# sigue funcionando y el webhook responde 503 con el detalle.
+META_VERIFY_TOKEN = (os.getenv("META_VERIFY_TOKEN") or "jaka-bici-2026").strip()
+META_APP_SECRET = (os.getenv("META_APP_SECRET") or "").strip()
+META_ACCESS_TOKEN = (os.getenv("META_ACCESS_TOKEN") or "").strip()
+META_PHONE_NUMBER_ID = (os.getenv("META_PHONE_NUMBER_ID") or "").strip()
+META_API_VERSION = (os.getenv("META_API_VERSION") or "v25.0").strip()
+
 
 def hay_ia() -> bool:
     """True si hay clave configurada. El servicio igual arranca sin ella (modo seco)."""
     return bool(GEMINI_API_KEY)
+
+
+def whatsapp_configurado() -> bool:
+    """True si están las tres credenciales que hacen falta para mandar mensajes."""
+    return bool(META_ACCESS_TOKEN and META_PHONE_NUMBER_ID and META_APP_SECRET)
+
+
+def falta_para_whatsapp() -> str:
+    """Qué variable falta, para poder decirlo en el health check."""
+    faltan = [
+        nombre
+        for nombre, valor in (
+            ("META_ACCESS_TOKEN", META_ACCESS_TOKEN),
+            ("META_PHONE_NUMBER_ID", META_PHONE_NUMBER_ID),
+            ("META_APP_SECRET", META_APP_SECRET),
+        )
+        if not valor
+    ]
+    return ", ".join(faltan) if faltan else ""

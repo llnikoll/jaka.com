@@ -156,13 +156,33 @@ devuelve lista pero nadie la envía al cliente todavía.
 
 > Las imágenes son de Ciclovía y su uso comercial es la condición #1 del `PLAN.md`.
 
+## Estado de la tercera etapa (WhatsApp)
+
+El adaptador está implementado en `bot/service/whatsapp.py` y probado con payloads iguales a los de
+Meta. Falta sólo cargar las credenciales de la app para que atienda mensajes reales.
+
+| Chequeo | Resultado |
+|---|---|
+| Verificación del webhook | `GET /webhook` devuelve el desafío con el verify token correcto y **403** con uno incorrecto |
+| Firma | `POST /webhook` acepta con HMAC-SHA256 válido y devuelve **401** con firma incorrecta o cuerpo alterado |
+| Respuesta inmediata | Contesta **200** antes de llamar al modelo (Meta espera 5 s) y procesa en un hilo aparte |
+| Deduplicación | El mismo `mensaje_id` no se responde dos veces; si el envío falla, se libera para que el reintento de Meta sí se procese |
+| Envío | Foto con el texto como pie; si la imagen falla, manda sólo texto. El pie se recorta a 1024 caracteres |
+| Teléfono | Meta manda `595995622412` sin `+`; se normaliza a E.164 o el `CHECK` de contactos rechaza el pedido o el turno |
+
+Número liberado para probar: **+595 995 622 412** (se eliminó su cuenta de WhatsApp).
+
+Lo que **no** quedó probado: un mensaje real de punta a punta, porque faltan `META_ACCESS_TOKEN`,
+`META_PHONE_NUMBER_ID` y `META_APP_SECRET`. Tampoco hay token permanente todavía: el de la consola
+vence a las 24 horas.
+
 ## Siguiente trabajo
 
-Conectar el servicio al webhook de WhatsApp (etapa 3). Antes hay que validar la coexistencia
-del número actual con la Cloud API y conseguir las credenciales de Meta.
+Cargar las credenciales de Meta y probar con el número nuevo. Después, dejar un token permanente de
+System User para que no venza cada día.
 
-Después, cerrar el circuito comercial: que el asistente use `create_pending_order` para armar
-el pedido y `set_order_status` para que una persona lo confirme.
+Y cuando esté estable: avaliar **coexistencia** para el número principal, que requiere verificación de
+negocio y que el número sea elegible.
 
 No activar WhatsApp real antes de validar coexistencia con el número actual.
 

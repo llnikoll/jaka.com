@@ -78,8 +78,21 @@ def contexto(telefono: str, limite: int) -> list[dict]:
         return list(_en_memoria[telefono][-limite:])
 
 
-def guardar(telefono: str, mensaje_usuario: str, respuesta: str) -> None:
-    """Guarda el turno completo: lo que dijo el cliente y lo que contestó el bot."""
+def guardar(
+    telefono: str,
+    mensaje_usuario: str,
+    respuesta: str,
+    *,
+    mensaje_id: str | None = None,
+    provider: str = "local",
+) -> None:
+    """
+    Guarda el turno completo: lo que dijo el cliente y lo que contestó el bot.
+
+    Si viene `mensaje_id` (el id que asigna WhatsApp), se usa como clave externa: el
+    índice único de la tabla de mensajes descarta un reintento aunque el servicio se
+    haya reiniciado entre medio. Sin id, se fabrica uno con la hora.
+    """
     _en_memoria[telefono].append({"role": "user", "content": mensaje_usuario})
     _en_memoria[telefono].append({"role": "assistant", "content": respuesta})
     if len(_en_memoria[telefono]) > MAX_MEMORIA:
@@ -91,14 +104,16 @@ def guardar(telefono: str, mensaje_usuario: str, respuesta: str) -> None:
     try:
         contacto = repository.get_or_create_contact(telefono)
         conversacion = repository.get_or_create_conversation(contacto["id"])
-        externo = f"local:{telefono}:{int(time.time() * 1000)}"
+        base_id = (
+            f"{provider}:{mensaje_id}" if mensaje_id else f"{provider}:{telefono}:{int(time.time() * 1000)}"
+        )
         repository.save_message(
             conversacion["id"], "inbound", mensaje_usuario,
-            provider="local", provider_message_id=externo,
+            provider=provider, provider_message_id=base_id,
         )
         repository.save_message(
             conversacion["id"], "outbound", respuesta,
-            provider="local", provider_message_id=externo + ":out",
+            provider=provider, provider_message_id=base_id + ":out",
             delivery_status="sent",
         )
     except Exception as e:  # noqa: BLE001

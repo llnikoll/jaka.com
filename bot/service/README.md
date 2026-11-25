@@ -118,9 +118,77 @@ devuelve `imagen: {producto, url}` y el adaptador del webhook tiene que mandarla
 python -m unittest discover -s bot/service/tests -t . -v
 ```
 
-Son 71 pruebas con dobles del modelo y del catálogo: no necesitan API key, ni red, ni base
+Son 99 pruebas con dobles del modelo y del catálogo: no necesitan API key, ni red, ni base
 de datos. Verifican el contrato que importa —entre otras, que **sin resultados no se llame
 al modelo**, que la foto se elija bien y que la URL de la imagen no duplique parámetros.
+
+## Conectar WhatsApp
+
+El servicio ya habla con la Cloud API de Meta. Sin credenciales funciona igual en el navegador; con
+ellas empieza a atender mensajes reales.
+
+### 1. Sacar el número de la app de WhatsApp
+
+Un número no puede estar en la app y en la API a la vez (salvo coexistencia, que requiere verificación
+de negocio). Si el número está en uso:
+
+> **Desinstalar la app NO libera el número.** Hay que eliminarlo desde adentro:
+> WhatsApp → Ajustes → Cuenta → **Eliminar mi cuenta**. Se pierden los chats de ese número.
+
+### 2. Sacar las credenciales en Meta
+
+1. [developers.facebook.com](https://developers.facebook.com) → **Crear app** → tipo **Business**.
+2. En la app: **Agregar producto → WhatsApp**.
+3. **API Setup**: agregar el número, verificar el código por SMS o llamada y ponerle nombre visible.
+4. De ahí salen **Phone Number ID** y un **token temporal de 24 h**.
+5. **Configuración de la app → Básica** → **Clave secreta** (el App Secret).
+
+### 3. Exponer el webhook
+
+Meta necesita una URL pública con HTTPS. Para probar alcanza un túnel:
+
+```powershell
+ngrok http 8790
+```
+
+Te da una URL tipo `https://algo.ngrok-free.app`. El webhook completo es esa URL + `/webhook`.
+
+### 4. Configurar el webhook en Meta
+
+En **WhatsApp → Configuración → Webhook**:
+
+- **Callback URL**: `https://algo.ngrok-free.app/webhook`
+- **Verify token**: el mismo que pongas en `META_VERIFY_TOKEN`
+
+Al guardar, Meta hace un `GET` con un desafío y el servicio lo responde solo. Después hay que
+**suscribir el campo `messages`**, que es el que trae los mensajes entrantes.
+
+### 5. Completar el .env y reiniciar
+
+```
+META_PHONE_NUMBER_ID=
+META_ACCESS_TOKEN=
+META_APP_SECRET=
+META_VERIFY_TOKEN=jaka-bici-2026
+```
+
+`/health` te dice qué falta si algo no está: `"whatsapp": "falta META_ACCESS_TOKEN"`.
+
+> **El token temporal dura 24 horas.** Para un piloto sirve; para dejarlo andando hace falta un token
+> permanente de un **System User** (Business Settings → Usuarios del sistema → generar token con
+> `whatsapp_business_messaging`).
+
+### Cómo queda el flujo
+
+```
+Meta → POST /webhook → verifica firma → contesta 200 YA → hilo aparte
+   → asistente (clasificar, catálogo, redactar)
+   → envía respuesta: foto con el texto de pie, o texto si la foto falla
+   → guarda la conversación en PostgreSQL
+```
+
+Meta espera el 200 en unos 5 segundos y reintenta hasta 7 veces. Por eso se contesta primero y se
+procesa después, y por eso los reintentos se deduplican por id de mensaje.
 
 ## Pedidos y turnos
 
@@ -142,8 +210,7 @@ quedó anotado**: le pide al cliente que escriba al taller. Mentir con eso serí
 
 ## Lo que todavía no hace
 
-- **No está conectado a WhatsApp.** No recibe ni manda mensajes reales; se prueba por el
-  navegador o con `curl`.
+- **Falta cargar las credenciales de Meta.** El adaptador está hecho y probado con payloads simulados, pero sin `META_*` no manda ni recibe nada real.
 - **No hay aviso real al taller.** El pedido queda en la base y la conversación se marca como
   `human`, pero nadie recibe una notificación: hay que mirar la base.
 - **No pregunta la cantidad de a una.** Si el cliente dice "quiero cámaras", asume 1.
