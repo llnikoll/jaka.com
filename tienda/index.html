@@ -10,6 +10,12 @@
 <meta name="author" content="Jaka Bicicletería">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <link rel="canonical" href="https://www.bicicleteria.capiata.com.py/">
+<script>
+  // Si alguien entra por /index.html, dejar la URL limpia (/) sin recargar.
+  if (location.pathname.endsWith('/index.html')) {
+    history.replaceState(null, '', location.pathname.replace(/\/index\.html$/, '/') + location.search + location.hash);
+  }
+</script>
 <link rel="alternate" hreflang="es_PY" href="https://www.bicicleteria.capiata.com.py/">
 <link rel="alternate" hreflang="es_AR" href="https://www.bicicleteria.com.ar/">
 <link rel="alternate" hreflang="x-default" href="https://www.bicicleteria.capiata.com.py/">
