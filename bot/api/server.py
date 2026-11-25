@@ -177,6 +177,30 @@ def normalize(text):
     return re.sub(r"[^a-z0-9]+", " ", text).strip()
 
 
+# El catálogo escribe las velocidades de tres formas: "7 VELOCIDADES", "7V" y "7VL".
+# Se unifican todas a "7v" ANTES de buscar, tanto en la consulta como en el nombre del
+# producto, para que "piñón 7 velocidades" encuentre los tres.
+#
+# La alternativa —convertir "velocidades" en el token suelto "v"— se probó y es peor:
+# "pinon" + "7" + "v" hacía match con cualquier producto que tuviera un 7 en el código
+# y una "v" en cualquier palabra ("PIÑON DE LEVA MILESTONE ..."). Junto el número con
+# su unidad y el ruido desaparece.
+PATRON_VELOCIDADES = re.compile(r"(\d+)\s*(?:velocidades|velocidad|vel|vl|v)\b")
+
+
+def normalize(text):
+    text = unicodedata.normalize("NFD", str(text or "").lower())
+    text = "".join(c for c in text if unicodedata.category(c) != "Mn")
+    text = re.sub(r"[^a-z0-9]+", " ", text).strip()
+    return PATRON_VELOCIDADES.sub(r"\1v", text)
+
+
+def expandir_terminos(consulta):
+    """Normaliza la consulta y la parte en términos. Devuelve (frase, términos)."""
+    frase = normalize(consulta)
+    return frase, [t for t in frase.split() if t]
+
+
 def enrich(product, cfg):
     p = {k: v for k, v in product.items() if k != "_raw"}
     p["price"] = sale_price(product["source_price"], cfg)
@@ -236,8 +260,7 @@ def get_cache(force=False):
 
 def search_products(query, category=None, kind=None, limit=10, offset=0):
     data = get_cache()
-    q = normalize(query)
-    terms = [t for t in q.split() if t]
+    q, terms = expandir_terminos(query)
     if not terms:
         return [], 0
     matches = []

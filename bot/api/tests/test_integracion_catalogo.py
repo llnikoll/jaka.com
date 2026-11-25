@@ -247,6 +247,29 @@ class HttpTest(unittest.TestCase):
         self.assertEqual(estado, 200)
         self.assertEqual([s["precio"] for s in datos["items"]], [80000, 120000, 150000])
 
+    def test_busqueda_por_velocidades_encuentra_las_tres_formas(self):
+        """
+        Caso real: el cliente pidió "piñón de 7 velocidades" y el bot le mostró una sola
+        opción. El catálogo tiene 5, pero están escritas de tres formas distintas.
+        """
+        estado, datos = self.pedir("/catalog/search?q=pi%C3%B1on%207%20velocidades&limit=20")
+        self.assertEqual(estado, 200)
+        self.assertGreaterEqual(datos["total"], 3, "no encontró los piñones de 7 velocidades")
+
+        nombres = " ".join(i["name"] for i in datos["items"]).upper()
+        self.assertIn("7V", nombres, "no trajo la forma '7V'")
+        self.assertIn("7 VELOCIDADES", nombres, "no trajo la forma '7 VELOCIDADES'")
+
+    def test_velocidades_no_trae_falsos_positivos(self):
+        estado, datos = self.pedir("/catalog/search?q=pi%C3%B1on%207%20velocidades&limit=20")
+        self.assertEqual(estado, 200)
+        for item in datos["items"]:
+            self.assertNotIn(
+                "DE LEVA",
+                item["name"].upper(),
+                f"coló un piñón de leva por el 7 del código: {item['name']}",
+            )
+
     def test_ruta_inexistente_404(self):
         self.assertEqual(self.pedir("/no-existe")[0], 404)
 

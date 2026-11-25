@@ -144,6 +144,8 @@ con conversaciones reales contra el catálogo publicado.
 | Historial | Guarda en PostgreSQL cuando hay `DATABASE_URL` + psycopg; si no, en memoria. El `/health` informa cuál está activo |
 | Pruebas | **33/33** con dobles del modelo y del catálogo, sin red ni API key |
 | Foto del producto | Se manda una foto del primer resultado **no agotado**, dimensionada a 800x800 (~60 KB en vez de 350 KB). Se le indica al modelo qué producto muestra para que la respuesta hable de ese. En el chat local se ve; en WhatsApp falta el adaptador |
+| Búsqueda por velocidades | "piñón 7 velocidades" devolvía **1** producto de los **5** que hay: el catálogo escribe "7 VELOCIDADES", "7V" y "7VL". Se unifican todas al token "7v" al buscar; ahora devuelve los 5 correctos y ningún falso positivo |
+| Varias opciones | Cuando hay más de un resultado el bot dice cuántos hay y nombra hasta 3 con sus precios, en vez de mostrar uno solo |
 
 Lo que **no** hace todavía: no recibe WhatsApp, no agenda turnos (explica los planes pero no
 reserva), no arma pedidos y el "quiero hablar con una persona" no avisa a nadie. La foto se

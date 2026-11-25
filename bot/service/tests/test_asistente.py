@@ -280,6 +280,23 @@ class FotoTest(unittest.TestCase):
         self.assertEqual(datos["imagen"]["producto"], PRODUCTO["nombre"])
         self.assertTrue(datos["imagen"]["url"].startswith("https://cdn.test/"))
 
+    def test_datos_dicen_cuantos_hay_y_cuantos_se_muestran(self):
+        """Para que el bot pueda decir 'tengo 5, te paso algunos' y no mostrar uno solo."""
+        api = ApiFalsa(productos=[PRODUCTO, AGOTADO], total=5)
+        datos = asistente.ejecutar(
+            {"intencion": "buscar_producto", "consulta": "piñon 7v", "tipo": "todos"}, api=api
+        )
+        self.assertEqual(datos["total"], 5)
+        self.assertEqual(datos["mostrados"], 2)
+
+    def test_el_prompt_le_pide_no_quedarse_con_uno_solo(self):
+        cliente = ClienteFalso(texto="Tengo 5 opciones: ...")
+        api = ApiFalsa(productos=[PRODUCTO, AGOTADO], total=5)
+        asistente.responder("tenes piñon de 7 velocidades?", [], api=api, cliente=cliente)
+        contexto = cliente.ultimo_contexto[0]["content"]
+        self.assertIn('"mostrados": 2', contexto)
+        self.assertIn('"total": 5', contexto)
+
     def test_servicio_tecnico_no_lleva_foto(self):
         datos = asistente.ejecutar({"intencion": "servicio_tecnico"}, api=ApiFalsa())
         self.assertNotIn("imagen", datos)
