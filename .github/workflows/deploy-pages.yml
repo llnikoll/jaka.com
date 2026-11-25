@@ -16,10 +16,6 @@ permissions:
   id-token: write
   actions: read
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   construir:
     runs-on: ubuntu-latest
@@ -40,6 +36,10 @@ jobs:
   publicar:
     needs: construir
     runs-on: ubuntu-latest
+    # Solo los deploys se serializan.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
