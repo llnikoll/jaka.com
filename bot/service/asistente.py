@@ -98,6 +98,11 @@ Lo que NO podés hacer:
   confirma en el local. Si DATOS dice "a confirmar" o "sin stock", decilo.
 - Prometer envíos gratis ni plazos de entrega.
 
+Sobre la foto:
+- Si DATOS trae "imagen", esa foto del producto se le envía al cliente junto con tu mensaje.
+  Tu respuesta tiene que hablar de "imagen.producto", no de otro producto de la lista.
+- No digas "te mando una foto" ni "acá va la imagen": la foto ya llega, mencionarla suena raro.
+
 Si DATOS viene vacío o no alcanza, decí que no lo tenés a mano y ofrecé pasarlo al WhatsApp
 del taller. No rellenes con suposiciones.
 """
@@ -162,6 +167,24 @@ def clasificar(texto: str, historial: list[dict] | None = None, *, cliente=None)
     return plan
 
 
+def _elegir_foto(productos: list[dict]) -> dict | None:
+    """
+    Elige de qué producto se manda la foto.
+
+    No es el primero de la lista: si el primero figura sin stock, mandarle esa foto al
+    cliente mientras se le ofrece otra cosa confunde. Se prefiere el primero con imagen
+    que no esté agotado, y si todos lo están, el primero con imagen igual (a veces el
+    cliente quiere ver el modelo justamente para encargarlo).
+    """
+    con_imagen = [p for p in productos if p.get("imagen")]
+    if not con_imagen:
+        return None
+    for producto in con_imagen:
+        if "sin stock" not in (producto.get("disponibilidad") or "").lower():
+            return producto
+    return con_imagen[0]
+
+
 def _buscar_productos(api, consulta: str, tipo: str | None) -> tuple[dict, str]:
     """
     Busca, y si no hay nada va soltando la última palabra.
@@ -200,13 +223,19 @@ def ejecutar(plan: dict, *, api=None) -> dict:
         tipo = plan.get("tipo") if plan.get("tipo") in ("bicicletas", "motos") else None
         respuesta, usada = _buscar_productos(api, consulta, tipo)
         productos = [api.resumir_producto(i) for i in (respuesta.get("items") or [])]
-        return {
+        datos = {
             "tipo": "productos",
             "consulta": consulta,
             "consulta_usada": usada,
             "total": respuesta.get("total", 0),
             "productos": productos,
         }
+        foto = _elegir_foto(productos)
+        if foto:
+            # Va aparte de "productos" para que el modelo sepa cuál es la foto que
+            # acompaña al mensaje y hable de ese producto, no de otro de la lista.
+            datos["imagen"] = {"producto": foto["nombre"], "url": foto["imagen"]}
+        return datos
 
     if intencion == "servicio_tecnico":
         return {"tipo": "servicios", "servicios": api.resumir_servicios(api.servicios())}
@@ -368,6 +397,7 @@ def _resultado(
         "intencion": (plan or {}).get("intencion"),
         "plan": plan,
         "datos": datos,
+        "imagen": (datos or {}).get("imagen"),
         "ms": int((time.time() - arranque) * 1000),
         "error": error,
     }

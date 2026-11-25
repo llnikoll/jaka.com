@@ -53,6 +53,11 @@ def cargar() -> dict:
         "ubicacion": _texto(fuente, "ubicacion"),
         "nota_envio": _texto(_bloque(fuente, "envio"), "nota"),
         "nota_retiro": _texto(_bloque(fuente, "retiro"), "nota"),
+        # Parámetros de tamaño que ya usa la tienda. Se reusan acá para mandar la foto
+        # del producto liviana: la imagen original del CDN pesa hasta 350 KB y no hace
+        # falta tanta calidad para un mensaje de WhatsApp.
+        "imagen_params_grande": _texto(fuente, "imagenParamsGrande"),
+        "imagen_params": _texto(fuente, "imagenParams"),
     }
     _cache = (mtime, datos)
     return datos

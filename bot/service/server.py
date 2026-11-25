@@ -181,6 +181,9 @@ PAGINA = """<!doctype html>
           flex-direction: column; gap: 10px; }
   .msg { max-width: 78%; padding: 10px 13px; border-radius: 14px; white-space: pre-wrap;
          word-wrap: break-word; }
+  .msg img { display: block; max-width: 100%; margin-top: 8px; border-radius: 10px;
+             background: #0f1115; }
+  .msg .foto-pie { font-size: 11px; color: #8b93a4; margin-top: 4px; }
   .user { align-self: flex-end; background: #2b5d3f; border-bottom-right-radius: 4px; }
   .bot { align-self: flex-start; background: #1c222c; border-bottom-left-radius: 4px; }
   .meta { font-size: 11px; color: #7d8597; margin-top: 4px; }
@@ -250,7 +253,25 @@ form.addEventListener('submit', async (e) => {
       burbuja('Error: ' + (datos.error || 'no se pudo responder'), 'bot');
     } else {
       const meta = [datos.intencion, datos.ms ? datos.ms + ' ms' : null].filter(Boolean).join(' · ');
-      burbuja(datos.respuesta, 'bot', meta);
+      const globo = burbuja(datos.respuesta, 'bot', meta);
+
+      // La foto del producto: en WhatsApp va como mensaje aparte, acá se muestra
+      // pegada a la respuesta para que se vea tal cual la recibiría el cliente.
+      if (datos.imagen && datos.imagen.url) {
+        const img = document.createElement('img');
+        img.src = datos.imagen.url;
+        img.alt = datos.imagen.producto || 'producto';
+        img.loading = 'lazy';
+        img.referrerPolicy = 'no-referrer';
+        img.addEventListener('error', () => img.remove());
+        globo.appendChild(img);
+        if (datos.imagen.producto) {
+          const pie = document.createElement('div');
+          pie.className = 'foto-pie';
+          pie.textContent = 'foto: ' + datos.imagen.producto;
+          globo.appendChild(pie);
+        }
+      }
     }
   } catch (err) {
     esperando.remove();

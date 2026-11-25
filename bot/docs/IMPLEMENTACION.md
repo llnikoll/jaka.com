@@ -142,10 +142,14 @@ con conversaciones reales contra el catálogo publicado.
 | Consulta con modificadores | "cámaras 26 para mtb" no daba resultados (la API exige todas las palabras); se agregó reintento soltando la última palabra |
 | Latencia | 1,0–2,9 s por respuesta con `gemini-3.1-flash-lite`. `gemini-3.5-flash` tardó 17–35 s y `gemini-3.8-flash` devolvió 503: por eso el default es el lite |
 | Historial | Guarda en PostgreSQL cuando hay `DATABASE_URL` + psycopg; si no, en memoria. El `/health` informa cuál está activo |
-| Pruebas | **17/17** con dobles del modelo y del catálogo, sin red ni API key |
+| Pruebas | **33/33** con dobles del modelo y del catálogo, sin red ni API key |
+| Foto del producto | Se manda una foto del primer resultado **no agotado**, dimensionada a 800x800 (~60 KB en vez de 350 KB). Se le indica al modelo qué producto muestra para que la respuesta hable de ese. En el chat local se ve; en WhatsApp falta el adaptador |
 
 Lo que **no** hace todavía: no recibe WhatsApp, no agenda turnos (explica los planes pero no
-reserva), no arma pedidos y el "quiero hablar con una persona" no avisa a nadie.
+reserva), no arma pedidos y el "quiero hablar con una persona" no avisa a nadie. La foto se
+devuelve lista pero nadie la envía al cliente todavía.
+
+> Las imágenes son de Ciclovía y su uso comercial es la condición #1 del `PLAN.md`.
 
 ## Siguiente trabajo
 

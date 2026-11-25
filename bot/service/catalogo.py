@@ -12,7 +12,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from bot.service import config
+from bot.service import config, negocio
 
 
 class ErrorCatalogo(RuntimeError):
@@ -72,6 +72,25 @@ def _precio(valor) -> str:
     return f"Gs. {int(valor):,}".replace(",", ".")
 
 
+def _url_con_medida(url: str) -> str:
+    """
+    Le agrega a la URL de la imagen los parámetros de tamaño que usa la tienda.
+
+    El CDN de Ciclovía los respeta: la misma foto pasa de 350 KB a 60 KB en 800x800,
+    que es lo que conviene mandar por WhatsApp. Si no hay URL o no es absoluta, se
+    devuelve tal cual.
+    """
+    if not url or not url.startswith(("http://", "https://")):
+        return url
+    params = (negocio.cargar().get("imagen_params_grande") or "").strip()
+    if not params:
+        return url
+    if params.startswith("?"):
+        params = params[1:]
+    separador = "&" if "?" in url else "?"
+    return f"{url}{separador}{params}"
+
+
 def resumir_producto(item: dict) -> dict:
     """
     Recorta un producto a lo que el modelo necesita para redactar.
@@ -88,6 +107,7 @@ def resumir_producto(item: dict) -> dict:
         "disponibilidad": item.get("availability_label") or item.get("availability"),
         "categoria": (item.get("categories") or [None])[0],
         "link": item.get("product_url"),
+        "imagen": _url_con_medida(item.get("image")),
     }
 
 

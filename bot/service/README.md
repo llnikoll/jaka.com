@@ -90,15 +90,37 @@ Si la consulta no encuentra nada, el servicio vuelve a buscar soltando la últim
 ("camaras 26 para mtb" → "camaras 26" → "camaras"), porque la API exige que coincidan
 todas las palabras.
 
+## Foto del producto
+
+Cuando el cliente pregunta por un producto, el servicio elige **una** foto de los resultados y la
+devuelve junto con la respuesta.
+
+- Elige el primer resultado con imagen que **no** esté agotado. Si todos lo están, manda el primero
+  igual: a veces el cliente quiere ver el modelo justamente para encargarlo.
+- Reusa los parámetros de tamaño de la tienda. La foto original del CDN pesa hasta 350 KB; con
+  `?quality=85&fit=bounds&height=800&width=800` queda en **~60 KB**, que es lo que conviene mandar.
+- Le avisa al modelo qué producto muestra la foto (`DATOS.imagen`), para que la respuesta hable de
+  ese y no de otro de la lista.
+- Manda **una** sola foto, no cinco: con una lista larga, cinco imágenes seguidas en WhatsApp se
+  siente spam.
+
+En el chat local se ve debajo del mensaje. **En WhatsApp todavía no se envía**: el servicio ya
+devuelve `imagen: {producto, url}` y el adaptador del webhook tiene que mandarla como mensaje aparte
+—por Cloud API, `type: "image"` con `link`, o subiéndola antes con `POST /media` y usando `media_id`.
+
+> ⚠️ **Las fotos son de Ciclovía.** Mandárselas a clientes es uso comercial de material de terceros:
+> es la condición #1 del `PLAN.md` (autorización escrita). Hasta tenerla, la tienda ya las muestra
+> "como referencia" desde su CDN; decidí vos si el bot también.
+
 ## Pruebas
 
 ```powershell
 python -m unittest discover -s bot/service/tests -t . -v
 ```
 
-Son 17 pruebas con dobles del modelo y del catálogo: no necesitan API key, ni red, ni base
+Son 33 pruebas con dobles del modelo y del catálogo: no necesitan API key, ni red, ni base
 de datos. Verifican el contrato que importa —entre otras, que **sin resultados no se llame
-al modelo** y que un fallo se convierta en aviso técnico en vez de guardarse como respuesta.
+al modelo**, que la foto se elija bien y que la URL de la imagen no duplique parámetros.
 
 ## Lo que todavía no hace
 

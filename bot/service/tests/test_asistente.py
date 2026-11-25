@@ -87,6 +87,19 @@ PRODUCTO = {
     "disponibilidad": "Figura en catálogo; confirmar disponibilidad",
     "categoria": "bicicletas",
     "link": "https://example.test/p/442954",
+    "imagen": "https://cdn.test/camara.jpg?quality=85&fit=bounds",
+}
+
+AGOTADO = {
+    "id": "442227",
+    "nombre": "CASCO SCOTT SUPRA",
+    "marca": "SCOTT",
+    "precio": "a consultar",
+    "precio_origen": None,
+    "disponibilidad": "Sin stock según catálogo",
+    "categoria": "bicicletas",
+    "link": "https://example.test/p/442227",
+    "imagen": "https://cdn.test/casco-supra.jpg?quality=85",
 }
 
 
@@ -211,6 +224,45 @@ class ResponderTest(unittest.TestCase):
         r = asistente.responder("tenes camaras 26?", [], api=api, cliente=cliente)
         self.assertTrue(r["error"])
         self.assertIn("catálogo", r["respuesta"])
+
+
+class FotoTest(unittest.TestCase):
+    """Qué foto se manda cuando el cliente pregunta por un producto."""
+
+    def test_prefiere_un_producto_disponible(self):
+        elegido = asistente._elegir_foto([AGOTADO, PRODUCTO])
+        self.assertEqual(elegido["id"], PRODUCTO["id"], "eligió un producto sin stock")
+
+    def test_si_todos_estan_agotados_igual_manda_foto(self):
+        elegido = asistente._elegir_foto([AGOTADO])
+        self.assertEqual(elegido["id"], AGOTADO["id"])
+
+    def test_sin_imagenes_devuelve_none(self):
+        self.assertIsNone(asistente._elegir_foto([{"nombre": "sin foto"}]))
+
+    def test_lista_vacia_devuelve_none(self):
+        self.assertIsNone(asistente._elegir_foto([]))
+
+    def test_ejecutar_adjunta_la_foto_elegida(self):
+        api = ApiFalsa(productos=[AGOTADO, PRODUCTO])
+        datos = asistente.ejecutar(
+            {"intencion": "buscar_producto", "consulta": "camara 26", "tipo": "todos"}, api=api
+        )
+        self.assertIn("imagen", datos)
+        self.assertEqual(datos["imagen"]["producto"], PRODUCTO["nombre"])
+        self.assertTrue(datos["imagen"]["url"].startswith("https://cdn.test/"))
+
+    def test_servicio_tecnico_no_lleva_foto(self):
+        datos = asistente.ejecutar({"intencion": "servicio_tecnico"}, api=ApiFalsa())
+        self.assertNotIn("imagen", datos)
+
+    def test_la_foto_sale_en_la_respuesta(self):
+        cliente = ClienteFalso(texto="Sí, mirá este casco.")
+        api = ApiFalsa(productos=[PRODUCTO])
+        r = asistente.responder("tenes cascos?", [], api=api, cliente=cliente)
+        self.assertEqual(r["imagen"]["producto"], PRODUCTO["nombre"])
+        # El modelo tiene que saber qué producto muestra la foto para hablar de ese.
+        self.assertIn(PRODUCTO["nombre"], cliente.ultimo_contexto[0]["content"])
 
 
 class PlantillaEnvioTest(unittest.TestCase):
