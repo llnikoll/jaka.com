@@ -84,7 +84,13 @@ class Handler(BaseHTTPRequestHandler):
 
         telefono = (datos.get("telefono") or TELEFONO_PRUEBA).strip()
         historial = memoria.contexto(telefono, config.MAX_HISTORIAL)
-        resultado = asistente.responder(texto, historial)
+        resultado = asistente.responder(
+            texto,
+            historial,
+            crear_pedido=lambda lineas: memoria.crear_pedido(telefono, lineas),
+            crear_turno=lambda servicio, fecha: memoria.crear_turno(telefono, servicio, fecha),
+            marcar_humano=lambda: memoria.marcar_humano(telefono),
+        )
 
         # Los avisos técnicos no se guardan como si fueran una respuesta del agente.
         if not resultado.get("error"):

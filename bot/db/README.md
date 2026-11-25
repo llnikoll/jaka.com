@@ -9,7 +9,8 @@ Esta etapa agrega persistencia operativa. No reemplaza ni copia el catálogo JSO
 - Mensajes entrantes, salientes e internos.
 - ID externo del proveedor para deduplicar reintentos de webhooks.
 - Pedidos y líneas como `pending_confirmation`.
-- Auditoría de cambios de modo y creación de pedidos.
+- **Turnos de taller**: qué mantenimiento y qué día el cliente va a traer la bici.
+- Auditoría de cambios de modo, creación de pedidos y de turnos.
 
 Los productos, precios y disponibilidad siguen consultándose en la API de catálogo. Los pedidos guardan una fotografía del nombre, precio y disponibilidad devueltos al momento de armarlos. No descuentan stock ni representan una venta confirmada.
 
@@ -71,6 +72,23 @@ WhatsApp, n8n ni al servidor de catálogo.
 | `get_conversation_history(contact_id)` | Conversación abierta + últimos mensajes en una sola llamada |
 | `get_order(order_id)` | Pedido con sus renglones |
 | `set_order_status(order_id, estado, actor=)` | Confirma, rechaza o cancela, con auditoría y transiciones controladas |
+| `crear_turno(conv, contact, servicio, fecha)` | Anota que el cliente va a traer la bici un día |
+| `listar_turnos(contact_id)` | Turnos vigentes de un contacto |
+| `set_turno_estado(turno_id, estado, actor=)` | Marca el turno como recibido o cancelado |
+
+### Turnos de taller
+
+Un turno **no es una cita con horario**. El cliente sólo avisa qué mantenimiento quiere y qué día
+puede traer la bici; la recepción es en el mostrador, así que dos clientes el mismo día no se pisan.
+Por eso `turnos.fecha` es un día y no hay columna de hora ni control de cupo.
+
+```
+pendiente ──► recibido
+    └──────► cancelado
+```
+
+La duración (24 a 48 hs) no se guarda porque es la misma para todos los planes: se le informa al
+cliente en el momento.
 
 ### Transiciones de pedido
 
@@ -89,6 +107,22 @@ confirmando a la vez no generan dos eventos contradictorios.
 Ningún cambio de estado descuenta stock ni cobra nada: el pedido es un registro comercial y la venta se
 cierra por WhatsApp.
 
+## Ver pedidos y turnos
+
+El bot no confirma ventas: deja los pedidos en `pending_confirmation` y los turnos en
+`pendiente`. Para verlos sin abrir un cliente de base de datos:
+
+```powershell
+$env:DATABASE_URL = "postgresql://jaka_bot:TU_CLAVE@127.0.0.1:5432/jaka_chatbot"
+py -m bot.db.ver
+```
+
+Muestra cada pedido con sus renglones, cantidades, precios y total, y los turnos pendientes con
+su día, plan y teléfono. Opciones: `--estado confirmed`, `--pedidos 50`, `--sin-turnos`.
+
+Cuando lo confirmes, `repository.set_order_status(id, "confirmed", actor="tu-nombre")` deja la
+auditoría de quién lo hizo.
+
 ## Pruebas
 
 Con PostgreSQL levantado y `DATABASE_URL` configurada en la terminal:
@@ -99,7 +133,7 @@ $env:DATABASE_URL = "postgresql://jaka_bot:TU_CLAVE@127.0.0.1:5432/jaka_chatbot"
 py -m unittest discover -s bot/db/tests -t . -v
 ```
 
-Son **35 pruebas contra la base real**, no contra un doble: alta idempotente de contactos, teléfono
+Son **44 pruebas contra la base real**, no contra un doble: alta idempotente de contactos, teléfono
 inválido rechazado por el `CHECK`, una sola conversación abierta por contacto, apertura de una nueva al
 cerrar la anterior, deduplicación de mensajes por id externo, auditoría del cambio bot/humano, subtotal
 del pedido, **rollback completo** cuando un renglón falla después de insertar el pedido, orden
@@ -113,8 +147,8 @@ de fallar.
 ### Validación realizada
 
 - PostgreSQL **16.9**, la misma versión mayor que la imagen `postgres:16-alpine` del compose.
-- Esquema aplicado sobre una base **vacía**: crea las 6 tablas y los 2 índices únicos parciales.
-- 35/35 pruebas en verde, tres corridas seguidas.
+- Esquema aplicado sobre una base **vacía**: crea las 7 tablas y los 2 índices únicos parciales.
+- 44/44 pruebas en verde.
 
 Lo que **no** quedó probado: el `docker compose up` en sí (la máquina donde se validó no tiene Docker
 Desktop) y el comportamiento con volumen persistente entre reinicios.

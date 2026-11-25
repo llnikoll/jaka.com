@@ -24,6 +24,7 @@ import os
 import unittest
 import uuid
 from concurrent.futures import ThreadPoolExecutor
+from datetime import date, timedelta
 from pathlib import Path
 
 try:
@@ -66,6 +67,7 @@ def borrar_datos(telefono: str) -> None:
         ]
         for cid in ids:
             conn.execute("DELETE FROM audit_log WHERE conversation_id = %s", (cid,))
+            conn.execute("DELETE FROM turnos WHERE conversation_id = %s", (cid,))
             conn.execute(
                 "DELETE FROM order_items WHERE order_id IN "
                 "(SELECT id FROM orders WHERE conversation_id = %s)",
@@ -497,6 +499,88 @@ class RepositorioTest(unittest.TestCase):
         self.assertEqual(
             len(self._auditoria_de_pedido(conv["id"])), 1, "se auditó la confirmación dos veces"
         )
+
+
+class TurnoTest(unittest.TestCase):
+    """Turnos de taller: qué mantenimiento y qué día. Sin horarios ni cupos."""
+
+    @classmethod
+    def setUpClass(cls):
+        aplicar_schema()
+
+    def setUp(self):
+        self.telefono = f"+59597{uuid.uuid4().int % 100000000:08d}"
+        self.addCleanup(borrar_datos, self.telefono)
+        self.contacto = repository.get_or_create_contact(self.telefono, "Ana")
+        self.conv = repository.get_or_create_conversation(self.contacto["id"])
+
+    def test_crea_el_turno(self):
+        manana = date.today() + timedelta(days=1)
+        turno = repository.crear_turno(
+            self.conv["id"], self.contacto["id"], "Completo", manana
+        )
+        self.assertEqual(turno["servicio"], "Completo")
+        self.assertEqual(turno["fecha"], manana)
+        self.assertEqual(turno["estado"], "pendiente")
+
+    def test_dos_turnos_el_mismo_dia_no_chocan(self):
+        """La recepción es en el mostrador: no hay cupo por día."""
+        manana = date.today() + timedelta(days=1)
+        repository.crear_turno(self.conv["id"], self.contacto["id"], "Básico", manana)
+        segundo = repository.crear_turno(
+            self.conv["id"], self.contacto["id"], "Premium", manana
+        )
+        self.assertIsNotNone(segundo["id"])
+        self.assertEqual(len(repository.listar_turnos(self.contacto["id"])), 2)
+
+    def test_lista_los_turnos_del_contacto(self):
+        manana = date.today() + timedelta(days=1)
+        repository.crear_turno(self.conv["id"], self.contacto["id"], "Básico", manana)
+        turnos = repository.listar_turnos(self.contacto["id"])
+        self.assertEqual(len(turnos), 1)
+        self.assertEqual(turnos[0]["servicio"], "Básico")
+
+    def test_no_lista_turnos_de_otro(self):
+        manana = date.today() + timedelta(days=1)
+        repository.crear_turno(self.conv["id"], self.contacto["id"], "Básico", manana)
+        self.assertEqual(repository.listar_turnos(str(uuid.uuid4())), [])
+
+    def test_marca_recibido_con_auditoria(self):
+        manana = date.today() + timedelta(days=1)
+        turno = repository.crear_turno(self.conv["id"], self.contacto["id"], "Básico", manana)
+
+        actualizado = repository.set_turno_estado(turno["id"], "recibido", actor="op-1")
+
+        self.assertEqual(actualizado["estado"], "recibido")
+        with psycopg.connect(repository.database_url(), row_factory=dict_row) as conn:
+            filas = conn.execute(
+                "SELECT action FROM audit_log WHERE conversation_id = %s "
+                "AND action = 'turno.status_changed'",
+                (self.conv["id"],),
+            ).fetchall()
+        self.assertEqual(len(filas), 1)
+
+    def test_servicio_vacio_se_rechaza(self):
+        with self.assertRaises(ValueError):
+            repository.crear_turno(
+                self.conv["id"], self.contacto["id"], "  ", date.today()
+            )
+
+    def test_estado_invalido_se_rechaza(self):
+        manana = date.today() + timedelta(days=1)
+        turno = repository.crear_turno(self.conv["id"], self.contacto["id"], "Básico", manana)
+        with self.assertRaises(ValueError):
+            repository.set_turno_estado(turno["id"], "terminado", actor="op-1")
+
+    def test_turno_inexistente_lanza_error(self):
+        with self.assertRaises(ValueError):
+            repository.set_turno_estado(str(uuid.uuid4()), "recibido", actor="op-1")
+
+    def test_cancelado_no_aparece_en_la_lista(self):
+        manana = date.today() + timedelta(days=1)
+        turno = repository.crear_turno(self.conv["id"], self.contacto["id"], "Básico", manana)
+        repository.set_turno_estado(turno["id"], "cancelado", actor="op-1")
+        self.assertEqual(repository.listar_turnos(self.contacto["id"]), [])
 
 
 if __name__ == "__main__":

@@ -108,3 +108,88 @@ def guardar(telefono: str, mensaje_usuario: str, respuesta: str) -> None:
 def limpiar(telefono: str) -> None:
     """Borra el historial en memoria de ese teléfono (para reiniciar una prueba)."""
     _en_memoria.pop(telefono, None)
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Acciones con efecto: pedidos, turnos y cambio de modo
+# ─────────────────────────────────────────────────────────────────────────
+
+
+def _ids(telefono: str) -> dict | None:
+    """Contacto y conversación abierta de ese teléfono, o None si no hay base."""
+    if not hay_base():
+        return None
+    contacto = repository.get_or_create_contact(telefono)
+    conversacion = repository.get_or_create_conversation(contacto["id"])
+    return {"contact_id": contacto["id"], "conversation_id": conversacion["id"]}
+
+
+def crear_pedido(telefono: str, lineas: list[dict]) -> dict | None:
+    """
+    Guarda el pedido como pendiente de confirmación.
+
+    Devuelve None si no hay base o si falló: el asistente usa eso para avisarle al
+    cliente que escriba al taller en vez de dar por hecho que quedó registrado.
+    """
+    try:
+        ids = _ids(telefono)
+        if not ids:
+            logger.warning(f"Pedido de {telefono} no guardado: no hay base de datos")
+            return None
+        items = [
+            {
+                "product_id": linea["producto"]["id"],
+                "product_name": linea["producto"]["nombre"],
+                "quantity": linea["cantidad"],
+                "unit_price": linea["producto"].get("precio_valor"),
+                "availability": linea["producto"].get("disponibilidad_codigo") or "confirm",
+            }
+            for linea in lineas
+        ]
+        pedido = repository.create_pending_order(
+            ids["conversation_id"], ids["contact_id"], items
+        )
+        logger.info(f"Pedido {pedido['id']} creado para {telefono} ({len(items)} ítems)")
+        return pedido
+    except Exception as e:  # noqa: BLE001
+        logger.error(f"No se pudo crear el pedido de {telefono}: {e}")
+        return None
+
+
+def crear_turno(telefono: str, servicio: str, fecha) -> dict | None:
+    """Guarda el turno de taller. Mismo criterio que crear_pedido: None si no se pudo."""
+    try:
+        ids = _ids(telefono)
+        if not ids:
+            logger.warning(f"Turno de {telefono} no guardado: no hay base de datos")
+            return None
+        turno = repository.crear_turno(
+            ids["conversation_id"], ids["contact_id"], servicio, fecha
+        )
+        logger.info(f"Turno {turno['id']} creado para {telefono}: {servicio} {fecha}")
+        return turno
+    except Exception as e:  # noqa: BLE001
+        logger.error(f"No se pudo crear el turno de {telefono}: {e}")
+        return None
+
+
+def marcar_humano(telefono: str) -> bool:
+    """
+    Pasa la conversación a una persona.
+
+    Se usa después de armar un pedido: el bot no cierra ventas. En modo memoria no hay
+    dónde anotarlo, así que sólo se registra en el log.
+    """
+    try:
+        ids = _ids(telefono)
+        if not ids:
+            logger.info(f"[{telefono}] pedido de atención humana (sin base, no se persiste)")
+            return False
+        repository.set_conversation_mode(
+            ids["conversation_id"], "human", actor="bot"
+        )
+        logger.info(f"[{telefono}] conversación derivada a una persona")
+        return True
+    except Exception as e:  # noqa: BLE001
+        logger.error(f"No se pudo derivar la conversación de {telefono}: {e}")
+        return False

@@ -118,19 +118,36 @@ devuelve `imagen: {producto, url}` y el adaptador del webhook tiene que mandarla
 python -m unittest discover -s bot/service/tests -t . -v
 ```
 
-Son 33 pruebas con dobles del modelo y del catálogo: no necesitan API key, ni red, ni base
+Son 71 pruebas con dobles del modelo y del catálogo: no necesitan API key, ni red, ni base
 de datos. Verifican el contrato que importa —entre otras, que **sin resultados no se llame
 al modelo**, que la foto se elija bien y que la URL de la imagen no duplique parámetros.
+
+## Pedidos y turnos
+
+Además de contestar, el bot puede cerrar dos cosas. Las dos se guardan en PostgreSQL y las dos
+respetan la misma regla: **el bot no confirma nada por su cuenta**.
+
+**Pedido.** Cuando el cliente dice que quiere comprar algo, el bot resuelve cada producto contra el
+catálogo (precio y disponibilidad reales), arma el pedido como `pending_confirmation` y **pasa la
+conversación a una persona**, que es la que cierra la venta. El mensaje muestra cantidades, precios y
+total.
+
+**Turno.** Cuando dice que quiere traer la bici para un service, el bot confirma **qué mantenimiento y
+qué día**, y le dice las dos cosas que necesita saber para venir: **dónde es** y que el mantenimiento
+lleva **entre 24 y 48 hs**. No hay horarios ni cupos: la recepción es en el mostrador, así que dos
+clientes el mismo día no se pisan. El turno queda `pendiente` y no deriva la conversación.
+
+Si el pedido o el turno no se pudieron guardar (base caída, falta de datos), el mensaje **no dice que
+quedó anotado**: le pide al cliente que escriba al taller. Mentir con eso sería peor que fallar.
 
 ## Lo que todavía no hace
 
 - **No está conectado a WhatsApp.** No recibe ni manda mensajes reales; se prueba por el
   navegador o con `curl`.
-- **No agenda turnos.** Puede explicar los planes de service y sus precios, pero no reserva:
-  falta conectar las funciones de agenda que ya existen en `bot/db/repository.py`.
-- **No arma pedidos.** Igual: `create_pending_order` está listo, pero ningún flujo lo llama.
-- **No hay handoff real.** Cuando alguien pide una persona, responde con una plantilla; no
-  avisa a nadie ni pausa el bot.
+- **No hay aviso real al taller.** El pedido queda en la base y la conversación se marca como
+  `human`, pero nadie recibe una notificación: hay que mirar la base.
+- **No pregunta la cantidad de a una.** Si el cliente dice "quiero cámaras", asume 1.
+- **No cobra ni gestiona envíos.** El total es de productos; el envío se coordina aparte.
 - **No hay n8n.** Se reemplazó por este servicio para la etapa local.
 
 ## Probarlo con curl

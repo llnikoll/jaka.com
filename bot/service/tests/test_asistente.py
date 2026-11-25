@@ -83,8 +83,10 @@ PRODUCTO = {
     "nombre": "CÁMARA 26 X 1.50 CALOI",
     "marca": "CALOI",
     "precio": "Gs. 310.000",
+    "precio_valor": 310000,
     "precio_origen": 269565,
     "disponibilidad": "Figura en catálogo; confirmar disponibilidad",
+    "disponibilidad_codigo": "available_in_catalog",
     "categoria": "bicicletas",
     "link": "https://example.test/p/442954",
     "imagen": "https://cdn.test/camara.jpg?quality=85&fit=bounds",
@@ -324,6 +326,185 @@ class CoincidenciaTest(unittest.TestCase):
 
     def test_sin_consulta_no_puntua(self):
         self.assertEqual(asistente._puntaje_coincidencia("CASCO", ""), 0.0)
+
+
+class PedidoTest(unittest.TestCase):
+    """El bot arma el pedido, lo deja pendiente y deriva la conversación a una persona."""
+
+    def _responder(self, plan, api=None, crear=None, marcar=None, historial=None):
+        cliente = ClienteFalso(plan=plan)
+        creados = []
+        derivadas = []
+
+        def crear_pedido(lineas):
+            creados.append(lineas)
+            return {"id": "pedido-1", "status": "pending_confirmation"} if crear is None else crear(lineas)
+
+        def marcar_humano():
+            derivadas.append(True)
+
+        resultado = asistente.responder(
+            "quiero 2 camaras 26",
+            historial or [],
+            api=api or ApiFalsa(productos=[PRODUCTO]),
+            cliente=cliente,
+            crear_pedido=crear_pedido,
+            marcar_humano=marcar_humano if marcar is None else marcar,
+        )
+        return resultado, creados, derivadas
+
+    def _plan(self, items, **extra):
+        return {"intencion": "armar_pedido", "consulta": "", "tipo": "todos", "items": items, **extra}
+
+    def test_arma_el_pedido_con_cantidad_y_producto(self):
+        resultado, creados, _ = self._responder(
+            self._plan([{"consulta": "camara 26", "cantidad": 2}])
+        )
+        self.assertEqual(resultado["intencion"], "armar_pedido")
+        self.assertTrue(resultado["datos"]["guardado"])
+        self.assertEqual(len(creados), 1)
+        self.assertEqual(creados[0][0]["cantidad"], 2)
+        self.assertEqual(creados[0][0]["producto"]["id"], PRODUCTO["id"])
+
+    def test_la_respuesta_muestra_cantidad_y_precio(self):
+        resultado, _, _ = self._responder(
+            self._plan([{"consulta": "camara 26", "cantidad": 2}])
+        )
+        self.assertIn("2 x", resultado["respuesta"])
+        self.assertIn(PRODUCTO["nombre"], resultado["respuesta"])
+        # 310.000 x 2
+        self.assertIn("620.000", resultado["respuesta"])
+
+    def test_deriva_la_conversacion_a_una_persona(self):
+        _, _, derivadas = self._responder(
+            self._plan([{"consulta": "camara 26", "cantidad": 1}])
+        )
+        self.assertEqual(derivadas, [True], "no derivó la conversación")
+
+    def test_varios_productos_en_un_pedido(self):
+        api = ApiFalsa(productos=[PRODUCTO])
+        resultado, creados, _ = self._responder(
+            self._plan(
+                [
+                    {"consulta": "camara 26", "cantidad": 2},
+                    {"consulta": "casco scott", "cantidad": 1},
+                ]
+            ),
+            api=api,
+        )
+        self.assertEqual(len(creados[0]), 2)
+
+    def test_cantidad_invalida_cae_en_uno(self):
+        resultado, creados, _ = self._responder(
+            self._plan([{"consulta": "camara 26", "cantidad": 0}])
+        )
+        self.assertEqual(creados[0][0]["cantidad"], 1)
+
+    def test_si_no_encuentra_nada_no_crea_pedido(self):
+        resultado, creados, derivadas = self._responder(
+            self._plan([{"consulta": "bici voladora laser", "cantidad": 1}]),
+            api=ApiFalsa(productos=[], total=0),
+        )
+        self.assertEqual(creados, [])
+        self.assertEqual(derivadas, [])
+        self.assertIn("No lo tengo listado", resultado["respuesta"])
+
+    def test_si_la_base_falla_avisa_en_vez_de_mentir(self):
+        resultado, _, _ = self._responder(
+            self._plan([{"consulta": "camara 26", "cantidad": 1}]), crear=lambda lineas: None
+        )
+        self.assertFalse(resultado["datos"]["guardado"])
+        self.assertIn("no pude registrarlo", resultado["respuesta"].lower())
+
+    def test_sin_items_pide_que_le_diga_que_quiere(self):
+        resultado, creados, _ = self._responder(self._plan([]))
+        self.assertEqual(creados, [])
+        self.assertIn("¿Qué querés encargar?", resultado["respuesta"])
+
+
+class TurnoTest(unittest.TestCase):
+    """El turno sólo registra qué mantenimiento y qué día: no hay horarios ni cupos."""
+
+    def _responder(self, plan, crear=None):
+        cliente = ClienteFalso(plan=plan)
+        creados = []
+
+        def crear_turno(servicio, fecha):
+            creados.append((servicio, fecha))
+            if crear is not None:
+                return crear(servicio, fecha)
+            return {"id": "turno-1"}
+
+        resultado = asistente.responder(
+            "quiero llevar la bici",
+            [],
+            api=ApiFalsa(),
+            cliente=cliente,
+            crear_turno=crear_turno,
+        )
+        return resultado, creados
+
+    def _plan(self, servicio="completo", fecha="el sabado"):
+        return {
+            "intencion": "agendar_turno",
+            "consulta": "",
+            "tipo": "todos",
+            "servicio": servicio,
+            "fecha": fecha,
+        }
+
+    def test_crea_el_turno_con_servicio_y_fecha(self):
+        resultado, creados = self._responder(self._plan())
+        self.assertEqual(len(creados), 1)
+        servicio, fecha = creados[0]
+        self.assertEqual(servicio, "Completo")
+        self.assertEqual(fecha.weekday(), 5, "no cayó en sábado")
+
+    def test_dice_la_duracion_y_la_ubicacion(self):
+        resultado, _ = self._responder(self._plan())
+        texto = resultado["respuesta"]
+        self.assertIn("24 y 48 hs", texto)
+        self.assertIn("Capiatá", texto)
+        self.assertIn("8:00 a 18:00", texto)
+
+    def test_incluye_el_precio_del_plan(self):
+        resultado, _ = self._responder(self._plan())
+        self.assertIn("Gs. 120.000", resultado["respuesta"])
+
+    def test_sin_servicio_pregunta_cual(self):
+        resultado, creados = self._responder(self._plan(servicio="ninguno"))
+        self.assertEqual(creados, [])
+        self.assertIn("¿Cuál de los mantenimientos", resultado["respuesta"])
+
+    def test_sin_fecha_pregunta_que_dia(self):
+        resultado, creados = self._responder(self._plan(fecha=""))
+        self.assertEqual(creados, [])
+        self.assertIn("qué día", resultado["respuesta"].lower())
+
+    def test_fecha_que_no_entiende_la_repite(self):
+        resultado, creados = self._responder(self._plan(fecha="cuando pueda"))
+        self.assertEqual(creados, [])
+        self.assertIn("No entendí", resultado["respuesta"])
+
+    def test_si_no_se_guarda_no_dice_que_anoto(self):
+        resultado, _ = self._responder(self._plan(), crear=lambda s, f: None)
+        self.assertFalse(resultado["datos"]["guardado"])
+        self.assertNotIn("anoté", resultado["respuesta"])
+        self.assertIn("no pude registrarlo", resultado["respuesta"])
+
+    def test_no_deriva_la_conversacion(self):
+        """El turno lo resuelve el bot; no hace falta que lo tome una persona."""
+        cliente = ClienteFalso(plan=self._plan())
+        derivadas = []
+        asistente.responder(
+            "quiero llevar la bici",
+            [],
+            api=ApiFalsa(),
+            cliente=cliente,
+            crear_turno=lambda s, f: {"id": "t"},
+            marcar_humano=lambda: derivadas.append(True),
+        )
+        self.assertEqual(derivadas, [])
 
 
 class PlantillaEnvioTest(unittest.TestCase):

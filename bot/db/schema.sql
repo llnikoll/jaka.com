@@ -77,6 +77,24 @@ CREATE TABLE IF NOT EXISTS order_items (
 );
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 
+-- Turnos de taller. NO son citas con horario: el cliente sólo avisa qué mantenimiento
+-- quiere y qué día puede traer la bici. No hay franjas ni cupos que respetar porque la
+-- recepción es en el mostrador; por eso `fecha` es un día y no hay columna de hora.
+CREATE TABLE IF NOT EXISTS turnos (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id UUID NOT NULL REFERENCES conversations(id),
+    contact_id UUID NOT NULL REFERENCES contacts(id),
+    servicio TEXT NOT NULL,
+    fecha DATE NOT NULL,
+    cliente_nombre TEXT,
+    nota TEXT,
+    estado TEXT NOT NULL DEFAULT 'pendiente'
+        CHECK (estado IN ('pendiente', 'recibido', 'cancelado')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_turnos_fecha ON turnos(fecha);
+CREATE INDEX IF NOT EXISTS idx_turnos_contacto ON turnos(contact_id, fecha DESC);
+
 CREATE TABLE IF NOT EXISTS audit_log (
     id BIGSERIAL PRIMARY KEY,
     conversation_id UUID REFERENCES conversations(id),

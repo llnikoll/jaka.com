@@ -23,7 +23,7 @@ import re
 import time
 import unicodedata
 
-from bot.service import catalogo, config, gemini, negocio
+from bot.service import catalogo, config, fechas, gemini, negocio
 
 logger = logging.getLogger("jaka.asistente")
 
@@ -31,15 +31,18 @@ INTENCIONES = [
     "buscar_producto",
     "consultar_disponibilidad",
     "servicio_tecnico",
+    "agendar_turno",
+    "armar_pedido",
     "envio",
     "ubicacion",
-    "pedido",
     "humano",
     "fuera_de_alcance",
 ]
 
 # Las intenciones que se resuelven buscando en el catálogo.
 INTENCIONES_DE_CATALOGO = {"buscar_producto", "consultar_disponibilidad", "pedido"}
+
+SERVICIOS_TALLER = ("ninguno", "basico", "completo", "premium")
 
 ESQUEMA_PLAN = {
     "type": "object",
@@ -57,6 +60,33 @@ ESQUEMA_PLAN = {
             "enum": ["todos", "bicicletas", "motos"],
             "description": "Filtrar por rubro solo si el cliente lo dejó claro.",
         },
+        "items": {
+            "type": "array",
+            "description": (
+                "Solo para armar_pedido: cada producto que el cliente quiere, con su "
+                "cantidad. Un elemento por producto. Vacío en las demás intenciones."
+            ),
+            "items": {
+                "type": "object",
+                "properties": {
+                    "consulta": {"type": "string", "description": "Qué producto."},
+                    "cantidad": {"type": "integer", "description": "Cuántos quiere."},
+                },
+                "required": ["consulta", "cantidad"],
+            },
+        },
+        "servicio": {
+            "type": "string",
+            "enum": list(SERVICIOS_TALLER),
+            "description": "Solo para agendar_turno: qué mantenimiento quiere.",
+        },
+        "fecha": {
+            "type": "string",
+            "description": (
+                "Solo para agendar_turno: qué día puede traer la bici, tal como lo dijo "
+                "('el sábado', 'mañana', '29/11'). Vacío si no lo dijo."
+            ),
+        },
     },
     "required": ["intencion", "consulta", "tipo"],
 }
@@ -68,10 +98,11 @@ Recibís un mensaje de un cliente y devolvés SOLO el JSON del esquema. No conte
 Intenciones:
 - buscar_producto: pregunta por un producto, si lo tenés o cuánto sale.
 - consultar_disponibilidad: pregunta si hay stock, si puede pasar hoy, si lo tenés para ver.
-- servicio_tecnico: turnos, service, reparaciones, precio de mantenimiento.
+- servicio_tecnico: pregunta qué mantenimientos hay, qué incluye cada uno o cuánto salen.
+- agendar_turno: dice que QUIERE traer la bici para un mantenimiento (aunque no sepa el día).
+- armar_pedido: dice que QUIERE comprar o encargar productos. No es una consulta de precio.
 - envio: costos, zonas o formas de entrega.
 - ubicacion: dónde están, cómo llegar, horarios de atención.
-- pedido: quiere comprar o encargar algo concreto.
 - humano: pide hablar con una persona, reclama, o está enojado.
 - fuera_de_alcance: no tiene nada que ver con la bicicletería.
 
@@ -80,6 +111,12 @@ Reglas:
 - "consulta" lleva SOLO las palabras que identifican al producto: marca, medida o tipo.
   Nada de "para mtb", "de ruta", "buena", "barata" ni el nombre del negocio.
   Ejemplos: "camara 26", "casco scott", "cubierta 29", "service".
+- Ante "cuánto sale X" o "tenés X" → buscar_producto, NO armar_pedido.
+- Sólo es armar_pedido si dice que lo quiere llevar o encargar ("quiero 2 cámaras", "me llevo el casco").
+  En ese caso completá "items" con un elemento por producto y su cantidad (1 si no la dice).
+- Sólo es agendar_turno si dice que quiere dejar la bici para service o reparación.
+  En "servicio" poné el plan si lo nombró (básico, completo, premium) o "ninguno" si no.
+  En "fecha" poné el día tal como lo dijo, o vacío si no lo dijo.
 - Si pide varias cosas, quedate con la primera.
 - Ante la duda entre humano y otra cosa, elegí humano solo si pide explícitamente una persona o reclama.
 """
@@ -176,7 +213,12 @@ def clasificar(texto: str, historial: list[dict] | None = None, *, cliente=None)
         plan["intencion"] = "fuera_de_alcance"
     if plan.get("tipo") not in ("bicicletas", "motos"):
         plan["tipo"] = "todos"
+    if plan.get("servicio") not in SERVICIOS_TALLER:
+        plan["servicio"] = "ninguno"
     plan["consulta"] = (plan.get("consulta") or "").strip()
+    plan["fecha"] = (plan.get("fecha") or "").strip()
+    items = plan.get("items")
+    plan["items"] = items if isinstance(items, list) else []
     return plan
 
 
@@ -204,28 +246,34 @@ def _puntaje_coincidencia(nombre: str, consulta: str) -> float:
     return acertadas / len(palabras)
 
 
-def _elegir_foto(productos: list[dict], consulta: str = "") -> dict | None:
+def _elegir_mejor(productos: list[dict], consulta: str = "") -> dict | None:
     """
-    Elige de qué producto se manda la foto.
+    El producto que mejor representa lo que pidió el cliente.
 
-    Dos criterios, en este orden:
-
-    1. **Que coincida con lo que pidió el cliente.** Si pidió una cubierta 29 y la lista
-       trae 27.5 y 29, mandar la 27.5 mientras el mensaje habla de la 29 es un error que
-       el cliente nota enseguida.
-    2. **Que no esté agotado.** Si el primero figura sin stock, mandar esa foto mientras se
-       le ofrece otra cosa confunde. Si todos están agotados igual se manda la mejor
-       coincidencia: a veces quiere ver el modelo justamente para encargarlo.
+    Primero la coincidencia con la consulta, después que no esté agotado. Se usa para
+    la foto y también para armar un pedido, donde elegir el producto equivocado es peor
+    que no elegir ninguno.
     """
-    con_imagen = [p for p in productos if p.get("imagen")]
-    if not con_imagen:
+    if not productos:
         return None
 
     def clave(producto: dict) -> tuple[float, int]:
         disponible = 0 if "sin stock" in (producto.get("disponibilidad") or "").lower() else 1
         return (_puntaje_coincidencia(producto.get("nombre", ""), consulta), disponible)
 
-    return max(con_imagen, key=clave)
+    return max(productos, key=clave)
+
+
+def _elegir_foto(productos: list[dict], consulta: str = "") -> dict | None:
+    """
+    De qué producto se manda la foto.
+
+    Sólo entre los que tienen imagen: mandar la foto de un producto agotado cuando hay
+    uno disponible confunde, y si todos están agotados igual se manda (a veces quiere
+    ver el modelo para encargarlo).
+    """
+    con_imagen = [p for p in productos if p.get("imagen")]
+    return _elegir_mejor(con_imagen, consulta)
 
 
 def _buscar_productos(api, consulta: str, tipo: str | None) -> tuple[dict, str]:
@@ -325,12 +373,226 @@ def redactar(texto: str, datos: dict, historial: list[dict] | None = None, *, cl
     )
 
 
+def _gs(valor) -> str:
+    """1234000 -> 'Gs. 1.234.000'."""
+    try:
+        return f"Gs. {int(valor):,}".replace(",", ".")
+    except (TypeError, ValueError):
+        return "a consultar"
+
+
+def _plantilla_pedido(lineas: list[dict], total: int | None, whatsapp: str, guardado: bool) -> str:
+    """
+    El mensaje con el pedido armado.
+
+    Es plantilla y no redacción del modelo a propósito: acá hay plata y cantidades, y un
+    número mal escrito en un pedido es un problema comercial. El modelo ya hizo su parte
+    al entender qué quería el cliente.
+    """
+    detalle = "\n".join(
+        f"• {l['cantidad']} x {l['producto']['nombre']} — {l['producto']['precio']}"
+        for l in lineas
+    )
+    partes = ["Listo, te dejo el pedido armado:", detalle]
+    if total:
+        partes.append(f"Total de productos: {_gs(total)}")
+    partes.append(
+        "Te paso con alguien del taller para confirmar el stock y coordinar la entrega."
+    )
+    if not guardado:
+        partes.append(
+            "Ojo: no pude registrarlo en el sistema, así que escribinos al "
+            f"{whatsapp} para que no se pierda."
+        )
+    return "\n".join(partes)
+
+
+def _plantilla_turno(
+    servicio_nombre: str, precio: str | None, fecha, datos_negocio: dict, guardado: bool
+) -> str:
+    """
+    Confirmación del turno.
+
+    Tiene que decir siempre dos cosas que el cliente necesita para venir: dónde es y
+    cuánto va a estar la bici sin ella. El horario no se negocia porque la recepción es
+    en el mostrador.
+
+    Si el turno no se pudo guardar, el mensaje NO puede decir "anoté": se le pide al
+    cliente que escriba al taller, igual que con los pedidos.
+    """
+    if guardado:
+        lineas = [f"Listo, anoté el {servicio_nombre} para el {fechas.describir(fecha)}."]
+    else:
+        lineas = [
+            f"Querés el {servicio_nombre} para el {fechas.describir(fecha)}, "
+            "pero no pude registrarlo en el sistema."
+        ]
+    if precio:
+        lineas.append(f"Precio: {precio}.")
+    lineas.append("El mantenimiento lleva entre 24 y 48 hs.")
+    lineas.append(
+        "Podés traerla a Capiatá, Departamento Central, de lunes a sábado de 8:00 a 18:00."
+    )
+    if datos_negocio.get("ubicacion"):
+        lineas.append(f"Cómo llegar: {datos_negocio['ubicacion']}")
+    if not guardado and datos_negocio.get("whatsapp"):
+        lineas.append(
+            f"Escribinos al {datos_negocio['whatsapp']} con el día y el plan "
+            "para que no se pierda."
+        )
+    lineas.append("¿Te paso con alguien del taller para confirmarlo?")
+    return "\n".join(lineas)
+
+
+def _agendar_turno(plan: dict, arranque: float, *, api, crear_turno) -> dict:
+    """Flujo de turno: qué mantenimiento y qué día. Nada de horarios ni cupos."""
+    servicio = plan.get("servicio") or "ninguno"
+
+    if servicio == "ninguno":
+        return _resultado(
+            "¿Cuál de los mantenimientos querés? Tenemos Básico, Completo y Premium. "
+            "Si querés te digo qué incluye cada uno.",
+            plan,
+            None,
+            arranque,
+        )
+
+    try:
+        fecha = fechas.parsear(plan.get("fecha") or "")
+    except ValueError as e:
+        # No dijo el día, o lo dijo de una forma que no se entiende: se le pregunta.
+        return _resultado(f"{e} ¿Qué día podés traer la bici?", plan, None, arranque)
+
+    # El nombre y el precio salen de la API de catálogo, que los lee de config.js.
+    servicios = []
+    try:
+        servicios = api.resumir_servicios(api.servicios())
+    except catalogo.ErrorCatalogo as e:
+        logger.error(f"No se pudieron leer los servicios: {e}")
+
+    elegido = next(
+        (s for s in servicios if _normalizar(s["nombre"]) == _normalizar(servicio)), None
+    )
+    nombre = elegido["nombre"] if elegido else servicio.capitalize()
+    precio = elegido.get("precio") if elegido else None
+
+    datos = {
+        "tipo": "turno",
+        "servicio": nombre,
+        "precio": precio,
+        "fecha": fecha.isoformat(),
+        "dia": fechas.describir(fecha),
+        "guardado": False,
+    }
+
+    if crear_turno is not None:
+        try:
+            turno = crear_turno(nombre, fecha)
+            if turno:
+                datos["turno_id"] = str(turno.get("id"))
+                datos["guardado"] = True
+        except Exception as e:  # noqa: BLE001
+            logger.error(f"No se pudo guardar el turno: {e}")
+
+    return _resultado(
+        _plantilla_turno(nombre, precio, fecha, negocio.cargar(), datos["guardado"]),
+        plan,
+        datos,
+        arranque,
+    )
+
+
+def _armar_pedido(plan: dict, arranque: float, *, api, crear_pedido, marcar_humano) -> dict:
+    """
+    Flujo de pedido: resolver cada producto contra el catálogo y dejarlo pendiente.
+
+    El pedido NO se confirma solo: queda en 'pending_confirmation' y la conversación pasa
+    a una persona, que es la que cierra la venta.
+    """
+    pedidos = plan.get("items") or []
+    if not pedidos and plan.get("consulta"):
+        pedidos = [{"consulta": plan["consulta"], "cantidad": 1}]
+    if not pedidos:
+        return _resultado(
+            "¿Qué querés encargar? Decime el producto y cuántos.", plan, None, arranque
+        )
+
+    lineas = []
+    for pedido in pedidos[:8]:
+        consulta = (pedido.get("consulta") or "").strip()
+        if len(consulta) < 2:
+            continue
+        try:
+            cantidad = max(1, int(pedido.get("cantidad") or 1))
+        except (TypeError, ValueError):
+            cantidad = 1
+
+        respuesta, usada = _buscar_productos(api, consulta, None)
+        productos = [api.resumir_producto(i) for i in (respuesta.get("items") or [])]
+        elegido = _elegir_mejor(productos, consulta)
+        if elegido is None:
+            logger.info(f"No se encontró '{consulta}' para el pedido; se omite")
+            continue
+        lineas.append({"producto": elegido, "cantidad": cantidad, "consulta": usada})
+
+    if not lineas:
+        return _resultado(
+            PLANTILLA_SIN_RESULTADO.format(whatsapp=_whatsapp()), plan, None, arranque
+        )
+
+    total = sum(
+        (l["producto"].get("precio_valor") or 0) * l["cantidad"]
+        for l in lineas
+        if l["producto"].get("precio_valor")
+    ) or None
+
+    datos = {
+        "tipo": "pedido",
+        "lineas": [
+            {
+                "nombre": l["producto"]["nombre"],
+                "cantidad": l["cantidad"],
+                "precio": l["producto"]["precio"],
+                "producto_id": l["producto"]["id"],
+            }
+            for l in lineas
+        ],
+        "total": total,
+    }
+
+    guardado = False
+    if crear_pedido is not None:
+        try:
+            orden = crear_pedido(lineas)
+            if orden:
+                datos["pedido_id"] = str(orden.get("id"))
+                datos["estado"] = orden.get("status")
+                guardado = True
+        except Exception as e:  # noqa: BLE001
+            logger.error(f"No se pudo guardar el pedido: {e}")
+
+    # El pedido lo cierra una persona: se marca la conversación para que el bot no siga.
+    if marcar_humano is not None:
+        try:
+            marcar_humano()
+        except Exception as e:  # noqa: BLE001
+            logger.error(f"No se pudo marcar la conversación como humana: {e}")
+
+    datos["guardado"] = guardado
+    return _resultado(
+        _plantilla_pedido(lineas, total, _whatsapp(), guardado), plan, datos, arranque
+    )
+
+
 def responder(
     texto: str,
     historial: list[dict] | None = None,
     *,
     api=None,
     cliente=None,
+    crear_pedido=None,
+    crear_turno=None,
+    marcar_humano=None,
 ) -> dict:
     """
     Resuelve un mensaje de punta a punta.
@@ -356,6 +618,18 @@ def responder(
 
         if intencion == "fuera_de_alcance":
             return _resultado(PLANTILLA_FUERA_DE_ALCANCE, plan, None, arranque)
+
+        if intencion == "agendar_turno":
+            return _agendar_turno(plan, arranque, api=api or catalogo, crear_turno=crear_turno)
+
+        if intencion == "armar_pedido":
+            return _armar_pedido(
+                plan,
+                arranque,
+                api=api or catalogo,
+                crear_pedido=crear_pedido,
+                marcar_humano=marcar_humano,
+            )
 
         datos = ejecutar(plan, api=api)
 

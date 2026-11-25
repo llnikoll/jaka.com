@@ -391,3 +391,122 @@ def set_order_status(
             (pedido["conversation_id"], actor, json.dumps(detalles, ensure_ascii=False)),
         )
         return actualizado
+
+# ─────────────────────────────────────────────────────────────────────────
+# Turnos de taller
+# ─────────────────────────────────────────────────────────────────────────
+
+# Estados posibles de un turno (deben coincidir con el CHECK de la tabla).
+TURNO_ESTADOS = ("pendiente", "recibido", "cancelado")
+
+
+def crear_turno(
+    conversation_id: str,
+    contact_id: str,
+    servicio: str,
+    fecha,
+    *,
+    cliente_nombre: str | None = None,
+    nota: str | None = None,
+) -> dict[str, Any]:
+    """
+    Registra que el cliente va a traer la bici un día, para un mantenimiento dado.
+
+    No hay horario ni cupo: la recepción es en el mostrador, así que dos clientes el
+    mismo día no se pisan. El turno queda 'pendiente' hasta que alguien lo recibe.
+
+    `fecha` es un date. La duración del trabajo (24 a 48 h) no se guarda porque es la
+    misma para todos los planes y se le informa al cliente en el momento.
+    """
+    servicio = (servicio or "").strip()
+    if not servicio:
+        raise ValueError("Falta el servicio del turno")
+    if fecha is None:
+        raise ValueError("Falta la fecha del turno")
+
+    with connection() as conn:
+        turno = conn.execute(
+            """
+            INSERT INTO turnos
+              (conversation_id, contact_id, servicio, fecha, cliente_nombre, nota)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            RETURNING *
+            """,
+            (conversation_id, contact_id, servicio, fecha, cliente_nombre, nota),
+        ).fetchone()
+        conn.execute(
+            """
+            INSERT INTO audit_log (conversation_id, actor, action, details)
+            VALUES (%s, 'system', 'turno.created',
+                    jsonb_build_object('turno_id', %s::text, 'servicio', %s::text))
+            """,
+            (conversation_id, str(turno["id"]), servicio),
+        )
+        return turno
+
+
+def listar_turnos(contact_id: str, incluir_pasados: bool = False) -> list[dict[str, Any]]:
+    """Los turnos de un contacto, del más próximo al más lejano."""
+    consulta = "SELECT * FROM turnos WHERE contact_id = %s AND estado <> 'cancelado'"
+    if not incluir_pasados:
+        consulta += " AND fecha >= CURRENT_DATE"
+    consulta += " ORDER BY fecha"
+
+    with connection() as conn:
+        return conn.execute(consulta, (contact_id,)).fetchall()
+
+
+def set_turno_estado(turno_id: str, estado: str, *, actor: str) -> dict[str, Any]:
+    """Marca un turno como recibido o cancelado, con auditoría."""
+    if estado not in TURNO_ESTADOS:
+        raise ValueError(f"estado debe ser uno de: {', '.join(TURNO_ESTADOS)}")
+    with connection() as conn:
+        turno = conn.execute(
+            "UPDATE turnos SET estado = %s WHERE id = %s RETURNING *", (estado, turno_id)
+        ).fetchone()
+        if turno is None:
+            raise ValueError("Turno no encontrado")
+        conn.execute(
+            """
+            INSERT INTO audit_log (conversation_id, actor, action, details)
+            VALUES (%s, %s, 'turno.status_changed',
+                    jsonb_build_object('turno_id', %s::text, 'estado', %s::text))
+            """,
+            (turno["conversation_id"], actor, str(turno_id), estado),
+        )
+        return turno
+
+def listar_pedidos(status: str = "pending_confirmation", limite: int = 20) -> list[dict[str, Any]]:
+    """
+    Pedidos en un estado dado, con sus renglones, del más nuevo al más viejo.
+
+    Es lo que mira el dueño del taller para ver lo que el bot armó y todavía no confirmó.
+    """
+    if status not in ORDER_STATUSES:
+        raise ValueError(f"status debe ser uno de: {', '.join(ORDER_STATUSES)}")
+
+    with connection() as conn:
+        pedidos = conn.execute(
+            """
+            SELECT o.*, c.phone_e164, c.display_name
+            FROM orders o
+            JOIN contacts c ON c.id = o.contact_id
+            WHERE o.status = %s
+            ORDER BY o.created_at DESC
+            LIMIT %s
+            """,
+            (status, limite),
+        ).fetchall()
+
+        for pedido in pedidos:
+            pedido["items"] = conn.execute(
+                """
+                SELECT product_id, product_name_snapshot, quantity, unit_price,
+                       availability_snapshot
+                FROM order_items
+                WHERE order_id = %s
+                ORDER BY created_at, id
+                """,
+                (pedido["id"],),
+            ).fetchall()
+        return pedidos
