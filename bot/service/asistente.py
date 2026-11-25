@@ -19,7 +19,9 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
+import unicodedata
 
 from bot.service import catalogo, config, gemini, negocio
 
@@ -100,7 +102,9 @@ Lo que NO podés hacer:
 
 Sobre la foto:
 - Si DATOS trae "imagen", esa foto del producto se le envía al cliente junto con tu mensaje.
-  Tu respuesta tiene que hablar de "imagen.producto", no de otro producto de la lista.
+  Tu respuesta tiene que hablar de "imagen.producto" y no de otro producto de la lista.
+- Si el cliente pidió una medida, marca o color que no es el de esa foto, no lo presentes como
+  si lo fuera: decí qué medida tenés y ofrecé ver si aparece.
 - No digas "te mando una foto" ni "acá va la imagen": la foto ya llega, mencionarla suena raro.
 
 Si DATOS viene vacío o no alcanza, decí que no lo tenés a mano y ofrecé pasarlo al WhatsApp
@@ -167,22 +171,52 @@ def clasificar(texto: str, historial: list[dict] | None = None, *, cliente=None)
     return plan
 
 
-def _elegir_foto(productos: list[dict]) -> dict | None:
+def _normalizar(texto: str) -> str:
+    """Minúsculas, sin acentos y sin puntuación, para comparar nombres con consultas."""
+    plano = unicodedata.normalize("NFD", str(texto or "").lower())
+    sin_acentos = "".join(c for c in plano if unicodedata.category(c) != "Mn")
+    return re.sub(r"[^a-z0-9]+", " ", sin_acentos).strip()
+
+
+def _puntaje_coincidencia(nombre: str, consulta: str) -> float:
+    """
+    Qué tanto se parece el nombre del producto a lo que pidió el cliente.
+
+    Cuenta qué proporción de las palabras de la consulta aparecen en el nombre. Sirve
+    para desempatar la elección de la foto: si alguien pide "cubierta 29" y la lista
+    trae 27.5 y 29, la foto tiene que ser la 29 aunque la 27.5 aparezca primero.
+    """
+    buscado = _normalizar(consulta)
+    palabras = [p for p in buscado.split() if len(p) > 1]
+    if not palabras:
+        return 0.0
+    nombre_plano = _normalizar(nombre)
+    acertadas = sum(1 for p in palabras if p in nombre_plano)
+    return acertadas / len(palabras)
+
+
+def _elegir_foto(productos: list[dict], consulta: str = "") -> dict | None:
     """
     Elige de qué producto se manda la foto.
 
-    No es el primero de la lista: si el primero figura sin stock, mandarle esa foto al
-    cliente mientras se le ofrece otra cosa confunde. Se prefiere el primero con imagen
-    que no esté agotado, y si todos lo están, el primero con imagen igual (a veces el
-    cliente quiere ver el modelo justamente para encargarlo).
+    Dos criterios, en este orden:
+
+    1. **Que coincida con lo que pidió el cliente.** Si pidió una cubierta 29 y la lista
+       trae 27.5 y 29, mandar la 27.5 mientras el mensaje habla de la 29 es un error que
+       el cliente nota enseguida.
+    2. **Que no esté agotado.** Si el primero figura sin stock, mandar esa foto mientras se
+       le ofrece otra cosa confunde. Si todos están agotados igual se manda la mejor
+       coincidencia: a veces quiere ver el modelo justamente para encargarlo.
     """
     con_imagen = [p for p in productos if p.get("imagen")]
     if not con_imagen:
         return None
-    for producto in con_imagen:
-        if "sin stock" not in (producto.get("disponibilidad") or "").lower():
-            return producto
-    return con_imagen[0]
+
+    def clave(producto: dict) -> tuple[float, int]:
+        disponible = 0 if "sin stock" in (producto.get("disponibilidad") or "").lower() else 1
+        return (_puntaje_coincidencia(producto.get("nombre", ""), consulta), disponible)
+
+    return max(con_imagen, key=clave)
 
 
 def _buscar_productos(api, consulta: str, tipo: str | None) -> tuple[dict, str]:
@@ -230,7 +264,7 @@ def ejecutar(plan: dict, *, api=None) -> dict:
             "total": respuesta.get("total", 0),
             "productos": productos,
         }
-        foto = _elegir_foto(productos)
+        foto = _elegir_foto(productos, consulta)
         if foto:
             # Va aparte de "productos" para que el modelo sepa cuál es la foto que
             # acompaña al mensaje y hable de ese producto, no de otro de la lista.

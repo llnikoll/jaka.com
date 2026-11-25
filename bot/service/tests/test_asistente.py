@@ -229,6 +229,34 @@ class ResponderTest(unittest.TestCase):
 class FotoTest(unittest.TestCase):
     """Qué foto se manda cuando el cliente pregunta por un producto."""
 
+    CUBIERTA_275 = {
+        "id": "275", "nombre": "CUBIERTA CONTINENTAL 27.5X2.20 RACE KING",
+        "precio": "Gs. 319.000", "disponibilidad": "Figura en catálogo; confirmar disponibilidad",
+        "imagen": "https://cdn.test/275.jpg",
+    }
+    CUBIERTA_29 = {
+        "id": "29", "nombre": "CUBIERTA CONTINENTAL 29X2.20 RACE KING",
+        "precio": "Gs. 335.000", "disponibilidad": "Figura en catálogo; confirmar disponibilidad",
+        "imagen": "https://cdn.test/29.jpg",
+    }
+
+    def test_prefiere_la_medida_que_pidio_el_cliente(self):
+        """El caso real: pedía 29, la lista traía la 27.5 primero y se mandaba esa foto."""
+        elegido = asistente._elegir_foto(
+            [self.CUBIERTA_275, self.CUBIERTA_29], "cubierta 29"
+        )
+        self.assertEqual(elegido["id"], "29", "mandó la foto de otra medida")
+
+    def test_sin_consulta_elige_el_primero(self):
+        elegido = asistente._elegir_foto([self.CUBIERTA_275, self.CUBIERTA_29])
+        self.assertEqual(elegido["id"], "275")
+
+    def test_la_medida_le_gana_al_stock(self):
+        """Si la medida que pidió está agotada, manda esa igual: quiere verla."""
+        agotada_29 = dict(self.CUBIERTA_29, disponibilidad="Sin stock según catálogo")
+        elegido = asistente._elegir_foto([self.CUBIERTA_275, agotada_29], "cubierta 29")
+        self.assertEqual(elegido["id"], "29")
+
     def test_prefiere_un_producto_disponible(self):
         elegido = asistente._elegir_foto([AGOTADO, PRODUCTO])
         self.assertEqual(elegido["id"], PRODUCTO["id"], "eligió un producto sin stock")
@@ -263,6 +291,22 @@ class FotoTest(unittest.TestCase):
         self.assertEqual(r["imagen"]["producto"], PRODUCTO["nombre"])
         # El modelo tiene que saber qué producto muestra la foto para hablar de ese.
         self.assertIn(PRODUCTO["nombre"], cliente.ultimo_contexto[0]["content"])
+
+
+class CoincidenciaTest(unittest.TestCase):
+    def test_normaliza_acentos_y_mayusculas(self):
+        self.assertEqual(asistente._normalizar("CÁMARA 26x1.50"), "camara 26x1 50")
+
+    def test_puntaje_completo_cuando_coincide_todo(self):
+        self.assertEqual(asistente._puntaje_coincidencia("CASCO SCOTT DOPPIO", "casco scott"), 1.0)
+
+    def test_puntaje_parcial(self):
+        self.assertAlmostEqual(
+            asistente._puntaje_coincidencia("CASCO SCOTT DOPPIO", "casco shimano"), 0.5
+        )
+
+    def test_sin_consulta_no_puntua(self):
+        self.assertEqual(asistente._puntaje_coincidencia("CASCO", ""), 0.0)
 
 
 class PlantillaEnvioTest(unittest.TestCase):
