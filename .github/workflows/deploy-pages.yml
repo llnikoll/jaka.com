@@ -1,5 +1,10 @@
 name: Publicar tienda en GitHub Pages
 
+# Se dispara con cada push a main (y manualmente).
+# Separado en construir -> publicar por el mismo motivo que el workflow de
+# catalogo: si se empaqueta y publica en el mismo job, deploy-pages a veces
+# no ve el artefacto recien subido ("Found 0 artifact(s)") y falla el deploy.
+
 on:
   push:
     branches: [main]
@@ -9,17 +14,15 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  publicar:
+  construir:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Descargar el repositorio
         uses: actions/checkout@v4
@@ -33,6 +36,31 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: tienda
+
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Esperar a que el artefacto este disponible
+        shell: bash
+        run: |
+          for i in $(seq 1 40); do
+            cantidad=$(curl -sS -H "Authorization: Bearer ${{ github.token }}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts?per_page=100" \
+              | jq '[.artifacts[] | select(.name == "github-pages")] | length')
+            if [ "${cantidad:-0}" -ge 1 ]; then
+              echo "Artefacto github-pages disponible."
+              exit 0
+            fi
+            echo "Artefacto todavia no indexado (intento $i/40); esperando..."
+            sleep 3
+          done
+          echo "ERROR: el artefacto github-pages no aparecio." >&2
+          exit 1
 
       - name: Publicar
         id: deploy
