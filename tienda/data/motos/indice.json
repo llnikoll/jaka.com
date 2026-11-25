@@ -1,11 +1,11 @@
 {
- "generado": "2026-11-24T20:17:55+0000",
- "total": 13091,
+ "generado": "2026-11-25T19:23:28+0000",
+ "total": 13101,
  "categorias": [
   {
    "slug": "repuestos",
    "nombre": "Repuestos y aceites",
-   "total": 11998
+   "total": 12006
   },
   {
    "slug": "accesorios",
@@ -15,7 +15,7 @@
   {
    "slug": "cubiertas",
    "nombre": "Cubiertas y cámaras",
-   "total": 246
+   "total": 247
   },
   {
    "slug": "baterias",
@@ -35,7 +35,7 @@
   {
    "slug": "kenton",
    "nombre": "Kenton",
-   "total": 57
+   "total": 58
   },
   {
    "slug": "yamaha",
