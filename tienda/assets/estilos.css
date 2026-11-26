@@ -2289,10 +2289,116 @@ h1.titulo-pagina { font-size: clamp(23px, 2.5vw, 30px); letter-spacing: -.8px; m
   font-size: 18px;
 }
 .seo-local { border-top-color: #e1e8e2; }
-.pie { margin-top: 0; background: #10271c; }
-.pie__interior { padding-top: 38px; padding-bottom: 40px; }
-.pie__links a { color: #c9ef83; }
-.pie__nota { color: #a2b4a7; }
+.pie {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-top: 0;
+  color: #eaf2eb;
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(105, 164, 92, .2), transparent 34%),
+    linear-gradient(118deg, #0b291c 0%, #10271c 52%, #0d2118 100%);
+}
+.pie::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 500px;
+  height: 500px;
+  right: -250px;
+  bottom: -370px;
+  border: 1px solid rgba(220, 246, 196, .1);
+  border-radius: 50%;
+  box-shadow: 0 0 0 36px rgba(220, 246, 196, .025), 0 0 0 72px rgba(220, 246, 196, .02);
+}
+.pie__interior {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(230px, .9fr) minmax(170px, .65fr);
+  align-items: start;
+  gap: clamp(30px, 5vw, 72px);
+  padding-top: 54px;
+  padding-bottom: 46px;
+}
+.pie__marca { max-width: 430px; }
+.pie__identidad { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+.pie__logo { width: 48px; height: 48px; border: 1px solid rgba(255,255,255,.18); border-radius: 14px; object-fit: cover; }
+.pie__texto { display: flex; flex-direction: column; gap: 2px; line-height: 1.2; }
+.pie__texto strong { color: #fff; font-size: 20px; letter-spacing: -.4px; }
+.pie__texto small { color: #a9bdad; font-size: 12px; font-weight: 600; letter-spacing: .02em; }
+.pie__marca p { max-width: 390px; margin: 17px 0 21px; color: #bacbbd; font-size: 14px; line-height: 1.65; }
+.pie__whatsapp {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 11px 14px;
+  border: 1px solid rgba(201, 239, 131, .24);
+  border-radius: 15px;
+  background: rgba(255,255,255,.055);
+  color: #f0f6ef;
+  text-decoration: none;
+  transition: transform .16s, background .16s, border-color .16s;
+}
+.pie__whatsapp:hover { transform: translateY(-2px); border-color: rgba(201,239,131,.48); background: rgba(255,255,255,.09); }
+.pie__whatsapp-icono, .pie__ubicacion-icono {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(201,239,131,.13);
+  color: #c9ef83;
+}
+.pie__whatsapp-icono svg { width: 21px; height: 21px; }
+.pie__whatsapp-icono svg path:first-child { fill: none; stroke: currentColor; stroke-width: 1.6; }
+.pie__whatsapp-icono svg path:last-child { fill: currentColor; }
+.pie__whatsapp-texto, .pie__ubicacion-texto { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+.pie__whatsapp-texto strong, .pie__ubicacion-texto strong { color: #fff; font-size: 13px; }
+.pie__whatsapp-texto small, .pie__ubicacion-texto small { color: #a9bdad; font-size: 11.5px; line-height: 1.4; }
+.pie__flecha { margin-left: auto; color: #c9ef83; font-size: 16px; }
+.pie__columna { min-width: 0; }
+.pie__titulo { margin: 7px 0 17px; color: #fff; font-size: 13px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+.pie__ubicacion {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 12px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  background: rgba(255,255,255,.045);
+  color: inherit;
+  text-decoration: none;
+  transition: background .16s, border-color .16s, transform .16s;
+}
+.pie__ubicacion:hover { transform: translateY(-2px); border-color: rgba(201,239,131,.34); background: rgba(255,255,255,.075); }
+.pie__ubicacion-icono { flex-basis: 36px; width: 36px; height: 36px; }
+.pie__ubicacion-icono svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pie__ubicacion-texto strong { font-size: 12.5px; }
+.pie__links { display: grid; gap: 12px; font-size: 14px; }
+.pie__links a { width: fit-content; color: #c3d3c6; font-weight: 550; text-decoration: none; transition: color .16s, transform .16s; }
+.pie__links a:hover { transform: translateX(3px); color: #c9ef83; }
+.pie__base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  padding-bottom: 19px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  color: #9fb2a3;
+  font-size: 12px;
+}
+.pie__base > a { color: #c9ef83; font-weight: 650; text-decoration: none; }
+.pie__base > a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.pie__nota { margin: 0; color: #90a496; font-size: 11.5px; }
+
+@media (min-width: 701px) and (max-width: 980px) {
+  .pie__interior { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; padding-top: 42px; }
+  .pie__marca { grid-column: 1 / -1; max-width: 620px; }
+}
 
 .panel { border-left: 1px solid rgba(20,35,29,.08); }
 .panel__cabecera, .modal__cabecera { background: #fbfcfa; }
@@ -2381,7 +2487,17 @@ h1.titulo-pagina { font-size: clamp(23px, 2.5vw, 30px); letter-spacing: -.8px; m
   .faq { padding: 25px 0 30px; }
   .faq__item { padding-inline: 14px; }
   .faq__item summary h3 { font-size: 14px; }
-  .pie__interior { padding-bottom: 90px; }
+  .pie__interior { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 27px 18px; padding-top: 36px; padding-bottom: 29px; }
+  .pie__marca { grid-column: 1 / -1; max-width: 100%; }
+  .pie__marca p { max-width: 440px; margin: 14px 0 17px; }
+  .pie__titulo { margin: 3px 0 13px; font-size: 11px; }
+  .pie__ubicacion { align-items: flex-start; gap: 8px; padding: 10px 9px; }
+  .pie__ubicacion-icono { flex-basis: 32px; width: 32px; height: 32px; }
+  .pie__ubicacion-texto strong { font-size: 11.5px; }
+  .pie__ubicacion-texto small { font-size: 10.5px; }
+  .pie__links { gap: 11px; font-size: 12.5px; }
+  .pie__base { display: grid; grid-template-columns: 1fr auto; gap: 9px 12px; padding-top: 14px; padding-bottom: 22px; font-size: 11px; }
+  .pie__nota { grid-column: 1 / -1; }
   .modal__caja { max-height: 95vh; }
 }
 
@@ -2398,4 +2514,7 @@ h1.titulo-pagina { font-size: clamp(23px, 2.5vw, 30px); letter-spacing: -.8px; m
   .landing-hero { padding-inline: 18px; }
   .landing-hero__datos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .landing-hero__datos span:last-child { grid-column: 1 / -1; }
+  .pie__interior { grid-template-columns: 1fr; gap: 24px; }
+  .pie__marca { grid-column: auto; }
+  .pie__ubicacion { max-width: 360px; }
 }

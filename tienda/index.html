@@ -52,7 +52,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="shortcut icon" href="assets/favicon.ico">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="assets/estilos.css?v=20261126b">
+<link rel="stylesheet" href="assets/estilos.css?v=20261126c">
 <link rel="preconnect" href="https://www.ciclovia.com.py" crossorigin>
 <link rel="preconnect" href="https://www.chacomer.com.py" crossorigin>
 <link rel="dns-prefetch" href="https://www.ciclovia.com.py">
@@ -381,19 +381,39 @@ src="https://www.facebook.com/tr?id=1521450706425502&ev=PageView&noscript=1"/></
 <!-- ================= Pie ================= -->
 <footer class="pie">
   <div class="contenedor pie__interior">
-    <div>
-      <strong>Jaka Bicicletería</strong>
-      <p>Bicicletas, accesorios, repuestos, fitness y motos. Catálogo actualizado automáticamente; los pedidos se confirman por WhatsApp.</p>
+    <div class="pie__marca">
+      <a class="pie__identidad" href="/" aria-label="Jaka Bicicletería, volver al inicio">
+        <img class="pie__logo" src="assets/jaka-icono.png" alt="" width="46" height="46" loading="lazy">
+        <span class="pie__texto"><strong>Jaka Bicicletería</strong><small>Capiatá · Paraguay</small></span>
+      </a>
+      <p>Bicicletas, accesorios, repuestos, fitness y motos. Catálogo actualizado; confirmamos los pedidos por WhatsApp.</p>
+      <a class="pie__whatsapp" id="pie-whatsapp" href="https://wa.me/595993539237?text=Hola!%20Quiero%20hacer%20una%20consulta." target="_blank" rel="noopener">
+        <span class="pie__whatsapp-icono" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Z"/><path d="M8.5 8.7c.3-.7.6-.7.9-.7h.7c.2 0 .5 0 .7.6s.7 1.7.8 1.8c0 .2.1.3 0 .5l-.4.6c-.1.2-.3.4-.1.7.2.3.7 1.1 1.5 1.8 1 .9 1.8 1.1 2 1.2.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.3.1.2.1.8-.2 1.5-.3.7-1.6 1.4-2.2 1.4-.6 0-2.4-.2-4.5-2.2-1.7-1.6-2.6-3.3-2.9-3.9-.3-.6-1-1.9-.7-3Z"/></svg></span>
+        <span class="pie__whatsapp-texto"><strong>Escribinos por WhatsApp</strong><small><span id="pie-numero">+595 993 539 237</span></small></span>
+        <span class="pie__flecha" aria-hidden="true">↗</span>
+      </a>
     </div>
-    <div class="pie__links">
-      <a href="https://wa.me/595993539237?text=Hola!%20Quiero%20hacer%20una%20consulta." target="_blank" rel="noopener">WhatsApp +595 993 539 237</a>
-      <a href="https://maps.app.goo.gl/fmhizu2Qwd3aCJEZ9" target="_blank" rel="noopener">Cómo llegar al local</a>
-      <a href="tienda.html">Catálogo</a>
-      <a href="#servicio-tecnico">Servicio técnico</a>
-      <a href="#faq">Preguntas frecuentes</a>
-      <a href="privacidad.html">Privacidad</a>
-      <span class="pie__nota">Imágenes de referencia. Productos sujetos a disponibilidad.</span>
-    </div>
+    <section class="pie__columna" aria-labelledby="pie-ubicacion-titulo">
+      <h2 class="pie__titulo" id="pie-ubicacion-titulo">Encontranos</h2>
+      <a class="pie__ubicacion" id="pie-ubicacion" href="https://maps.app.goo.gl/fmhizu2Qwd3aCJEZ9" target="_blank" rel="noopener">
+        <span class="pie__ubicacion-icono" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg></span>
+        <span class="pie__ubicacion-texto"><strong>Jaka Bicicletería</strong><small>Capiatá, Departamento Central</small><small>Ver mapa y cómo llegar</small></span>
+        <span class="pie__flecha" aria-hidden="true">↗</span>
+      </a>
+    </section>
+    <nav class="pie__columna" aria-label="Explorar el sitio">
+      <h2 class="pie__titulo">Explorá</h2>
+      <div class="pie__links">
+        <a href="tienda.html">Catálogo</a>
+        <a href="#servicio-tecnico">Servicio técnico</a>
+        <a href="#faq">Preguntas frecuentes</a>
+      </div>
+    </nav>
+  </div>
+  <div class="contenedor pie__base">
+    <span>© Jaka Bicicletería · Capiatá, Paraguay</span>
+    <a href="privacidad.html">Política de privacidad</a>
+    <span class="pie__nota">Imágenes de referencia. Productos sujetos a disponibilidad.</span>
   </div>
 </footer>
 
