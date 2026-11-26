@@ -370,6 +370,7 @@
       const btn = ev.target.closest('[data-modo]');
       if (!btn) return;
       cambiarModo(btn.dataset.modo);
+      cerrarMenuCategorias();
     });
 
     $('#categorias').addEventListener('click', (ev) => {
@@ -377,6 +378,7 @@
       if (modo) { cambiarModo(modo.dataset.modo); return; }
       const btn = ev.target.closest('[data-cat]');
       if (!btn) return;
+      cerrarMenuCategorias();
       btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       if (btn.dataset.cat === 'motos') {
         const sub = btn.dataset.sub || null;
@@ -395,6 +397,7 @@
     $('#subcategorias').addEventListener('click', (ev) => {
       const btn = ev.target.closest('[data-sub]');
       if (!btn) return;
+      cerrarMenuCategorias();
       btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       estado.subcategoria = btn.dataset.sub || null;
       estado.mostrados = CONFIG.porPagina;
@@ -470,8 +473,10 @@
 
     $('#btn-mas').addEventListener('click', () => { estado.mostrados += CONFIG.porPagina; renderizarGrilla(); });
     $('#btn-limpiar-filtros').addEventListener('click', limpiarFiltros);
-    $('#btn-menu-categorias').addEventListener('click', () => {
-      $('#categorias').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    $('#btn-menu-categorias').addEventListener('click', (ev) => {
+      const abierto = $('.cabecera').classList.toggle('menu-abierto');
+      ev.currentTarget.setAttribute('aria-expanded', String(abierto));
+      if (abierto) $('#categorias').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 
     $('#btn-carrito').addEventListener('click', () => abrirPanel(true));
@@ -582,6 +587,14 @@
   /* ------------------------------------------------------------------ */
   /* Navegación: Bicicletas | Motos                                     */
   /* ------------------------------------------------------------------ */
+  function cerrarMenuCategorias() {
+    const cabecera = $('.cabecera');
+    const boton = $('#btn-menu-categorias');
+    if (!cabecera || !boton) return;
+    cabecera.classList.remove('menu-abierto');
+    boton.setAttribute('aria-expanded', 'false');
+  }
+
   function renderizarNav() {
     const indice = estado.indice || {};
     const vistas = indice.vistas || [];
