@@ -2385,8 +2385,7 @@ h1.titulo-pagina { font-size: clamp(23px, 2.5vw, 30px); letter-spacing: -.8px; m
   justify-content: space-between;
   gap: 14px 24px;
   flex-wrap: wrap;
-  padding-top: 16px;
-  padding-bottom: 19px;
+  padding: 16px 72px 19px 16px;
   border-top: 1px solid rgba(255,255,255,.12);
   color: #9fb2a3;
   font-size: 12px;
@@ -2496,8 +2495,9 @@ h1.titulo-pagina { font-size: clamp(23px, 2.5vw, 30px); letter-spacing: -.8px; m
   .pie__ubicacion-texto strong { font-size: 11.5px; }
   .pie__ubicacion-texto small { font-size: 10.5px; }
   .pie__links { gap: 11px; font-size: 12.5px; }
-  .pie__base { display: grid; grid-template-columns: 1fr auto; gap: 9px 12px; padding-top: 14px; padding-bottom: 22px; font-size: 11px; }
-  .pie__nota { grid-column: 1 / -1; }
+  .pie__base { display: grid; grid-template-columns: 1fr; gap: 9px; padding: 14px 76px 22px 16px; font-size: 11px; }
+  .pie__base > a { justify-self: start; }
+  .pie__nota { grid-column: auto; }
   .modal__caja { max-height: 95vh; }
 }
 
@@ -2514,6 +2514,12 @@ h1.titulo-pagina { font-size: clamp(23px, 2.5vw, 30px); letter-spacing: -.8px; m
   .landing-hero { padding-inline: 18px; }
   .landing-hero__datos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .landing-hero__datos span:last-child { grid-column: 1 / -1; }
+  .pie__interior { grid-template-columns: 1fr; gap: 24px; }
+  .pie__marca { grid-column: auto; }
+  .pie__ubicacion { max-width: 360px; }
+}
+
+@media (max-width: 420px) {
   .pie__interior { grid-template-columns: 1fr; gap: 24px; }
   .pie__marca { grid-column: auto; }
   .pie__ubicacion { max-width: 360px; }
